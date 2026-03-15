@@ -1,6 +1,9 @@
 # VibeCheck
 VibeCheck - glazbena socijalna mreza
 
+## Opis projekta
+Glazbeni ukusi govore puno o nama, ali trenutne platforme (Spotify, Apple Music) nemaju dovoljno socijalne komponente. VibeCheck je socijalna mreza fokusirana na glazbu gdje korisnici mogu dijeliti sto slusaju, kreirati playlist playdate-e i otkrivati nove izvodnace kroz preporuke prijatelja.
+
 ## Git pravila
 ### Grane
 pull request > develop > test > prod
