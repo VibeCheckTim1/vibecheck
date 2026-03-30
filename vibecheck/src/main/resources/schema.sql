@@ -1,0 +1,7 @@
+CREATE TABLE users (
+    id_user BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(16) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(60) NOT NULL,
+    tstamp TIMESTAMP NOT NULL
+);
