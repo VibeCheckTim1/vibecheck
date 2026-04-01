@@ -21,6 +21,7 @@ public class VibeCheckUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
                 .map(user -> VibeCheckUserDetails.builder()
+                        .id(user.getIdUser())
                         .username(user.getEmail())
                         .password(user.getPassword())
                         .roles(List.of()) //TODO: kada se dodaju role

@@ -42,6 +42,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/error/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+
+                        .requestMatchers("/api/user/create").permitAll()
+                        .requestMatchers("/api/user/addAvatar").permitAll()
+                        .requestMatchers("/error").permitAll()
+                        //.requestMatchers("/api/user/addAvatar").authenticated()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
