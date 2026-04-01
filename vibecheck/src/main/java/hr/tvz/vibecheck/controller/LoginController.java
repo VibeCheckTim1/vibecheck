@@ -6,12 +6,13 @@ import hr.tvz.vibecheck.service.AuthService;
 import hr.tvz.vibecheck.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class LoginController {
 
@@ -25,15 +26,15 @@ public class LoginController {
         return ResponseEntity.ok(authService.login(request));
     }
 
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestHeader("Authorization") String refreshToken) {
-        // TODO: validate refresh token, generate new access token
-        return ResponseEntity.ok(new TokenResponse("newAccessToken", refreshToken));
+    @PostMapping("/extend-login")
+    public ResponseEntity<?> refresh(String refreshToken) {
+
+        return ResponseEntity.ok(new TokenResponse(jwtService.generateAccessToken(null, refreshToken), refreshToken));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> logout() {
         // TODO: invalidate token
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 }
