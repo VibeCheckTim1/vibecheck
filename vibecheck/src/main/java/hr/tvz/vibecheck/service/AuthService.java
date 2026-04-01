@@ -19,6 +19,7 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
 
-        return new TokenResponse(jwtService.generateAccessToken(auth), jwtService.generateRefreshToken(auth));
+        var refreshToken = jwtService.generateRefreshToken(auth);
+        return new TokenResponse(jwtService.generateAccessToken(null, refreshToken), refreshToken);
     }
 }

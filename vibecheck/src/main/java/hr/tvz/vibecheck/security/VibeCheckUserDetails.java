@@ -1,5 +1,6 @@
 package hr.tvz.vibecheck.security;
 
+import jakarta.annotation.Nonnull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -14,14 +15,14 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VibeCheckUserDetails implements UserDetails {
+
     private Long id;
     private String username;
     private String password;
-    private String email;
     private List<String> roles;
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public @Nonnull Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .toList();
@@ -32,8 +33,13 @@ public class VibeCheckUserDetails implements UserDetails {
         return password;
     }
 
+    @Deprecated
     @Override
-    public String getUsername() {
+    public @Nonnull String getUsername() {
+        return username;
+    }
+
+    public @Nonnull String getEmail() {
         return username;
     }
 }
