@@ -1,8 +1,6 @@
 package hr.tvz.vibecheck.controller;
 
-import hr.tvz.vibecheck.repository.UserRepository;
-import hr.tvz.vibecheck.service.JwtService;
-import jakarta.servlet.http.HttpServletRequest;
+import hr.tvz.vibecheck.service.StateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,29 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class StateController {
 
-    private final JwtService jwtService;
-
-    private final UserRepository userRepository;
+    private final StateService stateService;
 
     @GetMapping("/user-state")
-    public ResponseEntity<?> getUserState(HttpServletRequest request) {
+    public ResponseEntity<?> getUserState() {
 
-        var header = request.getHeader("Authorization");
+        var userState = stateService.getUserState();
 
-        if (header != null && header.startsWith("Bearer ")) {
-
-            var token = header.substring(7);
-
-            if (jwtService.isValid(token, "access")) {
-                var email = jwtService.extractEmail(token);
-
-                return userRepository.findUserStateByEmail(email)
-                        .map(ResponseEntity::ok)
-                        .orElse(ResponseEntity.notFound().build());
-
-            }
-        }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (userState == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        else return ResponseEntity.ok((userState));
     }
 }

@@ -1,10 +1,13 @@
 package hr.tvz.vibecheck.service;
 
 import hr.tvz.vibecheck.dto.LoginRequest;
-import hr.tvz.vibecheck.dto.TokenResponse;
+import hr.tvz.vibecheck.enums.TokenType;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,14 +15,21 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
+
     private final JwtService jwtService;
 
-    public TokenResponse login(LoginRequest request) {
+    public void login(LoginRequest loginRequest, HttpServletResponse response) {
         var auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.email(), request.password())
+                new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password())
         );
+        SecurityContextHolder.getContext().setAuthentication(auth);
 
-        var refreshToken = jwtService.generateRefreshToken(auth);
-        return new TokenResponse(jwtService.generateAccessToken(null, refreshToken), refreshToken);
+        var refreshCookie = jwtService.generateTokenCookie(TokenType.REFRESH, null);
+
+        response.addCookie(refreshCookie);
+
+        var accessCookie = jwtService.generateTokenCookie(TokenType.ACCESS, refreshCookie.getValue());
+
+        response.addCookie(accessCookie);
     }
 }

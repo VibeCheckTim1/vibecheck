@@ -1,9 +1,11 @@
 package hr.tvz.vibecheck.controller;
 
 import hr.tvz.vibecheck.dto.LoginRequest;
-import hr.tvz.vibecheck.dto.TokenResponse;
+import hr.tvz.vibecheck.enums.TokenType;
 import hr.tvz.vibecheck.service.AuthService;
 import hr.tvz.vibecheck.service.JwtService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,15 +23,21 @@ public class LoginController {
     private final JwtService jwtService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 
-        return ResponseEntity.ok(authService.login(request));
+        authService.login(loginRequest, response);
+
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/extend-login")
-    public ResponseEntity<?> refresh(String refreshToken) {
+    public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
 
-        return ResponseEntity.ok(new TokenResponse(jwtService.generateAccessToken(null, refreshToken), refreshToken));
+        var accessTokenCookie = jwtService.generateTokenCookie(TokenType.ACCESS, jwtService.getTokenFromCookie(request, TokenType.REFRESH));
+
+        response.addCookie(accessTokenCookie);
+
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/logout")
