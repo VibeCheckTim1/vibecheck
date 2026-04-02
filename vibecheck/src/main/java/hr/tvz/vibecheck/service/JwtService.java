@@ -4,9 +4,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import hr.tvz.vibecheck.enums.TokenType;
 import hr.tvz.vibecheck.security.VibeCheckUserDetails;
-import org.jspecify.annotations.NonNull;
-import org.springframework.security.core.Authentication;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,8 @@ import java.util.Date;
 
 @Service
 public class JwtService {
+
+    private static final String TYPE = "type";
 
     @Value("${jwt.secret}")
     private String secret;
@@ -25,23 +28,43 @@ public class JwtService {
     @Value("${jwt.expiration.refresh}")
     private long refreshExpirationDays;
 
-    public String generateAccessToken(Authentication auth, String token) {
+    public Cookie generateTokenCookie(String type, String refreshToken) {
+
+        String token;
+
+        if (TokenType.ACCESS.equals(type)) token = generateAccessToken(refreshToken);
+        else if (TokenType.REFRESH.equals(type)) token = generateRefreshToken();
+        else return null;
+
+        var cookie = new Cookie(type.equals(TokenType.ACCESS) ? TokenType.ACCESS : TokenType.REFRESH, token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setSecure(false); // set to true in production with HTTPS
+        cookie.setMaxAge(type.equals(TokenType.ACCESS)
+                ? (-1) // session cookie
+                : (int) (refreshExpirationDays * 24 * 60 * 60)); //seconds
+
+        return cookie;
+    }
+
+    public String generateAccessToken(String token) {
 
         var accessExpiration = LocalDateTime.now().plusMinutes(accessExpirationMinutes);
 
-        return generate(auth, accessExpiration, TokenType.ACCESS, token);
+        return generate(accessExpiration, TokenType.ACCESS, token);
     }
 
-    public String generateRefreshToken(Authentication auth) {
+    public String generateRefreshToken() {
 
         var refreshExpiration = LocalDateTime.now().plusDays(refreshExpirationDays);
 
-        return generate(auth, refreshExpiration, TokenType.REFRESH, null);
+        return generate(refreshExpiration, TokenType.REFRESH, null);
     }
 
-    private String generate(Authentication auth, LocalDateTime expiration, String type, String token) {
+    private String generate(LocalDateTime expiration, String type, String token) {
         VibeCheckUserDetails userDetails;
         String email;
+        var auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth != null) {
 
@@ -56,11 +79,11 @@ public class JwtService {
             email = extractEmail(token);
         }
 
-        if (type.equals(TokenType.ACCESS) && !isValid(token, TokenType.REFRESH)) return null;  // TODO: throw error
+        if (type.equals(TokenType.ACCESS) && (token == null || !isValid(token, TokenType.REFRESH))) return null;  // TODO: throw error
 
         return JWT.create()
                 .withSubject(email)
-                .withClaim("type", type)
+                .withClaim(TYPE, type)
                 .withIssuedAt(new Date())
                 .withExpiresAt(expiration.toInstant(ZoneOffset.UTC))
                 .sign(Algorithm.HMAC256(secret));
@@ -71,11 +94,18 @@ public class JwtService {
                 .build()
                 .verify(token);
 
-        return decrypted.getClaim("type").asString().equals(type);
+        return decrypted.getClaim(TYPE).asString().equals(type);
     }
 
-    public @NonNull String extractToken(String header) {
-        return header.substring(7);
+    public String getTokenFromCookie(HttpServletRequest request, String type) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (type.equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 
     public String extractEmail(String token) {
