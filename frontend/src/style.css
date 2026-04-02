@@ -1,0 +1,61 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* COLORS */
+  --color-primary-base: rgb(124, 58, 237);
+
+  --color-primary-0: color-mix(in srgb, var(--color-primary-base), white 85%);
+  --color-primary-1: color-mix(in srgb, var(--color-primary-base), white 65%);
+  --color-primary-2: color-mix(in srgb, var(--color-primary-base), white 40%);
+  --color-primary-3: color-mix(in srgb, var(--color-primary-base), white 20%);
+  --color-primary-4: var(--color-primary-base);
+  --color-primary-5: color-mix(in srgb, var(--color-primary-base), black 10%);
+  --color-primary-6: color-mix(in srgb, var(--color-primary-base), black 25%);
+  --color-primary-7: color-mix(in srgb, var(--color-primary-base), black 40%);
+  --color-primary-8: color-mix(in srgb, var(--color-primary-base), black 55%);
+
+  /* SPACING */
+  --spacing-0: 0px;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-7: 32px;
+  --spacing-8: 40px;
+  --spacing-9: 48px;
+  --spacing-10: 64px;
+
+  /* FONT SIZE */
+  --font-size-0: 12px; /* caption */
+  --font-size-1: 14px; /* small text */
+  --font-size-2: 16px; /* base */
+  --font-size-3: 18px; /* body large */
+  --font-size-4: 20px; /* subtitle */
+  --font-size-5: 24px; /* h4 */
+  --font-size-6: 30px; /* h3 */
+  --font-size-7: 36px; /* h2 */
+  --font-size-8: 48px; /* h1 */
+  --font-size-9: 60px; /* hero */
+
+  /* BORDER RADIUS */
+  --border-radius-0: 0px;
+  --border-radius-1: 2px; /* subtle */
+  --border-radius-2: 4px; /* small */
+  --border-radius-3: 8px; /* default */
+  --border-radius-4: 12px; /* medium */
+  --border-radius-5: 16px; /* large */
+  --border-radius-6: 24px; /* cards */
+  --border-radius-full: 9999px; /* circle */
+}
+
+body {
+  font-family: "Helvetica", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
