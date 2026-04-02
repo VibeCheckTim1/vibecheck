@@ -1,6 +1,7 @@
 package hr.tvz.vibecheck.controller;
 
 import hr.tvz.vibecheck.dto.request.CreateUserRequest;
+import hr.tvz.vibecheck.dto.request.EditUserRequest;
 import hr.tvz.vibecheck.entity.User;
 import hr.tvz.vibecheck.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -40,5 +41,10 @@ public class UserController {
 
         return ResponseEntity.ok().build();
     }
+
+
+    /*public ResponseEntity<User> editUser(Long userId, EditUserRequest request, MultipartFile avatar) throws IOException {
+
+    }*/
 
 }

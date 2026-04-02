@@ -2,6 +2,7 @@ package hr.tvz.vibecheck.service.user;
 
 import hr.tvz.vibecheck.cloudinary.CloudinaryService;
 import hr.tvz.vibecheck.dto.request.CreateUserRequest;
+import hr.tvz.vibecheck.dto.request.EditUserRequest;
 import hr.tvz.vibecheck.dto.response.ImageUploadResponse;
 import hr.tvz.vibecheck.entity.User;
 import hr.tvz.vibecheck.entity.enum_.ProfileVisibility;
@@ -38,9 +39,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void uploadAvatar(Long userId, MultipartFile avatar) throws IOException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-
+    private static void avatarValidation(MultipartFile avatar) {
         if (avatar == null || avatar.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
         }
@@ -48,10 +47,16 @@ public class UserService {
         if (avatar.getContentType() == null || !avatar.getContentType().startsWith("image/")) {
             throw new IllegalArgumentException("File is not an image");
         }
+    }
 
-        if (user.getAvatarPublicId() != null) {
+    public void uploadAvatar(Long userId, MultipartFile avatar) throws IOException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        avatarValidation(avatar);
+
+        /*if (user.getAvatarPublicId() != null) {
             cloudinaryService.deleteImage(user.getAvatarPublicId());
-        }
+        }*/
 
         ImageUploadResponse response = cloudinaryService.uploadUserAvatar(avatar, user.getIdUser());
         user.setAvatarUrl(response.imageUrl());
@@ -61,9 +66,25 @@ public class UserService {
     }
 
 
-    public void editUser(Long userId, MultipartFile avatar) throws IOException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        
+    public User editUser(Long userId, EditUserRequest request, MultipartFile avatar) throws IOException {
+        var user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        User editedUser = User.builder()
+                .firstName(request.firstName())
+                .lastName(request.lastName())
+                .username(request.username())
+                .avatarUrl(avatar != null ? request.avatarUrl() : user.getAvatarUrl())
+                .avatarPublicId(avatar != null ? request.avatarPublicId() : user.getAvatarPublicId())
+                .bio(request.bio())
+                .visibility(request.visibility())
+                .build();
+
+        if (avatar != null) {
+            avatarValidation(avatar);
+            uploadAvatar(userId, avatar);
+        }
+
+        return userRepository.save(editedUser);
     }
 
 
