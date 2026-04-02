@@ -8,7 +8,8 @@
 	/* COLORS */
 	--color-primary-base: rgb(124, 58, 237);
 	--color-gray-base: rgb(109, 110, 113);
-	--color-red-base: rgb(214 64 79);
+	--color-red-base: rgb(201, 47, 0);
+	--color-green-base: rgb(0, 201, 80);
 
 	--color-primary-0: color-mix(in srgb, var(--color-primary-base), white 85%);
 	--color-primary-1: color-mix(in srgb, var(--color-primary-base), white 65%);
@@ -39,6 +40,16 @@
 	--color-red-6: color-mix(in srgb, var(--color-red-base), black 25%);
 	--color-red-7: color-mix(in srgb, var(--color-red-base), black 40%);
 	--color-red-8: color-mix(in srgb, var(--color-red-base), black 55%);
+
+	--color-green-0: color-mix(in srgb, var(--color-green-base), white 85%);
+	--color-green-1: color-mix(in srgb, var(--color-green-base), white 65%);
+	--color-green-2: color-mix(in srgb, var(--color-green-base), white 40%);
+	--color-green-3: color-mix(in srgb, var(--color-green-base), white 20%);
+	--color-green-4: var(--color-green-base);
+	--color-green-5: color-mix(in srgb, var(--color-green-base), black 10%);
+	--color-green-6: color-mix(in srgb, var(--color-green-base), black 25%);
+	--color-green-7: color-mix(in srgb, var(--color-green-base), black 40%);
+	--color-green-8: color-mix(in srgb, var(--color-green-base), black 55%);
 
 	/* SPACING */
 	--spacing-0: 0px;

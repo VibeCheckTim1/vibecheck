@@ -4,8 +4,10 @@ import {useForm} from "../../../composables/useForm.ts";
 import {useFormField} from "../../../composables/useFormField.ts";
 import {useValidators} from "../../../composables/useValidators.ts";
 import InputText from "../../../components/InputText.vue";
+import {useToast} from "../../../composables/useToast.ts";
 
 const {required, email} = useValidators();
+const {showSuccess, showError, showInfo} = useToast();
 
 const form = useForm({
     email: useFormField<string>(null, [required, email]),
@@ -14,7 +16,9 @@ const form = useForm({
 
 async function submitForm() {
     if (form.validateForm()) {
-        alert("test");
+        showSuccess("test");
+        showError("test");
+        showInfo("test");
     }
 }
 </script>
