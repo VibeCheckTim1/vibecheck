@@ -1,10 +1,10 @@
 package hr.tvz.vibecheck.controller;
 
-import hr.tvz.vibecheck.dto.LoginRequest;
+import hr.tvz.vibecheck.dto.request.LoginRequest;
 import hr.tvz.vibecheck.enums.TokenType;
-import hr.tvz.vibecheck.service.AuthService;
-import hr.tvz.vibecheck.service.JwtService;
 import hr.tvz.vibecheck.service.StateService;
+import hr.tvz.vibecheck.service.security.AuthService;
+import hr.tvz.vibecheck.service.security.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
