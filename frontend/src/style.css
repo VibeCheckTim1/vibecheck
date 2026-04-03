@@ -1,0 +1,275 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+:root {
+	/* COLORS */
+	--color-primary-base: rgb(124, 58, 237);
+	--color-gray-base: rgb(109, 110, 113);
+	--color-red-base: rgb(201, 47, 0);
+	--color-green-base: rgb(0, 201, 80);
+
+	--color-primary-0: color-mix(in srgb, var(--color-primary-base), white 85%);
+	--color-primary-1: color-mix(in srgb, var(--color-primary-base), white 65%);
+	--color-primary-2: color-mix(in srgb, var(--color-primary-base), white 40%);
+	--color-primary-3: color-mix(in srgb, var(--color-primary-base), white 20%);
+	--color-primary-4: var(--color-primary-base);
+	--color-primary-5: color-mix(in srgb, var(--color-primary-base), black 10%);
+	--color-primary-6: color-mix(in srgb, var(--color-primary-base), black 25%);
+	--color-primary-7: color-mix(in srgb, var(--color-primary-base), black 40%);
+	--color-primary-8: color-mix(in srgb, var(--color-primary-base), black 55%);
+
+	--color-gray-0: color-mix(in srgb, var(--color-gray-base), white 90%);
+	--color-gray-1: color-mix(in srgb, var(--color-gray-base), white 70%);
+	--color-gray-2: color-mix(in srgb, var(--color-gray-base), white 50%);
+	--color-gray-3: color-mix(in srgb, var(--color-gray-base), white 25%);
+	--color-gray-4: var(--color-gray-base);
+	--color-gray-5: color-mix(in srgb, var(--color-gray-base), black 10%);
+	--color-gray-6: color-mix(in srgb, var(--color-gray-base), black 25%);
+	--color-gray-7: color-mix(in srgb, var(--color-gray-base), black 40%);
+	--color-gray-8: color-mix(in srgb, var(--color-gray-base), black 55%);
+
+	--color-red-0: color-mix(in srgb, var(--color-red-base), white 85%);
+	--color-red-1: color-mix(in srgb, var(--color-red-base), white 65%);
+	--color-red-2: color-mix(in srgb, var(--color-red-base), white 40%);
+	--color-red-3: color-mix(in srgb, var(--color-red-base), white 20%);
+	--color-red-4: var(--color-red-base);
+	--color-red-5: color-mix(in srgb, var(--color-red-base), black 10%);
+	--color-red-6: color-mix(in srgb, var(--color-red-base), black 25%);
+	--color-red-7: color-mix(in srgb, var(--color-red-base), black 40%);
+	--color-red-8: color-mix(in srgb, var(--color-red-base), black 55%);
+
+	--color-green-0: color-mix(in srgb, var(--color-green-base), white 85%);
+	--color-green-1: color-mix(in srgb, var(--color-green-base), white 65%);
+	--color-green-2: color-mix(in srgb, var(--color-green-base), white 40%);
+	--color-green-3: color-mix(in srgb, var(--color-green-base), white 20%);
+	--color-green-4: var(--color-green-base);
+	--color-green-5: color-mix(in srgb, var(--color-green-base), black 10%);
+	--color-green-6: color-mix(in srgb, var(--color-green-base), black 25%);
+	--color-green-7: color-mix(in srgb, var(--color-green-base), black 40%);
+	--color-green-8: color-mix(in srgb, var(--color-green-base), black 55%);
+
+	/* SPACING */
+	--spacing-0: 0px;
+	--spacing-1: 4px;
+	--spacing-2: 8px;
+	--spacing-3: 12px;
+	--spacing-4: 16px;
+	--spacing-5: 20px;
+	--spacing-6: 24px;
+	--spacing-7: 32px;
+	--spacing-8: 40px;
+	--spacing-9: 48px;
+	--spacing-10: 64px;
+
+	/* FONT SIZE */
+	--font-size-0: 12px; /* caption */
+	--font-size-1: 14px; /* small text */
+	--font-size-2: 16px; /* base */
+	--font-size-3: 18px; /* body large */
+	--font-size-4: 20px; /* subtitle */
+	--font-size-5: 24px; /* h4 */
+	--font-size-6: 30px; /* h3 */
+	--font-size-7: 36px; /* h2 */
+	--font-size-8: 48px; /* h1 */
+	--font-size-9: 60px; /* hero */
+
+	/* BORDER RADIUS */
+	--border-radius-0: 0px;
+	--border-radius-1: 1px; /* subtle */
+	--border-radius-2: 2px; /* small */
+	--border-radius-3: 4px; /* default */
+	--border-radius-4: 8px; /* medium */
+	--border-radius-5: 12px; /* large */
+	--border-radius-6: 16px; /* cards */
+	--border-radius-full: 9999px; /* circle */
+}
+
+body {
+	font-family: "Helvetica", sans-serif;
+	font-size: 16px;
+	line-height: 1.5;
+}
+
+.center-content-container {
+	width: 100%;
+	padding-inline: var(--spacing-2);
+
+	@media screen and (min-width: 992px) {
+		width: 768px;
+		max-width: 768px;
+		margin-inline: auto;
+		padding-inline: 0;
+
+	}
+}
+
+.primary-button {
+	background-color: var(--color-primary-4);
+	color: white;
+	padding-block: var(--spacing-3);
+	padding-inline: var(--spacing-3);
+	border-radius: var(--border-radius-5);
+	font-family: "Helvetica", sans-serif;
+	font-size: var(--font-size-2);
+	border: 1px solid var(--color-primary-4);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--spacing-2);
+	text-decoration-line: none;
+	transition: background-color 150ms, transform 150ms;
+
+	&:hover {
+		background-color: var(--color-primary-5);
+	}
+
+	&:active {
+		background-color: var(--color-primary-6);
+		transform: scale(0.98);
+	}
+
+	&:focus-visible {
+		background-color: var(--color-primary-7);
+		outline: 2px solid var(--color-primary-7);
+		outline-offset: 1px;
+	}
+}
+
+.secondary-button {
+	background-color: transparent;
+	color: var(--color-gray-6);
+	padding-block: var(--spacing-3);
+	padding-inline: var(--spacing-3);
+	border-radius: var(--border-radius-5);
+	font-family: "Helvetica", sans-serif;
+	font-size: var(--font-size-2);
+	border: 1px solid var(--color-gray-2);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--spacing-2);
+	text-decoration-line: none;
+	transition: background-color 150ms, transform 150ms;
+
+	&:hover {
+		background-color: var(--color-gray-0);
+	}
+
+	&:active {
+		background-color: var(--color-gray-1);
+		transform: scale(0.98);
+	}
+
+	&:focus-visible {
+		background-color: var(--color-gray-0);
+		outline: 2px solid var(--color-gray-1);
+		outline-offset: 1px;
+	}
+}
+
+.danger-button {
+	background-color: var(--color-red-5);
+	color: white;
+	padding-block: var(--spacing-3);
+	padding-inline: var(--spacing-3);
+	border-radius: var(--border-radius-5);
+	font-family: "Helvetica", sans-serif;
+	font-size: var(--font-size-2);
+	border: 1px solid var(--color-red-5);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--spacing-2);
+	text-decoration-line: none;
+	transition: background-color 150ms, transform 150ms;
+
+	&:hover {
+		background-color: var(--color-red-6);
+	}
+
+	&:active {
+		background-color: var(--color-red-7);
+		transform: scale(0.98);
+	}
+
+	&:focus-visible {
+		background-color: var(--color-red-6);
+		outline: 2px solid var(--color-red-6);
+		outline-offset: 1px;
+	}
+}
+
+form {
+	display: flex;
+	flex-direction: column;
+	row-gap: var(--spacing-5);
+	width: 100% !important;
+
+	&.form-loading {
+		position: relative;
+		pointer-events: none;
+
+		&::before {
+			position: absolute;
+			content: '';
+			width: 100%;
+			height: 100%;
+			background-color: white;
+			opacity: 0.5;
+			left: 0;
+			top: 0;
+			z-index: 1;
+		}
+	}
+
+	.form-grid {
+		display: flex;
+		flex-direction: column;
+		row-gap: var(--spacing-5);
+
+		@media screen and (min-width: 768px) {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			column-gap: var(--spacing-5);
+			align-items: start;
+		}
+	}
+
+	.form-field-holder {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-0);
+	}
+
+	.form-bottom {
+		display: flex;
+		justify-content: flex-end;
+
+		& > * {
+			width: 100%;
+
+			@media screen and (min-width: 992px) {
+				width: fit-content !important;
+			}
+		}
+	}
+
+	.form-field-help {
+		font-size: var(--font-size-1);
+		color: var(--color-gray-6);
+		line-height: 1.5;
+	}
+
+	.form-control-errors {
+		font-size: var(--font-size-1);
+		list-style: none;
+		color: var(--color-red-4);
+	}
+}
+
