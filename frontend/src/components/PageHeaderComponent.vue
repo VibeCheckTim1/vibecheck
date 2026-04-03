@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import {useRouter} from "vue-router";
 import {computed} from "vue";
+import {getPreviousRouteName} from "../router";
 
 const router = useRouter();
 
-const canGoBack = computed(() => window.history.length > 1);
+const canGoBack = computed(() => {
+    const previous = getPreviousRouteName();
+    return previous !== null && previous !== "login";
+});
+
 const goBack = () => {
-    router.back();
+    if (canGoBack.value) {
+        router.back();
+    }
 };
 </script>
 

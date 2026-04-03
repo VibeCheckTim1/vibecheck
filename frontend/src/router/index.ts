@@ -9,6 +9,7 @@ import {useState} from "../composables/useState.ts";
 import {useHttpClient} from "../composables/useHttpClient.ts";
 import {User, type UserApi} from "../entities/user.ts";
 
+let previousRouteName: string | null = null;
 const router = createRouter({
 	history: createWebHistory(),
 	routes: [
@@ -21,7 +22,9 @@ const router = createRouter({
 	],
 });
 
-router.beforeEach(async (_to) => {
+router.beforeEach(async (_to, from) => {
+	previousRouteName = from.name as string | null;
+
 	const {httpGet} = useHttpClient();
 	const {
 		currentUser,
@@ -47,3 +50,7 @@ router.beforeEach(async (_to) => {
 });
 
 export default router;
+
+export function getPreviousRouteName() {
+	return previousRouteName;
+}
