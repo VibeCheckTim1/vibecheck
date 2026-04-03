@@ -24,6 +24,6 @@ public class StateService {
         var user = (VibeCheckUserDetails) auth.getPrincipal();
         if (user == null) return null;
 
-        return userRepository.findUserStateByEmail(user.getEmail()).orElse(null);
+        return userRepository.findUserStateByUsername(user.getUsername()).orElse(null);
     }
 }
