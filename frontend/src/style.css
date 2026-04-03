@@ -143,6 +143,7 @@ body {
 		padding-block: var(--spacing-3);
 		padding-inline: var(--spacing-3);
 		border-radius: var(--border-radius-5);
+		width: 100%;
 	}
 
 	&:hover {
@@ -295,17 +296,17 @@ form {
 			}
 		}
 	}
+}
 
-	.form-field-help {
-		font-size: var(--font-size-1);
-		color: var(--color-gray-6);
-		line-height: 1.5;
-	}
+.form-field-help {
+	font-size: var(--font-size-1);
+	color: var(--color-gray-6);
+	line-height: 1.5;
+}
 
-	.form-control-errors {
-		font-size: var(--font-size-1);
-		list-style: none;
-		color: var(--color-red-4);
-	}
+.form-control-errors {
+	font-size: var(--font-size-1);
+	list-style: none;
+	color: var(--color-red-4);
 }
 

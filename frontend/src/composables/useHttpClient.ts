@@ -32,13 +32,31 @@ export function useHttpClient() {
 			const fetchOptions: RequestInit = {
 				method,
 				credentials: "include",
-				headers: {
+				headers: {},
+
+			};
+
+			const isFormData = options.body instanceof FormData;
+
+			if (isFormData) {
+				fetchOptions.headers = {
+					...(options.headers || {})
+				};
+			}
+			else {
+				fetchOptions.headers = {
 					"Content-Type": "application/json",
 					"Accept": "application/json",
-					...(options.headers || {}),
-				},
-				body: options.body ? JSON.stringify(options.body) : undefined,
-			};
+					...(options.headers || {})
+				};
+			}
+
+			if (isFormData) {
+				fetchOptions.body = options.body as FormData;
+			}
+			else if (options.body != null) {
+				fetchOptions.body = JSON.stringify(options.body);
+			}
 
 			const response = await fetch(`${SERVER_HOST}${apiUrl}`, fetchOptions);
 

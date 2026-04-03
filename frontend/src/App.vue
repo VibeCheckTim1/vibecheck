@@ -2,6 +2,7 @@
 
 import ToastOutlet from "./components/ToastOutlet.vue";
 import {useState} from "./composables/useState.ts";
+import DialogOutlet from "./components/DialogOutlet.vue";
 
 const {isLoggedIn} = useState();
 </script>
@@ -61,6 +62,7 @@ const {isLoggedIn} = useState();
             </ul>
         </div>
     </nav>
+    <DialogOutlet/>
     <ToastOutlet/>
 </template>
 
