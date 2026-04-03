@@ -20,6 +20,7 @@ public class VibeCheckUserDetails implements UserDetails {
 
     private Long id;
     private String username;
+    private String email;
     private String password;
     private List<String> roles;
 
@@ -35,13 +36,12 @@ public class VibeCheckUserDetails implements UserDetails {
         return password;
     }
 
-    @Deprecated
     @Override
     public @Nonnull String getUsername() {
         return username;
     }
 
     public @Nonnull String getEmail() {
-        return username;
+        return email;
     }
 }
