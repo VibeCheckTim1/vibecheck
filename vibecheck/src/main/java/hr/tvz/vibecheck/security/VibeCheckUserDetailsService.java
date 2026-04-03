@@ -2,7 +2,7 @@ package hr.tvz.vibecheck.security;
 
 import hr.tvz.vibecheck.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,14 +18,15 @@ public class VibeCheckUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
+    public @NullMarked UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username)
                 .map(user -> VibeCheckUserDetails.builder()
                         .id(user.getIdUser())
-                        .username(user.getEmail())
+                        .username(user.getUsername())
+                        .email(user.getEmail())
                         .password(user.getPassword())
                         .roles(List.of()) //TODO: kada se dodaju role
                         .build())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 }

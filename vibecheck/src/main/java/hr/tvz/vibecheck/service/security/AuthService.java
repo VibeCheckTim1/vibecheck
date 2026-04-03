@@ -21,7 +21,7 @@ public class AuthService {
 
     public void login(LoginRequest loginRequest, HttpServletResponse response) {
         var auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password())
+                new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password())
         );
         SecurityContextHolder.getContext().setAuthentication(auth);
 

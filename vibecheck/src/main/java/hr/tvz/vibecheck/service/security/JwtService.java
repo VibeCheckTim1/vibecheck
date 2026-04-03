@@ -55,7 +55,7 @@ public class JwtService {
 
     private String generateToken(LocalDateTime expiration, String type, String token) {
         VibeCheckUserDetails userDetails;
-        String email;
+        String username;
         var auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth != null) {
@@ -64,17 +64,17 @@ public class JwtService {
 
             if (userDetails == null) return null; // TODO: throw error
 
-            email = userDetails.getEmail();
+            username = userDetails.getUsername();
 
         } else {
 
-            email = extractEmail(token);
+            username = extractUsername(token);
         }
 
         if (type.equals(TokenType.ACCESS) && (token == null || !isValid(token, TokenType.REFRESH))) return null;  // TODO: throw error
 
         return JWT.create()
-                .withSubject(email)
+                .withSubject(username)
                 .withClaim(TYPE, type)
                 .withIssuedAt(new Date())
                 .withExpiresAt(expiration.toInstant(ZoneOffset.UTC))
@@ -113,7 +113,7 @@ public class JwtService {
         return null;
     }
 
-    public String extractEmail(String token) {
+    public String extractUsername(String token) {
         return JWT.require(Algorithm.HMAC256(secret))
                 .build()
                 .verify(token)
