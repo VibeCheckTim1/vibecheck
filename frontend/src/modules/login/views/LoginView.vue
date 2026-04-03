@@ -8,9 +8,11 @@ import {useToast} from "../../../composables/useToast.ts";
 import {useLoginService} from "../composables/useLoginService.ts";
 import {ApiError} from "../../../composables/useHttpClient.ts";
 import {useRouter} from "vue-router";
+import {useState} from "../../../composables/useState.ts";
 
 const {required, email} = useValidators();
-const {showSuccess, showError} = useToast();
+const {showError} = useToast();
+const {setUser} = useState();
 const router = useRouter();
 
 const form = useForm({
@@ -22,8 +24,8 @@ async function submitForm() {
     if (form.validateForm()) {
         try {
             const {loginAction} = useLoginService();
-            await loginAction(form.toJson());
-            showSuccess("Hello!");
+            const user = await loginAction(form.toJson());
+            setUser(user);
             await router.push({
                 name: "home"
             });

@@ -1,23 +1,20 @@
 export interface UserApi {
-	id: string;
-	firstName: string;
-	lastName: string;
-	username: string;
+	idUser: number;
 	email: string;
+	username: string;
+	tstamp: string;
 }
 
 export class User {
-	id: string;
-	firstName: string;
-	lastName: string;
-	username: string;
+	idUser: number;
 	email: string;
+	username: string;
+	tstamp: Date;
 
 	constructor(apiObject: UserApi) {
-		this.id = apiObject.id;
-		this.firstName = apiObject.firstName;
-		this.lastName = apiObject.lastName;
-		this.username = apiObject.username;
+		this.idUser = apiObject.idUser;
 		this.email = apiObject.email;
+		this.username = apiObject.username;
+		this.tstamp = new Date(apiObject.tstamp);
 	}
 }
