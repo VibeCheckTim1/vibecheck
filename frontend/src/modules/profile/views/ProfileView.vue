@@ -42,12 +42,12 @@ const playlists = ref<Playlist[]>([
     <div class="center-content-container">
         <div class="profile-container" v-if="currentUser">
             <div class="user-avatar-holder">
-
+                <img v-if="currentUser.avatarUrl" :src="currentUser.avatarUrl" alt="Avatar">
             </div>
             <div class="user-full-name">{{ currentUser.email }}</div>
             <div class="user-username">{{ currentUser.username }}</div>
-            <p class="user-description">Music enthusiast 🎵 Always discovering new sounds · Indie & Electronic lover</p>
-            <a href="#" class="primary-button">Edit profile</a>
+            <p class="user-description" v-if="currentUser.bio">{{ currentUser.bio }}</p>
+            <router-link :to="{name: 'updateProfile'}" class="primary-button">Edit profile</router-link>
             <div class="profile-info">
                 <ul>
                     <li>
@@ -112,6 +112,15 @@ const playlists = ref<Playlist[]>([
         height: 90px;
         border-radius: 50%;
         background-color: var(--color-primary-4);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        img {
+            width: 90px;
+            height: 90px;
+        }
     }
 
     .user-full-name {

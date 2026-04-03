@@ -100,11 +100,25 @@ body {
 	padding-inline: var(--spacing-2);
 
 	@media screen and (min-width: 992px) {
-		width: 750px;
-		max-width: 750px;
+		width: 700px;
+		max-width: 700px;
 		margin-inline: auto;
 		padding-inline: 0;
 
+	}
+}
+
+.decorative-link {
+	color: var(--color-primary-4);
+	font-weight: bold;
+	text-decoration-line: none;
+	font-size: var(--font-size-1);
+	border: none;
+	outline: none;
+	cursor: pointer;
+
+	&:hover {
+		text-decoration-line: underline;
 	}
 }
 
@@ -253,6 +267,20 @@ form {
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-0);
+
+		label {
+			font-size: var(--font-size-2);
+			font-weight: 500;
+			color: var(--color-gray-8);
+
+			span {
+				font-weight: normal;
+				margin-left: 2px;
+				color: var(--color-gray-6);
+				text-transform: lowercase;
+			}
+		}
+
 	}
 
 	.form-bottom {
