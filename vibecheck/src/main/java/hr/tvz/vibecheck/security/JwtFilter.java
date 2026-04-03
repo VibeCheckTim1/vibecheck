@@ -1,7 +1,7 @@
 package hr.tvz.vibecheck.security;
 
 import hr.tvz.vibecheck.enums.TokenType;
-import hr.tvz.vibecheck.service.JwtService;
+import hr.tvz.vibecheck.service.security.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.service;
+package hr.tvz.vibecheck.service.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
