@@ -24,12 +24,12 @@ public class AuthService {
         );
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        var refreshCookie = jwtService.generateTokenCookie(TokenType.REFRESH, null);
+        var refreshCookieToken = jwtService.generateTokenCookie(TokenType.REFRESH, null);
 
-        response.addCookie(refreshCookie);
+        response.addCookie(refreshCookieToken);
 
-        var accessCookie = jwtService.generateTokenCookie(TokenType.ACCESS, refreshCookie.getValue());
+        var accessCookieToken = jwtService.generateTokenCookie(TokenType.ACCESS, refreshCookieToken.getValue());
 
-        response.addCookie(accessCookie);
+        response.addCookie(accessCookieToken);
     }
 }

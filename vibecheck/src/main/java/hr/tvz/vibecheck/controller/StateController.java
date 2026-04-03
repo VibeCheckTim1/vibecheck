@@ -22,8 +22,8 @@ public class StateController {
     public ResponseEntity<?> getUserState() {
 
         var userState = stateService.getUserState();
-
         if (userState == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        else return ResponseEntity.ok((userState));
+
+        return ResponseEntity.ok(userState);
     }
 }
