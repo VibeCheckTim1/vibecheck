@@ -3,8 +3,17 @@ import {useState} from "../../../composables/useState.ts";
 import {ref} from "vue";
 import type {Playlist} from "../../../entities/playlist.ts";
 import PageHeaderComponent from "../../../components/PageHeaderComponent.vue";
+import {useProfileService} from "../composables/useProfileService.ts";
 
 const {currentUser} = useState();
+
+async function logout() {
+    if (currentUser.value) {
+        const {logoutAction} = useProfileService(currentUser.value.idUser);
+        await logoutAction();
+        window.location.href = "/";
+    }
+}
 
 const playlists = ref<Playlist[]>([
     {
@@ -38,6 +47,9 @@ const playlists = ref<Playlist[]>([
 <template>
     <PageHeaderComponent>
         <span>Profile</span>
+        <template #actions>
+            <button class="danger-button" type="button" @click="logout">Logout</button>
+        </template>
     </PageHeaderComponent>
     <div class="center-content-container">
         <div class="profile-container" v-if="currentUser">
