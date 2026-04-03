@@ -95,8 +95,8 @@ async function submitForm() {
         formData.append("file", file.value as File);
 
         try {
-            const {uploadAvatar} = useProfileService(currentUser.value.idUser);
-            const user = await uploadAvatar(formData);
+            const {uploadAvatarAction} = useProfileService(currentUser.value.idUser);
+            const user = await uploadAvatarAction(formData);
             await props.callback(user);
         }
         catch (error) {

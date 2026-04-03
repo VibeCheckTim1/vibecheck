@@ -3,6 +3,7 @@
 import ToastOutlet from "./components/ToastOutlet.vue";
 import {useState} from "./composables/useState.ts";
 import DialogOutlet from "./components/DialogOutlet.vue";
+import ConfirmOutlet from "./components/ConfirmOutlet.vue";
 
 const {isLoggedIn} = useState();
 </script>
@@ -64,6 +65,7 @@ const {isLoggedIn} = useState();
     </nav>
     <DialogOutlet/>
     <ToastOutlet/>
+    <ConfirmOutlet/>
 </template>
 
 <style scoped>
