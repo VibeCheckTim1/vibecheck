@@ -5,9 +5,11 @@ import {useFormField} from "../../../composables/useFormField.ts";
 import {useValidators} from "../../../composables/useValidators.ts";
 import InputText from "../../../components/InputText.vue";
 import {useToast} from "../../../composables/useToast.ts";
+import {useLoginService} from "../composables/useLoginService.ts";
+import {ApiError} from "../../../composables/useHttpClient.ts";
 
 const {required, email} = useValidators();
-const {showSuccess, showError, showInfo} = useToast();
+const {showSuccess, showError} = useToast();
 
 const form = useForm({
     email: useFormField<string>(null, [required, email]),
@@ -16,9 +18,16 @@ const form = useForm({
 
 async function submitForm() {
     if (form.validateForm()) {
-        showSuccess("test");
-        showError("test");
-        showInfo("test");
+        try {
+            const {loginAction} = useLoginService();
+            await loginAction(form.toJson());
+            showSuccess("Hello!");
+        }
+        catch (error) {
+            if (error instanceof ApiError) {
+                showError(error.message);
+            }
+        }
     }
 }
 </script>
