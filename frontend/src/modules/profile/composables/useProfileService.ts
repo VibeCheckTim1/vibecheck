@@ -12,6 +12,10 @@ export interface UpdateProfileRequest {
 export function useProfileService(userId: number) {
 	const {httpPut, httpPost} = useHttpClient();
 
+	async function logoutAction(): Promise<void> {
+		await httpPost<void>(`/auth/logout`, {});
+	}
+
 	async function updateAction(body: UpdateProfileRequest): Promise<User> {
 		const data = await httpPut<UserApi>(`/user/edit/${String(userId)}`, body);
 		return new User(data);
@@ -23,6 +27,7 @@ export function useProfileService(userId: number) {
 	}
 
 	return {
+		logoutAction,
 		updateAction,
 		uploadAvatar
 	};
