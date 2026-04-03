@@ -7,9 +7,11 @@ import InputText from "../../../components/InputText.vue";
 import {useToast} from "../../../composables/useToast.ts";
 import {useLoginService} from "../composables/useLoginService.ts";
 import {ApiError} from "../../../composables/useHttpClient.ts";
+import {useRouter} from "vue-router";
 
 const {required, email} = useValidators();
 const {showSuccess, showError} = useToast();
+const router = useRouter();
 
 const form = useForm({
     email: useFormField<string>(null, [required, email]),
@@ -22,6 +24,9 @@ async function submitForm() {
             const {loginAction} = useLoginService();
             await loginAction(form.toJson());
             showSuccess("Hello!");
+            await router.push({
+                name: "home"
+            });
         }
         catch (error) {
             if (error instanceof ApiError) {

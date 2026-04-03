@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?uuvlo0');
-  src:  url('fonts/icomoon.eot?uuvlo0#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?uuvlo0') format('truetype'),
-    url('fonts/icomoon.woff?uuvlo0') format('woff'),
-    url('fonts/icomoon.svg?uuvlo0#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?c3zn5w');
+  src:  url('fonts/icomoon.eot?c3zn5w#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?c3zn5w') format('truetype'),
+    url('fonts/icomoon.woff?c3zn5w') format('woff'),
+    url('fonts/icomoon.svg?c3zn5w#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,21 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-account-outline:before {
+  content: "\e904";
+}
+.icon-bell-outline:before {
+  content: "\e905";
+}
+.icon-plus-box-outline:before {
+  content: "\e906";
+}
+.icon-magnify:before {
+  content: "\e907";
+}
+.icon-home-outline:before {
+  content: "\e908";
+}
 .icon-information-circle-outline:before {
   content: "\e900";
 }
