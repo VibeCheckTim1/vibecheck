@@ -10,7 +10,7 @@ export interface UpdateProfileRequest {
 }
 
 export function useProfileService(userId: number) {
-	const {httpPut, httpPost} = useHttpClient();
+	const {httpPut, httpPost, httpDelete} = useHttpClient();
 
 	async function logoutAction(): Promise<void> {
 		await httpPost<void>(`/auth/logout`, {});
@@ -21,14 +21,19 @@ export function useProfileService(userId: number) {
 		return new User(data);
 	}
 
-	async function uploadAvatar(body: FormData): Promise<User> {
+	async function uploadAvatarAction(body: FormData): Promise<User> {
 		const data = await httpPost<UserApi>(`/user/addAvatar`, body);
 		return new User(data);
+	}
+
+	async function deleteAction(): Promise<void> {
+		await httpDelete<void>(`/user/delete/${String(userId)}`);
 	}
 
 	return {
 		logoutAction,
 		updateAction,
-		uploadAvatar
+		uploadAvatarAction,
+		deleteAction
 	};
 }

@@ -50,8 +50,8 @@ async function submitForm() {
 </script>
 
 <template>
-    <div class="login-page-container">
-        <div class="login-form-holder">
+    <div class="register-page-container">
+        <div class="register-form-holder">
             <div class="logo-holder">
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -111,7 +111,7 @@ async function submitForm() {
                 </button>
             </div>
 
-            <div class="login-footer">
+            <div class="register-footer">
                 <span>Already have an account?</span>
                 <router-link :to="{name: 'login'}" class="decorative-link">Sign in</router-link>
             </div>
@@ -120,20 +120,29 @@ async function submitForm() {
 </template>
 
 <style scoped>
-.login-page-container {
-    width: 100%;
-    height: 100dvh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.register-page-container {
+    padding-block: var(--spacing-6);
 
-    .login-form-holder {
+    @media screen and (min-width: 768px) {
+        width: 100%;
+        height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-block: 0;
+    }
+
+    .register-form-holder {
         display: flex;
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        width: 480px;
         padding: var(--spacing-4);
+        width: 100%;
+
+        @media screen and (min-width: 768px) {
+            width: 480px;
+        }
 
         .app-name {
             width: 100%;
@@ -187,7 +196,7 @@ async function submitForm() {
             }
         }
 
-        .login-footer {
+        .register-footer {
             display: flex;
             align-items: center;
             justify-content: center;

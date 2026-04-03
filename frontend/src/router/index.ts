@@ -8,6 +8,8 @@ import {profileRoutes} from "../modules/profile/routes.ts";
 import {useState} from "../composables/useState.ts";
 import {useHttpClient} from "../composables/useHttpClient.ts";
 import {User, type UserApi} from "../entities/user.ts";
+import {useDialog} from "../composables/useDialog.ts";
+import {useConfirm} from "../composables/useConfirm.ts";
 
 let previousRouteName: string | null = null;
 const router = createRouter({
@@ -24,6 +26,10 @@ const router = createRouter({
 
 router.beforeEach(async (_to, from) => {
 	previousRouteName = from.name as string | null;
+	const {closeAllDialogs} = useDialog();
+	const {closeConfirm} = useConfirm();
+	closeAllDialogs();
+	closeConfirm();
 
 	const {httpGet} = useHttpClient();
 	const {

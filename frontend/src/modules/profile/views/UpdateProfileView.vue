@@ -13,11 +13,13 @@ import {useRouter} from "vue-router";
 import UploadAvatarForm from "../components/UploadAvatarForm.vue";
 import {useDialog} from "../../../composables/useDialog.ts";
 import type {User} from "../../../entities/user.ts";
+import {useConfirm} from "../../../composables/useConfirm.ts";
 
 const {currentUser, setUser} = useState();
 const {openDialog} = useDialog();
 const {required} = useValidators();
 const {showSuccess, showError} = useToast();
+const {openConfirm} = useConfirm();
 const router = useRouter();
 
 function uploadAvatar() {
@@ -62,6 +64,21 @@ async function submitForm() {
                 showError(error.message);
             }
         }
+    }
+}
+
+async function deleteAccount() {
+    const confirmed = await openConfirm({
+        isDanger: true,
+        title: "Delete account",
+        subtitle: "Are you sure you want to delete this account?",
+        acceptMessage: "Yes, delete account?",
+    });
+
+    if (confirmed && currentUser.value) {
+        const {deleteAction} = useProfileService(currentUser.value.idUser);
+        await deleteAction();
+        window.location.href = "/";
     }
 }
 </script>
@@ -135,6 +152,18 @@ async function submitForm() {
                     </div>
                     <div class="action-holder">
                         <button class="decorative-link" type="button">Change</button>
+                    </div>
+                </div>
+                <div class="form-section-container">
+                    <div class="icon-holder">
+                        <i class="icon-trash-can-outline"></i>
+                    </div>
+                    <div class="section-info">
+                        <span class="title">Delete account</span>
+                        <span class="description">Delete your account and all related data</span>
+                    </div>
+                    <div class="action-holder">
+                        <button class="decorative-link" type="button" @click="deleteAccount">Delete</button>
                     </div>
                 </div>
             </section>
