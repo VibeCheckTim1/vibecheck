@@ -68,3 +68,12 @@ The following guides illustrate how to use some features concretely:
 * [Authenticating a User with LDAP](https://spring.io/guides/gs/authenticating-ldap/)
 * [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
 * [Building a RESTful Web Service with Spring Boot Actuator](https://spring.io/guides/gs/actuator-service/)
+
+## Frontend
+Upute za pokretanje frontenda:
+
+Frontend se nalazi u direktoriju `./frontend`.
+
+U direktoriju frontend treba pokrenuti `npm install` samo prvi puta kada ikad podižemo ovaj frontend na svojim računalima. Ako se pokrene nekad kasnije, nije strašno, ali je nepotrebno i moglo bi doći do izmjena u package.json i package-lock.json fajlovima koje onda treba commitati.
+
+Nakon toga `npm run dev`, to je naredba koju uvijek pokrećemo kad želimo vidjeti frontend u browseru. Trebala bi se u konzoli ispisati adresa `http://localhost:5173` na kojoj se frontend nalazi.
