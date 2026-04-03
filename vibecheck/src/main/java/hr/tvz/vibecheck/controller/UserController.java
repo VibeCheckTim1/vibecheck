@@ -2,16 +2,18 @@ package hr.tvz.vibecheck.controller;
 
 import hr.tvz.vibecheck.dto.request.CreateUserRequest;
 import hr.tvz.vibecheck.dto.request.EditUserRequest;
-import hr.tvz.vibecheck.entity.User;
+import hr.tvz.vibecheck.dto.response.UserEditResponse;
+import hr.tvz.vibecheck.dto.response.UserResponse;
+import hr.tvz.vibecheck.security.VibeCheckUserDetails;
 import hr.tvz.vibecheck.service.user.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -19,32 +21,44 @@ import java.io.IOException;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/user")
+@RequestMapping("/user")
 public class UserController {
     private final UserService userService;
 
     @PostMapping("/create")
-    public ResponseEntity<User> createUser(CreateUserRequest request) {
-        return ResponseEntity.ok(userService.createUser(request));
+    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid CreateUserRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(userService.createUser(request));
     }
 
-    //@SecurityRequirement(name = "bearerAuth")
     @PostMapping(value = "/addAvatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadAvatar(
-            @RequestParam("file") MultipartFile avatar/*, @AuthenticationPrincipal VibeCheckUserDetails userDetails*/
+            @RequestParam("file") MultipartFile avatar, @AuthenticationPrincipal VibeCheckUserDetails userDetails
             ) throws IOException {
 
-        //Long userId = userDetails.getId();
-        Long userId = 2L;
+        Long userId = userDetails.getId();
 
         userService.uploadAvatar(userId, avatar);
 
         return ResponseEntity.ok().build();
     }
 
-
-    /*public ResponseEntity<User> editUser(Long userId, EditUserRequest request, MultipartFile avatar) throws IOException {
-
+    /*@PutMapping(value = "/edit/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<User> editUser(
+            @PathVariable Long userId,
+            @RequestPart("request") EditUserRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile avatar)
+            throws IOException {
+        return ResponseEntity.ok(userService.editUser(userId, request, avatar));
     }*/
+
+    /*@PutMapping("avatarEdit/{userId}")
+    public*/
+
+    @PutMapping("/edit/{userId}")
+    public ResponseEntity<UserEditResponse> edit(@PathVariable Long userId, @RequestBody @Valid EditUserRequest request) {
+        return ResponseEntity.ok(userService.editUser(userId, request));
+    }
 
 }

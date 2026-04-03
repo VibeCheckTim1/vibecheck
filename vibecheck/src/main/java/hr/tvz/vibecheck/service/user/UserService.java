@@ -4,8 +4,11 @@ import hr.tvz.vibecheck.cloudinary.CloudinaryService;
 import hr.tvz.vibecheck.dto.request.CreateUserRequest;
 import hr.tvz.vibecheck.dto.request.EditUserRequest;
 import hr.tvz.vibecheck.dto.response.ImageUploadResponse;
+import hr.tvz.vibecheck.dto.response.UserEditResponse;
+import hr.tvz.vibecheck.dto.response.UserResponse;
+import hr.tvz.vibecheck.dtoMapper.UserMapper;
 import hr.tvz.vibecheck.entity.User;
-import hr.tvz.vibecheck.entity.enum_.ProfileVisibility;
+import hr.tvz.vibecheck.projections.UserStateResponse;
 import hr.tvz.vibecheck.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,14 +24,18 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryService cloudinaryService;
+    private final UserMapper userMapper;
 
-    public User createUser(CreateUserRequest request) {
+    public UserResponse createUser(CreateUserRequest request) {
+        if (checkDuplicate(request.email()))
+            throw new RuntimeException("User with " + request.email() +  " email already exists");
+
         User user = User.builder()
                 .firstName(request.firstName())
                 .lastName(request.lastName())
                 .username(request.username())
                 .bio(request.bio())
-                .visibility(request.visibility() != null ? request.visibility() : ProfileVisibility.PUBLIC)
+                .visibility(request.visibility())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .avatarUrl("https://res.cloudinary.com/dqqjdinyg/image/upload/v1774976056/default_qpersr.svg") //default avatar
@@ -36,7 +43,13 @@ public class UserService {
                 .tstamp(LocalDateTime.now())
                 .build();
 
-        return userRepository.save(user);
+        userRepository.save(user);
+
+        return userMapper.toUserResponse(user);
+    }
+
+    private boolean checkDuplicate(String email) {
+        return userRepository.findByEmail(email).isPresent();
     }
 
     private static void avatarValidation(MultipartFile avatar) {
@@ -66,25 +79,14 @@ public class UserService {
     }
 
 
-    public User editUser(Long userId, EditUserRequest request, MultipartFile avatar) throws IOException {
+    public UserEditResponse editUser(Long userId, EditUserRequest request) {
         var user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
-        User editedUser = User.builder()
-                .firstName(request.firstName())
-                .lastName(request.lastName())
-                .username(request.username())
-                .avatarUrl(avatar != null ? request.avatarUrl() : user.getAvatarUrl())
-                .avatarPublicId(avatar != null ? request.avatarPublicId() : user.getAvatarPublicId())
-                .bio(request.bio())
-                .visibility(request.visibility())
-                .build();
+        userMapper.updateUserFromRequest(request, user); //update request mapper
 
-        if (avatar != null) {
-            avatarValidation(avatar);
-            uploadAvatar(userId, avatar);
-        }
+        userRepository.save(user);
 
-        return userRepository.save(editedUser);
+        return userMapper.toUserEditResponse(user); //response DTO mapper
     }
 
 

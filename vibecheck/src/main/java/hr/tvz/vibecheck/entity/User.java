@@ -1,6 +1,6 @@
 package hr.tvz.vibecheck.entity;
 
-import hr.tvz.vibecheck.entity.enum_.ProfileVisibility;
+import hr.tvz.vibecheck.enums.ProfileVisibility;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,5 +45,6 @@ public class User {
     private String password;
 
     private LocalDateTime tstamp;
+
 
 }

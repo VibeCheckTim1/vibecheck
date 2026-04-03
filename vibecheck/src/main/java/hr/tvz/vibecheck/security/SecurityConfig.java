@@ -44,7 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
 
                         .requestMatchers("/api/user/create").permitAll()
-                        .requestMatchers("/api/user/addAvatar").permitAll()
+                        .requestMatchers("/api/user/addAvatar").authenticated()
                         .requestMatchers("/error").permitAll()
                         //.requestMatchers("/api/user/addAvatar").authenticated()
                         .anyRequest().authenticated()

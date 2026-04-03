@@ -8,12 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @Slf4j
 @SpringBootApplication
-@SecurityScheme(
-		name = "bearerAuth",
-		type = SecuritySchemeType.HTTP,
-		scheme = "bearer",
-		bearerFormat = "JWT"
-)
 public class VibeCheckApplication {
 
 	public static void main(String[] args) {

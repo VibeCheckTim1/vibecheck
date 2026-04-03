@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.entity.enum_;
+package hr.tvz.vibecheck.enums;
 
 public enum ProfileVisibility {
     PRIVATE,
