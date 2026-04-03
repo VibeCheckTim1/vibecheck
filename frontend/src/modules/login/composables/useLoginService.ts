@@ -2,6 +2,15 @@ import {useHttpClient} from "../../../composables/useHttpClient.ts";
 import {User, type UserApi} from "../../../entities/user.ts";
 
 export interface LoginRequest {
+	username: string;
+	password: string;
+}
+
+export interface RegisterRequest {
+	firstName: string;
+	lastName: string;
+	username: string;
+	bio: string;
 	email: string;
 	password: string;
 }
@@ -14,7 +23,13 @@ export function useLoginService() {
 		return new User(data);
 	}
 
+	async function registerAction(body: RegisterRequest): Promise<User> {
+		const data = await httpPost<UserApi>("/user/create", body);
+		return new User(data);
+	}
+
 	return {
 		loginAction,
+		registerAction
 	};
 }

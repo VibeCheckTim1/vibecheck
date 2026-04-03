@@ -40,7 +40,7 @@ router.beforeEach(async (_to, from) => {
 			setUser(new User(data));
 		}
 		catch {
-			if (_to.name !== "login") {
+			if (_to.name !== "login" && _to.name !== "register") {
 				return {name: "login"};
 			}
 		}
