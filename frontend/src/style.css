@@ -84,6 +84,8 @@
 	--border-radius-4: 8px; /* medium */
 	--border-radius-5: 12px; /* large */
 	--border-radius-6: 16px; /* cards */
+	--border-radius-7: 20px; /* cards */
+	--border-radius-8: 28px; /* cards */
 	--border-radius-full: 9999px; /* circle */
 }
 
@@ -98,8 +100,8 @@ body {
 	padding-inline: var(--spacing-2);
 
 	@media screen and (min-width: 992px) {
-		width: 768px;
-		max-width: 768px;
+		width: 750px;
+		max-width: 750px;
 		margin-inline: auto;
 		padding-inline: 0;
 
@@ -109,9 +111,9 @@ body {
 .primary-button {
 	background-color: var(--color-primary-4);
 	color: white;
-	padding-block: var(--spacing-3);
-	padding-inline: var(--spacing-3);
-	border-radius: var(--border-radius-5);
+	padding-block: var(--spacing-2);
+	padding-inline: var(--spacing-4);
+	border-radius: var(--border-radius-8);
 	font-family: "Helvetica", sans-serif;
 	font-size: var(--font-size-2);
 	border: 1px solid var(--color-primary-4);
@@ -122,6 +124,12 @@ body {
 	gap: var(--spacing-2);
 	text-decoration-line: none;
 	transition: background-color 150ms, transform 150ms;
+
+	&.large-button {
+		padding-block: var(--spacing-3);
+		padding-inline: var(--spacing-3);
+		border-radius: var(--border-radius-5);
+	}
 
 	&:hover {
 		background-color: var(--color-primary-5);

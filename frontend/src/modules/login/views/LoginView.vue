@@ -69,7 +69,7 @@ async function submitForm() {
                            type="password"
                            label="Password"/>
                 <a href="#" class="decorative-link">Forgot your password?</a>
-                <button type="submit" class="primary-button">Login</button>
+                <button type="submit" class="primary-button large-button">Login</button>
             </form>
 
             <div class="divider">
@@ -97,7 +97,7 @@ async function submitForm() {
 
 <style scoped>
 .login-page-container {
-    width: 100dvw;
+    width: 100%;
     height: 100dvh;
     display: flex;
     align-items: center;

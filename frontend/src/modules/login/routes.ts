@@ -10,9 +10,11 @@ export const loginRoutes: RouteRecordRaw[] = [
 		beforeEnter: () => {
 			const {isLoggedIn} = useState();
 
-			if (isLoggedIn) {
+			if (isLoggedIn.value) {
 				return {name: "home"};
 			}
+
+			return;
 		}
 	},
 ];

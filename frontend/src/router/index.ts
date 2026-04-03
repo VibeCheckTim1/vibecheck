@@ -21,7 +21,7 @@ const router = createRouter({
 	],
 });
 
-router.beforeEach(async () => {
+router.beforeEach(async (_to) => {
 	const {httpGet} = useHttpClient();
 	const {
 		currentUser,
@@ -37,7 +37,9 @@ router.beforeEach(async () => {
 			setUser(new User(data));
 		}
 		catch {
-			return;
+			if (_to.name !== "login") {
+				return {name: "login"};
+			}
 		}
 	}
 
