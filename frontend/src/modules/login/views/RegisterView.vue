@@ -10,38 +10,48 @@ import {ApiError} from "../../../composables/useHttpClient.ts";
 import {useRouter} from "vue-router";
 import {useState} from "../../../composables/useState.ts";
 
-const {required} = useValidators();
-const {showError} = useToast();
+const {required, email, minLength} = useValidators();
+const {showSuccess, showError} = useToast();
 const {setUser} = useState();
 const router = useRouter();
 
 const form = useForm({
+    firstName: useFormField<string>(null, [required]),
+    lastName: useFormField<string>(null, [required]),
+    email: useFormField<string>(null, [required, email]),
     username: useFormField<string>(null, [required]),
-    password: useFormField<string>(null, [required]),
+    password: useFormField<string>(null, [required, minLength(4)]),
+    repeatPassword: useFormField<string>(null, [required]),
 });
 
 async function submitForm() {
     if (form.validateForm()) {
-        try {
-            const {loginAction} = useLoginService();
-            const user = await loginAction(form.toJson());
-            setUser(user);
-            await router.push({
-                name: "home"
-            });
-        }
-        catch (error) {
-            if (error instanceof ApiError) {
-                showError(error.message);
+        if (form.password.getInputValue() === form.repeatPassword.getInputValue()) {
+            try {
+                const {registerAction} = useLoginService();
+                const user = await registerAction(form.toJson());
+                setUser(user);
+                showSuccess("Welcome to VibeCheck!");
+                await router.push({
+                    name: "home"
+                });
             }
+            catch (error) {
+                if (error instanceof ApiError) {
+                    showError(error.message);
+                }
+            }
+        }
+        else {
+            showError("Passwords don't match!");
         }
     }
 }
 </script>
 
 <template>
-    <div class="login-page-container">
-        <div class="login-form-holder">
+    <div class="register-page-container">
+        <div class="register-form-holder">
             <div class="logo-holder">
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -62,13 +72,28 @@ async function submitForm() {
             <p class="app-description">Share your music, discover new vibes</p>
 
             <form @submit.prevent="submitForm">
-                <InputText :control="form.username"
-                           label="Username"/>
+                <div class="form-grid">
+                    <InputText :control="form.firstName"
+                               label="First name"/>
+                    <InputText :control="form.lastName"
+                               label="Last name"/>
+                </div>
+                <div class="form-grid">
+                    <InputText :control="form.username"
+                               label="Username">
+                        <template #prefix>@</template>
+                    </InputText>
+                    <InputText :control="form.email"
+                               type="email"
+                               label="Email"/>
+                </div>
                 <InputText :control="form.password"
                            type="password"
                            label="Password"/>
-                <a href="#" class="decorative-link">Forgot your password?</a>
-                <button type="submit" class="primary-button large-button">Login</button>
+                <InputText :control="form.repeatPassword"
+                           type="password"
+                           label="Repeat password"/>
+                <button type="submit" class="primary-button large-button">Register</button>
             </form>
 
             <div class="divider">
@@ -86,29 +111,38 @@ async function submitForm() {
                 </button>
             </div>
 
-            <div class="login-footer">
-                <span>Don't have an account?</span>
-                <router-link :to="{name: 'register'}" class="decorative-link">Sign up</router-link>
+            <div class="register-footer">
+                <span>Already have an account?</span>
+                <router-link :to="{name: 'login'}" class="decorative-link">Sign in</router-link>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-.login-page-container {
-    width: 100%;
-    height: 100dvh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.register-page-container {
+    padding-block: var(--spacing-6);
 
-    .login-form-holder {
+    @media screen and (min-width: 768px) {
+        width: 100%;
+        height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-block: 0;
+    }
+
+    .register-form-holder {
         display: flex;
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        width: 480px;
         padding: var(--spacing-4);
+        width: 100%;
+
+        @media screen and (min-width: 768px) {
+            width: 480px;
+        }
 
         .app-name {
             width: 100%;
@@ -162,7 +196,7 @@ async function submitForm() {
             }
         }
 
-        .login-footer {
+        .register-footer {
             display: flex;
             align-items: center;
             justify-content: center;

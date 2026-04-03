@@ -10,7 +10,6 @@ public record CreateUserRequest(
         @NotBlank String lastName,
         @NotBlank String username,
         String bio,
-        @NotNull ProfileVisibility visibility,
         @Email @NotBlank String email,
         @NotBlank String password
 ) {

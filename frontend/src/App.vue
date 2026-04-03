@@ -1,16 +1,18 @@
 <script setup lang="ts">
 
 import ToastOutlet from "./components/ToastOutlet.vue";
-import {useRoute} from "vue-router";
+import {useState} from "./composables/useState.ts";
+import DialogOutlet from "./components/DialogOutlet.vue";
+import ConfirmOutlet from "./components/ConfirmOutlet.vue";
 
-const route = useRoute();
+const {isLoggedIn} = useState();
 </script>
 
 <template>
     <main>
         <router-view/>
     </main>
-    <nav class="bottom-navigation" v-if="route.name !== 'login'">
+    <nav class="bottom-navigation" v-if="isLoggedIn">
         <div class="center-content-container">
             <ul>
                 <li>
@@ -61,22 +63,30 @@ const route = useRoute();
             </ul>
         </div>
     </nav>
+    <DialogOutlet/>
     <ToastOutlet/>
+    <ConfirmOutlet/>
 </template>
 
 <style scoped>
+main {
+    padding-bottom: 100px;
+}
+
 .bottom-navigation {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
     border-top: 1px solid var(--color-gray-2);
+    background-color: white;
 
     ul {
         list-style: none;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: space-evenly;
+        gap: var(--spacing-2);
 
         a {
             padding-block: var(--spacing-3);

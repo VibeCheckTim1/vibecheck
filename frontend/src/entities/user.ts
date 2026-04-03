@@ -1,23 +1,35 @@
 export interface UserApi {
-	id: string;
+	idUser: number;
 	firstName: string;
 	lastName: string;
-	username: string;
+	avatarUrl: string | null;
+	bio: string | null;
 	email: string;
+	username: string;
+	visibility: string;
+	tstamp: string;
 }
 
 export class User {
-	id: string;
+	idUser: number;
 	firstName: string;
 	lastName: string;
-	username: string;
+	avatarUrl: string | null;
+	bio: string | null;
 	email: string;
+	username: string;
+	isPrivate: boolean;
+	tstamp: Date;
 
 	constructor(apiObject: UserApi) {
-		this.id = apiObject.id;
+		this.idUser = apiObject.idUser;
 		this.firstName = apiObject.firstName;
 		this.lastName = apiObject.lastName;
-		this.username = apiObject.username;
+		this.avatarUrl = apiObject.avatarUrl;
+		this.bio = apiObject.bio;
 		this.email = apiObject.email;
+		this.username = apiObject.username;
+		this.isPrivate = apiObject.visibility === "PRIVATE";
+		this.tstamp = new Date(apiObject.tstamp);
 	}
 }
