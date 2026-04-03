@@ -2,6 +2,7 @@
 import {useState} from "../../../composables/useState.ts";
 import {ref} from "vue";
 import type {Playlist} from "../../../entities/playlist.ts";
+import PageHeaderComponent from "../../../components/PageHeaderComponent.vue";
 
 const {currentUser} = useState();
 
@@ -35,60 +36,65 @@ const playlists = ref<Playlist[]>([
 </script>
 
 <template>
-    <div class="profile-container" v-if="currentUser">
-        <div class="user-avatar-holder">
+    <PageHeaderComponent>
+        <span>Profile</span>
+    </PageHeaderComponent>
+    <div class="center-content-container">
+        <div class="profile-container" v-if="currentUser">
+            <div class="user-avatar-holder">
 
-        </div>
-        <div class="user-full-name">{{ currentUser.email }}</div>
-        <div class="user-username">{{ currentUser.username }}</div>
-        <p class="user-description">Music enthusiast 🎵 Always discovering new sounds · Indie & Electronic lover</p>
-        <a href="#" class="primary-button">Edit profile</a>
-        <div class="profile-info">
-            <ul>
-                <li>
-                    <span class="value">1.2K</span>
-                    <span class="label">Followers</span>
-                </li>
-                <li>
-                    <span class="value">856</span>
-                    <span class="label">Following</span>
-                </li>
-                <li>
-                    <span class="value">24</span>
-                    <span class="label">Playlists</span>
-                </li>
-            </ul>
-        </div>
-
-        <section>
-            <div class="section-title">
-                <i class="icon-bell-outline"></i>
-                <span>Top genres</span>
             </div>
-            <ul class="genres-list">
-                <li>Indie rock</li>
-                <li>Electronic</li>
-                <li>R&B</li>
-                <li>Jazz</li>
-                <li>Hip Hop</li>
-            </ul>
-        </section>
-
-        <section>
-            <div class="section-title">
-                <i class="icon-bell-outline"></i>
-                <span>My playlists</span>
+            <div class="user-full-name">{{ currentUser.email }}</div>
+            <div class="user-username">{{ currentUser.username }}</div>
+            <p class="user-description">Music enthusiast 🎵 Always discovering new sounds · Indie & Electronic lover</p>
+            <a href="#" class="primary-button">Edit profile</a>
+            <div class="profile-info">
+                <ul>
+                    <li>
+                        <span class="value">1.2K</span>
+                        <span class="label">Followers</span>
+                    </li>
+                    <li>
+                        <span class="value">856</span>
+                        <span class="label">Following</span>
+                    </li>
+                    <li>
+                        <span class="value">24</span>
+                        <span class="label">Playlists</span>
+                    </li>
+                </ul>
             </div>
-            <div class="playlists-container">
-                <div class="playlist-card" v-for="playlist in playlists" :key="playlist.id">
-                    <div class="playlist-cover">
 
-                    </div>
-                    <span class="playlist-name">{{ playlist.name }}</span>
-                    <span class="playlist-song-count">{{ playlist.songCount }} songs</span>
+            <section>
+                <div class="section-title">
+                    <i class="icon-chart-bar"></i>
+                    <span>Top genres</span>
                 </div>
-            </div>
-        </section>
+                <ul class="genres-list">
+                    <li>Indie rock</li>
+                    <li>Electronic</li>
+                    <li>R&B</li>
+                    <li>Jazz</li>
+                    <li>Hip Hop</li>
+                </ul>
+            </section>
+
+            <section>
+                <div class="section-title">
+                    <i class="icon-playlist-music"></i>
+                    <span>My playlists</span>
+                </div>
+                <div class="playlists-container">
+                    <div class="playlist-card" v-for="playlist in playlists" :key="playlist.id">
+                        <div class="playlist-cover">
+
+                        </div>
+                        <span class="playlist-name">{{ playlist.name }}</span>
+                        <span class="playlist-song-count">{{ playlist.songCount }} songs</span>
+                    </div>
+                </div>
+            </section>
+        </div>
     </div>
 </template>
 
@@ -154,6 +160,10 @@ const playlists = ref<Playlist[]>([
                 .value {
                     font-size: var(--font-size-5);
                     font-weight: bold;
+                }
+
+                .label {
+                    font-size: var(--font-size-1);
                 }
             }
         }

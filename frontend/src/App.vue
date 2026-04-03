@@ -8,9 +8,7 @@ const {isLoggedIn} = useState();
 
 <template>
     <main>
-        <div class="center-content-container">
-            <router-view/>
-        </div>
+        <router-view/>
     </main>
     <nav class="bottom-navigation" v-if="isLoggedIn">
         <div class="center-content-container">
