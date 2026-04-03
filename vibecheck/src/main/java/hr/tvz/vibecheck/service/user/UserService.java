@@ -27,7 +27,7 @@ public class UserService {
     private final CloudinaryService cloudinaryService;
     private final UserMapper userMapper;
 
-    public UserResponse createUser(CreateUserRequest request) {
+    public void createUser(CreateUserRequest request) {
         if (checkDuplicate(request.email()))
             throw new RuntimeException("User with " + request.email() +  " email already exists");
 
@@ -46,7 +46,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        return userMapper.toUserResponse(user);
+        /*return userMapper.toUserResponse(user);*/
     }
 
     private boolean checkDuplicate(String email) {

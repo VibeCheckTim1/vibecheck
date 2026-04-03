@@ -50,7 +50,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/addAvatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadAvatar(
+    public ResponseEntity<UserStateResponse> uploadAvatar(
             @RequestParam("file") MultipartFile avatar, @AuthenticationPrincipal VibeCheckUserDetails userDetails
             ) throws IOException {
 
@@ -58,7 +58,10 @@ public class UserController {
 
         userService.uploadAvatar(userId, avatar);
 
-        return ResponseEntity.ok().build();
+        var userState = stateService.getUserState();
+        if (userState == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        return ResponseEntity.ok(userState);
     }
 
     /*@PutMapping(value = "/edit/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
