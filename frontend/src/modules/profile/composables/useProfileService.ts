@@ -10,14 +10,20 @@ export interface UpdateProfileRequest {
 }
 
 export function useProfileService(userId: number) {
-	const {httpPut} = useHttpClient();
+	const {httpPut, httpPost} = useHttpClient();
 
 	async function updateAction(body: UpdateProfileRequest): Promise<User> {
 		const data = await httpPut<UserApi>(`/user/edit/${String(userId)}`, body);
 		return new User(data);
 	}
 
+	async function uploadAvatar(body: FormData): Promise<User> {
+		const data = await httpPost<UserApi>(`/user/addAvatar`, body);
+		return new User(data);
+	}
+
 	return {
 		updateAction,
+		uploadAvatar
 	};
 }

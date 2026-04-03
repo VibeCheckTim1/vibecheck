@@ -112,14 +112,16 @@ const playlists = ref<Playlist[]>([
         height: 90px;
         border-radius: 50%;
         background-color: var(--color-primary-4);
-        overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
+        margin-bottom: var(--spacing-2);
 
         img {
             width: 90px;
             height: 90px;
+            border-radius: 50%;
+            border: 2px solid var(--color-primary-4);
         }
     }
 

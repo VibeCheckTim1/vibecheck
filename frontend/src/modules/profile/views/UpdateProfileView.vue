@@ -10,12 +10,27 @@ import InputText from "../../../components/InputText.vue";
 import InputToggle from "../../../components/InputToggle.vue";
 import {useProfileService} from "../composables/useProfileService.ts";
 import {useRouter} from "vue-router";
+import UploadAvatarForm from "../components/UploadAvatarForm.vue";
+import {useDialog} from "../../../composables/useDialog.ts";
+import type {User} from "../../../entities/user.ts";
 
-const {currentUser} = useState();
+const {currentUser, setUser} = useState();
+const {openDialog} = useDialog();
 const {required} = useValidators();
 const {showSuccess, showError} = useToast();
-const {setUser} = useState();
 const router = useRouter();
+
+function uploadAvatar() {
+    openDialog(UploadAvatarForm, "Upload profile picture", {
+        callback: async (user: User) => {
+            setUser(user);
+            showSuccess("Updated successfully!");
+            await router.push({
+                name: "profile"
+            });
+        }
+    });
+}
 
 const form = useForm({
     firstName: useFormField<string>(currentUser.value?.firstName, [required]),
@@ -62,7 +77,7 @@ async function submitForm() {
         <div class="update-profile-container" v-if="currentUser">
             <div class="user-avatar-holder">
                 <img v-if="currentUser.avatarUrl" :src="currentUser.avatarUrl" alt="Avatar">
-                <button type="button" class="change-avatar-button">
+                <button type="button" class="change-avatar-button" @click="uploadAvatar">
                     <i class="icon-camera"></i>
                 </button>
             </div>
@@ -151,6 +166,7 @@ async function submitForm() {
             width: 90px;
             height: 90px;
             border-radius: 50%;
+            border: 2px solid var(--color-primary-4);
         }
 
         .change-avatar-button {
