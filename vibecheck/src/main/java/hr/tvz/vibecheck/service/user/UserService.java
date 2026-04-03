@@ -5,7 +5,6 @@ import hr.tvz.vibecheck.dto.request.CreateUserRequest;
 import hr.tvz.vibecheck.dto.request.EditUserRequest;
 import hr.tvz.vibecheck.dto.response.ImageUploadResponse;
 import hr.tvz.vibecheck.dto.response.UserEditResponse;
-import hr.tvz.vibecheck.dto.response.UserResponse;
 import hr.tvz.vibecheck.dtoMapper.UserMapper;
 import hr.tvz.vibecheck.entity.User;
 import hr.tvz.vibecheck.enums.ProfileVisibility;
@@ -50,7 +49,7 @@ public class UserService {
     }
 
     private boolean checkDuplicate(String email) {
-        return userRepository.findByEmail(email).isPresent();
+        return userRepository.existsByEmail(email);
     }
 
     private static void avatarValidation(MultipartFile avatar) {
@@ -90,6 +89,12 @@ public class UserService {
         return userMapper.toUserEditResponse(user); //response DTO mapper
     }
 
+
+    public void deleteUser(Long userId) {
+        userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        userRepository.deleteById(userId);
+    }
 
 
 }
