@@ -4,7 +4,8 @@ import type {useFormField} from "../composables/useFormField.ts";
 
 const props = withDefaults(defineProps<{
     control: ReturnType<typeof useFormField<string>>;
-    label: string;
+    label?: string;
+    placeholder?: string;
     multiline?: boolean;
     type?: string;
     disabled?: boolean;
@@ -56,6 +57,11 @@ function onBlur(): void {
 
 <template>
     <div class="form-field-holder">
+        <label :for="uniqueId" v-if="label">
+            {{ label }}
+            <span v-if="!props.required">(optional)</span>
+        </label>
+
         <div class="text-input-holder"
              @blur="onBlur"
              :class="{ 'invalid': props.control.errors.value.length > 0, 'disabled': props.disabled, 'active': isFocused }">
@@ -66,8 +72,8 @@ function onBlur(): void {
             <textarea v-if="multiline"
                       :id="uniqueId"
                       v-model.trim="model"
-                      :placeholder="label"
-                      rows="2"
+                      :placeholder="placeholder || label"
+                      rows="4"
                       @click="isFocused = true"
                       @blur="onBlur"
                       :disabled="disabled"/>
@@ -76,7 +82,7 @@ function onBlur(): void {
                    :id="uniqueId"
                    v-model="model"
                    :type="props.type"
-                   :placeholder="label"
+                   :placeholder="placeholder || label"
                    @click="isFocused = true"
                    @blur="onBlur"
                    :disabled="disabled"/>
@@ -174,6 +180,7 @@ function onBlur(): void {
         resize: none;
         line-height: 1.5;
         border: none;
+        font-family: "Helvetica", sans-serif;
 
         &:is(textarea) {
             padding-block: var(--spacing-1);

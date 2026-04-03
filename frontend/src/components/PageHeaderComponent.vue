@@ -36,6 +36,7 @@ const goBack = () => {
 <style scoped>
 header {
     position: sticky;
+    z-index: 10;
     top: 0;
     left: 0;
     width: 100%;
