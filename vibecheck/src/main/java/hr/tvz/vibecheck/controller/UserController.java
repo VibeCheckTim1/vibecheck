@@ -2,10 +2,15 @@ package hr.tvz.vibecheck.controller;
 
 import hr.tvz.vibecheck.dto.request.CreateUserRequest;
 import hr.tvz.vibecheck.dto.request.EditUserRequest;
+import hr.tvz.vibecheck.dto.request.LoginRequest;
 import hr.tvz.vibecheck.dto.response.UserEditResponse;
 import hr.tvz.vibecheck.dto.response.UserResponse;
+import hr.tvz.vibecheck.projections.UserStateResponse;
 import hr.tvz.vibecheck.security.VibeCheckUserDetails;
+import hr.tvz.vibecheck.service.StateService;
+import hr.tvz.vibecheck.service.security.AuthService;
 import hr.tvz.vibecheck.service.user.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,13 +28,25 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
+
     private final UserService userService;
 
+    private final AuthService authService;
+
+    private final StateService stateService;
+
     @PostMapping("/create")
-    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid CreateUserRequest request) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(userService.createUser(request));
+    public ResponseEntity<UserStateResponse> createUser(@RequestBody @Valid CreateUserRequest request, HttpServletResponse response) {
+
+        userService.createUser(request);
+
+        var loginRequest = new LoginRequest(request.username(), request.password());
+        authService.login(loginRequest, response);
+
+        var userState = stateService.getUserState();
+        if (userState == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        return ResponseEntity.ok(userState);
     }
 
     @PostMapping(value = "/addAvatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
