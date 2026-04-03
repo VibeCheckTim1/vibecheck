@@ -8,6 +8,7 @@ import hr.tvz.vibecheck.dto.response.UserEditResponse;
 import hr.tvz.vibecheck.dto.response.UserResponse;
 import hr.tvz.vibecheck.dtoMapper.UserMapper;
 import hr.tvz.vibecheck.entity.User;
+import hr.tvz.vibecheck.enums.ProfileVisibility;
 import hr.tvz.vibecheck.projections.UserStateResponse;
 import hr.tvz.vibecheck.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class UserService {
                 .lastName(request.lastName())
                 .username(request.username())
                 .bio(request.bio())
-                .visibility(request.visibility())
+                .visibility(ProfileVisibility.PRIVATE)
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .avatarUrl("https://res.cloudinary.com/dqqjdinyg/image/upload/v1774976056/default_qpersr.svg") //default avatar
