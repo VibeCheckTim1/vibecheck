@@ -36,32 +36,24 @@ public class JwtService {
         else if (TokenType.REFRESH.equals(type)) token = generateRefreshToken();
         else return null;
 
-        var cookie = new Cookie(type.equals(TokenType.ACCESS) ? TokenType.ACCESS : TokenType.REFRESH, token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setSecure(false); // set to true in production with HTTPS
-        cookie.setMaxAge(type.equals(TokenType.ACCESS)
-                ? (-1) // session cookie
-                : (int) (refreshExpirationDays * 24 * 60 * 60)); //seconds
-
-        return cookie;
+        return generateCookieToken(type, token, false);
     }
 
     public String generateAccessToken(String token) {
 
         var accessExpiration = LocalDateTime.now().plusMinutes(accessExpirationMinutes);
 
-        return generate(accessExpiration, TokenType.ACCESS, token);
+        return generateToken(accessExpiration, TokenType.ACCESS, token);
     }
 
     public String generateRefreshToken() {
 
         var refreshExpiration = LocalDateTime.now().plusDays(refreshExpirationDays);
 
-        return generate(refreshExpiration, TokenType.REFRESH, null);
+        return generateToken(refreshExpiration, TokenType.REFRESH, null);
     }
 
-    private String generate(LocalDateTime expiration, String type, String token) {
+    private String generateToken(LocalDateTime expiration, String type, String token) {
         VibeCheckUserDetails userDetails;
         String email;
         var auth = SecurityContextHolder.getContext().getAuthentication();
@@ -87,6 +79,19 @@ public class JwtService {
                 .withIssuedAt(new Date())
                 .withExpiresAt(expiration.toInstant(ZoneOffset.UTC))
                 .sign(Algorithm.HMAC256(secret));
+    }
+
+    public Cookie generateCookieToken(String type, String token, boolean age0) {
+        var cookie = new Cookie(type.equals(TokenType.ACCESS) ? TokenType.ACCESS : TokenType.REFRESH, token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setSecure(false); // set to true in production with HTTPS
+        if (age0) cookie.setMaxAge(0);
+        else cookie.setMaxAge(type.equals(TokenType.ACCESS)
+                ? (-1) // session cookie
+                : (int) (refreshExpirationDays * 24 * 60 * 60)); //seconds
+
+        return cookie;
     }
 
     public boolean isValid(String token, String type) {
