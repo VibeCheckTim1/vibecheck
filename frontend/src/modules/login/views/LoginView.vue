@@ -25,6 +25,7 @@ async function submitForm() {
         try {
             const {loginAction} = useLoginService();
             const user = await loginAction(form.toJson());
+            localStorage.setItem("authenticated", "true");
             setUser(user);
             await router.push({
                 name: "home"
