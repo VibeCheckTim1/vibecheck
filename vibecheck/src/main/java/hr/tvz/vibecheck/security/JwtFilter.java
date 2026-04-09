@@ -39,7 +39,8 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (jwtService.isValid(token, TokenType.ACCESS)) {
+        try {
+            if (jwtService.isValid(token, TokenType.ACCESS)) {
                 var username = jwtService.extractUsername(token);
 
                 var user = userDetailsService.loadUserByUsername(username);
@@ -50,6 +51,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
+            }
+        }
+        catch (Exception e) {
+            SecurityContextHolder.clearContext();
         }
 
         chain.doFilter(request, response);
