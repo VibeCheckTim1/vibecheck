@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, ref} from "vue";
-import {useProfileService} from "../composables/useProfileService.ts";
+import {useUserService} from "../composables/useUserService.ts";
 import {useState} from "../../../composables/useState.ts";
 import type {User} from "../../../entities/user.ts";
 
@@ -95,7 +95,7 @@ async function submitForm() {
         formData.append("file", file.value as File);
 
         try {
-            const {uploadAvatarAction} = useProfileService(currentUser.value.idUser);
+            const {uploadAvatarAction} = useUserService(currentUser.value.idUser);
             const user = await uploadAvatarAction(formData);
             await props.callback(user);
         }

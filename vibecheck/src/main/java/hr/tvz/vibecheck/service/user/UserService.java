@@ -5,18 +5,23 @@ import hr.tvz.vibecheck.dto.request.CreateUserRequest;
 import hr.tvz.vibecheck.dto.request.EditUserRequest;
 import hr.tvz.vibecheck.dto.response.ImageUploadResponse;
 import hr.tvz.vibecheck.dto.response.UserEditResponse;
+import hr.tvz.vibecheck.dto.response.UserResponse;
 import hr.tvz.vibecheck.dtoMapper.UserMapper;
 import hr.tvz.vibecheck.entity.User;
 import hr.tvz.vibecheck.enums.ProfileVisibility;
 import hr.tvz.vibecheck.projections.UserStateResponse;
 import hr.tvz.vibecheck.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +30,12 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryService cloudinaryService;
     private final UserMapper userMapper;
+
+    public UserResponse findOneById(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        return userMapper.toUserResponse(user);
+    }
 
     public void createUser(CreateUserRequest request) {
         if (checkDuplicate(request.email()))

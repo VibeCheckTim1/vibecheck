@@ -9,8 +9,13 @@ export interface UpdateProfileRequest {
 	"visibility": string
 }
 
-export function useProfileService(userId: number) {
-	const {httpPut, httpPost, httpDelete} = useHttpClient();
+export function useUserService(userId: number) {
+	const {httpGet, httpPut, httpPost, httpDelete} = useHttpClient();
+
+	async function getUser(): Promise<User> {
+		const data = await httpGet<UserApi>(`/user/${String(userId)}`);
+		return new User(data);
+	}
 
 	async function logoutAction(): Promise<void> {
 		await httpPost<void>(`/auth/logout`, {});
@@ -31,6 +36,7 @@ export function useProfileService(userId: number) {
 	}
 
 	return {
+		getUser,
 		logoutAction,
 		updateAction,
 		uploadAvatarAction,
