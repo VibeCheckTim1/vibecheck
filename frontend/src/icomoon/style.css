@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?l620n1');
-  src:  url('fonts/icomoon.eot?l620n1#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?l620n1') format('truetype'),
-    url('fonts/icomoon.woff?l620n1') format('woff'),
-    url('fonts/icomoon.svg?l620n1#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?jgmiiz');
+  src:  url('fonts/icomoon.eot?jgmiiz#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?jgmiiz') format('truetype'),
+    url('fonts/icomoon.woff?jgmiiz') format('woff'),
+    url('fonts/icomoon.svg?jgmiiz#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,24 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-microphone:before {
+  content: "\e918";
+}
+.icon-account:before {
+  content: "\e913";
+}
+.icon-shield-lock-outline:before {
+  content: "\e914";
+}
+.icon-music:before {
+  content: "\e915";
+}
+.icon-play-circle-outline:before {
+  content: "\e916";
+}
+.icon-trending-up:before {
+  content: "\e917";
+}
 .icon-alert-outline:before {
   content: "\e912";
 }
