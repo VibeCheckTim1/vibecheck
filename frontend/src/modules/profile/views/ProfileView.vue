@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useState} from "../../../composables/useState.ts";
-import {onMounted, ref, watch} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import type {Playlist} from "../../../entities/playlist.ts";
 import PageHeaderComponent from "../../../components/PageHeaderComponent.vue";
 import {useRoute} from "vue-router";
@@ -8,12 +8,13 @@ import {ApiError} from "../../../composables/useHttpClient.ts";
 import router from "../../../router";
 import {useToast} from "../../../composables/useToast.ts";
 import {useUserService} from "../composables/useUserService.ts";
+import type {User} from "../../../entities/user.ts";
 
 const {currentUser} = useState();
 const route = useRoute();
 
 const isOwnProfile = ref(true);
-const viewedUser = ref<any>(null);
+const viewedUser = ref<User | null>(null);
 const {showError} = useToast();
 
 async function logout() {
@@ -24,6 +25,10 @@ async function logout() {
         window.location.href = "/";
     }
 }
+
+const isPrivateProfile = computed(() => {
+    return isOwnProfile.value === false && viewedUser.value?.isPrivate;
+});
 
 const playlists = ref<Playlist[]>([
     {
@@ -106,59 +111,67 @@ onMounted(() => {
             <div class="user-username">{{ viewedUser.username }}</div>
             <p class="user-description" v-if="viewedUser.bio">{{ viewedUser.bio }}</p>
             <router-link :to="{name: 'updateProfile'}" class="primary-button" v-if="isOwnProfile">Edit profile</router-link>
-            <div class="profile-info">
-                <ul>
-                    <li>
-                        <span class="value">1.2K</span>
-                        <span class="label">Followers</span>
-                    </li>
-                    <li>
-                        <span class="value">856</span>
-                        <span class="label">Following</span>
-                    </li>
-                    <li>
-                        <span class="value">24</span>
-                        <span class="label">Playlists</span>
-                    </li>
-                </ul>
-            </div>
-
-            <section>
-                <div class="section-title">
-                    <i class="icon-chart-bar"></i>
-                    <span>Top genres</span>
+            <template v-if="isPrivateProfile === false">
+                <div class="profile-info">
+                    <ul>
+                        <li>
+                            <span class="value">1.2K</span>
+                            <span class="label">Followers</span>
+                        </li>
+                        <li>
+                            <span class="value">856</span>
+                            <span class="label">Following</span>
+                        </li>
+                        <li>
+                            <span class="value">24</span>
+                            <span class="label">Playlists</span>
+                        </li>
+                    </ul>
                 </div>
-                <ul class="genres-list">
-                    <li>Indie rock</li>
-                    <li>Electronic</li>
-                    <li>R&B</li>
-                    <li>Jazz</li>
-                    <li>Hip Hop</li>
-                </ul>
-            </section>
 
-            <section>
-                <div class="section-title">
-                    <i class="icon-playlist-music"></i>
-                    <span>My playlists</span>
-                </div>
-                <div class="playlists-container">
-                    <div class="playlist-card" v-for="playlist in playlists" :key="playlist.id">
-                        <div class="playlist-cover">
-
-                        </div>
-                        <span class="playlist-name">{{ playlist.name }}</span>
-                        <span class="playlist-song-count">{{ playlist.songCount }} songs</span>
+                <section>
+                    <div class="section-title">
+                        <i class="icon-chart-bar"></i>
+                        <span>Top genres</span>
                     </div>
+                    <ul class="genres-list">
+                        <li>Indie rock</li>
+                        <li>Electronic</li>
+                        <li>R&B</li>
+                        <li>Jazz</li>
+                        <li>Hip Hop</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <div class="section-title">
+                        <i class="icon-playlist-music"></i>
+                        <span>My playlists</span>
+                    </div>
+                    <div class="playlists-container">
+                        <div class="playlist-card" v-for="playlist in playlists" :key="playlist.id">
+                            <div class="playlist-cover">
+
+                            </div>
+                            <span class="playlist-name">{{ playlist.name }}</span>
+                            <span class="playlist-song-count">{{ playlist.songCount }} songs</span>
+                        </div>
+                    </div>
+                </section>
+            </template>
+            <div class="private-profile-container">
+                <div class="icon-holder">
+                    <i class="icon-shield-lock-outline"></i>
                 </div>
-            </section>
+                <p class="private-profile-message">This account is private!</p>
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
 .profile-container {
-    padding-block: var(--spacing-10);
+    padding-block: var(--spacing-5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -309,6 +322,35 @@ onMounted(() => {
                 color: var(--color-gray-4);
                 display: block;
             }
+        }
+    }
+
+    .private-profile-container {
+        background-color: var(--color-gray-0);
+        border-radius: var(--border-radius-6);
+        padding-block: 10%;
+        padding-inline: var(--spacing-3);
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+
+        .icon-holder {
+            font-size: var(--font-size-8);
+            color: var(--color-primary-4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+        }
+
+        .private-profile-message {
+            text-align: center;
+            font-size: var(--font-size-3);
+            color: var(--color-gray-6);
+            font-weight: bold;
         }
     }
 }
