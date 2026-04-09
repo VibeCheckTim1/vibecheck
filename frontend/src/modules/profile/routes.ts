@@ -9,7 +9,7 @@ export const profileRoutes: RouteRecordRaw[] = [
 		component: EmptyLayout,
 		children: [
 			{
-				path: "",
+				path: ":userId",
 				name: "profile",
 				component: ProfileView,
 			},

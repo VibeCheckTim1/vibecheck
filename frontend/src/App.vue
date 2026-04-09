@@ -5,14 +5,14 @@ import {useState} from "./composables/useState.ts";
 import DialogOutlet from "./components/DialogOutlet.vue";
 import ConfirmOutlet from "./components/ConfirmOutlet.vue";
 
-const {isLoggedIn} = useState();
+const {currentUser} = useState();
 </script>
 
 <template>
     <main>
         <router-view/>
     </main>
-    <nav class="bottom-navigation" v-if="isLoggedIn">
+    <nav class="bottom-navigation" v-if="currentUser">
         <div class="center-content-container">
             <ul>
                 <li>
@@ -52,7 +52,7 @@ const {isLoggedIn} = useState();
                     </router-link>
                 </li>
                 <li>
-                    <router-link :to="{name: 'profile'}"
+                    <router-link :to="{name: 'profile', params: {userId: String(currentUser.idUser)}}"
                                  active-class="highlight">
                         <div class="icon-holder">
                             <i class="icon-account-outline"></i>

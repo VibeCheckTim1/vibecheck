@@ -1,15 +1,24 @@
 <script setup lang="ts">
 import {useState} from "../../../composables/useState.ts";
-import {ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import type {Playlist} from "../../../entities/playlist.ts";
 import PageHeaderComponent from "../../../components/PageHeaderComponent.vue";
-import {useProfileService} from "../composables/useProfileService.ts";
+import {useRoute} from "vue-router";
+import {ApiError} from "../../../composables/useHttpClient.ts";
+import router from "../../../router";
+import {useToast} from "../../../composables/useToast.ts";
+import {useUserService} from "../composables/useUserService.ts";
 
 const {currentUser} = useState();
+const route = useRoute();
+
+const isOwnProfile = ref(true);
+const viewedUser = ref<any>(null);
+const {showError} = useToast();
 
 async function logout() {
     if (currentUser.value) {
-        const {logoutAction} = useProfileService(currentUser.value.idUser);
+        const {logoutAction} = useUserService(currentUser.value.idUser);
         await logoutAction();
         localStorage.removeItem("authenticated");
         window.location.href = "/";
@@ -43,24 +52,60 @@ const playlists = ref<Playlist[]>([
         songCount: 22,
     },
 ]);
+
+const loadUser = async (userIdRoute: number) => {
+    if (!currentUser.value) {
+        return;
+    }
+
+    isOwnProfile.value = currentUser.value.idUser === userIdRoute;
+    if (isOwnProfile.value) {
+        viewedUser.value = currentUser.value;
+    }
+    else {
+        try {
+            const {getUser} = useUserService(userIdRoute);
+            viewedUser.value = await getUser();
+        }
+        catch (error) {
+            await router.push({name: "home"});
+            if (error instanceof ApiError) {
+                showError(error.message);
+            }
+        }
+    }
+};
+
+watch(() => route.params.userId, async (newUserId) => {
+    if (!newUserId) return;
+
+    await loadUser(Number(newUserId));
+}, {
+    immediate: true,
+});
+
+onMounted(() => {
+    const userIdRoute = Number(route.params.userId);
+    loadUser(userIdRoute);
+});
 </script>
 
 <template>
     <PageHeaderComponent>
         <span>Profile</span>
-        <template #actions>
+        <template #actions v-if="isOwnProfile">
             <button class="danger-button" type="button" @click="logout">Logout</button>
         </template>
     </PageHeaderComponent>
     <div class="center-content-container">
-        <div class="profile-container" v-if="currentUser">
+        <div class="profile-container" v-if="viewedUser">
             <div class="user-avatar-holder">
-                <img v-if="currentUser.avatarUrl" :src="currentUser.avatarUrl" alt="Avatar">
+                <img v-if="viewedUser.avatarUrl" :src="viewedUser.avatarUrl" alt="Avatar">
             </div>
-            <div class="user-full-name">{{ currentUser.email }}</div>
-            <div class="user-username">{{ currentUser.username }}</div>
-            <p class="user-description" v-if="currentUser.bio">{{ currentUser.bio }}</p>
-            <router-link :to="{name: 'updateProfile'}" class="primary-button">Edit profile</router-link>
+            <div class="user-full-name">{{ viewedUser.email }}</div>
+            <div class="user-username">{{ viewedUser.username }}</div>
+            <p class="user-description" v-if="viewedUser.bio">{{ viewedUser.bio }}</p>
+            <router-link :to="{name: 'updateProfile'}" class="primary-button" v-if="isOwnProfile">Edit profile</router-link>
             <div class="profile-info">
                 <ul>
                     <li>
