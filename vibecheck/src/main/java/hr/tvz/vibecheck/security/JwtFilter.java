@@ -39,17 +39,21 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (jwtService.isValid(token, TokenType.ACCESS)) {
+        try {
+            if (jwtService.isValid(token, TokenType.ACCESS)) {
                 var username = jwtService.extractUsername(token);
 
                 var user = userDetailsService.loadUserByUsername(username);
 
-                var auth = new UsernamePasswordAuthenticationToken(
-                        user, null, user.getAuthorities()
-                );
+                var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
+            }
+        }
+        catch (Exception e) {
+            SecurityContextHolder.clearContext();
+            //TODO: klijentu vratiti 401 statusni kod
         }
 
         chain.doFilter(request, response);

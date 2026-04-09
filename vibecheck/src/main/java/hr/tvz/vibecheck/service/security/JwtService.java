@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 @Service
@@ -40,20 +42,16 @@ public class JwtService {
     }
 
     public String generateAccessToken(String token) {
-
-        var accessExpiration = LocalDateTime.now().plusMinutes(accessExpirationMinutes);
-
+        Instant accessExpiration = Instant.now().plus(accessExpirationMinutes, ChronoUnit.MINUTES);
         return generateToken(accessExpiration, TokenType.ACCESS, token);
     }
 
     public String generateRefreshToken() {
-
-        var refreshExpiration = LocalDateTime.now().plusDays(refreshExpirationDays);
-
+        Instant refreshExpiration = Instant.now().plus(refreshExpirationDays, ChronoUnit.DAYS);
         return generateToken(refreshExpiration, TokenType.REFRESH, null);
     }
 
-    private String generateToken(LocalDateTime expiration, String type, String token) {
+    private String generateToken(Instant expiration, String type, String token) {
         VibeCheckUserDetails userDetails;
         String username;
         var auth = SecurityContextHolder.getContext().getAuthentication();
@@ -77,7 +75,7 @@ public class JwtService {
                 .withSubject(username)
                 .withClaim(TYPE, type)
                 .withIssuedAt(new Date())
-                .withExpiresAt(expiration.toInstant(ZoneOffset.UTC))
+                .withExpiresAt(Date.from(expiration))
                 .sign(Algorithm.HMAC256(secret));
     }
 

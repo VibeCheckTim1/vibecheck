@@ -24,29 +24,36 @@ const router = createRouter({
 	],
 });
 
-router.beforeEach(async (_to, from) => {
+router.beforeEach(async (to, from) => {
 	previousRouteName = from.name as string | null;
+	const guestRoutes = ["login", "register"];
 	const {closeAllDialogs} = useDialog();
 	const {closeConfirm} = useConfirm();
 	closeAllDialogs();
 	closeConfirm();
 
-	const {httpGet} = useHttpClient();
-	const {
-		currentUser,
-		setUser,
-	} = useState();
+	const isAuthenticated = !!localStorage.getItem("authenticated");
+	const isGuestRoute = guestRoutes.includes(to.name as string);
 
-	/*
-	 * USER
-	 */
-	if (!currentUser.value) {
-		try {
-			const data = await httpGet<UserApi>("/state/user-state");
-			setUser(new User(data));
-		}
-		catch {
-			if (_to.name !== "login" && _to.name !== "register") {
+	if (!isAuthenticated && !isGuestRoute) {
+		return {name: "login"};
+	}
+
+	if (isAuthenticated && isGuestRoute) {
+		return {name: "home"};
+	}
+
+	if (isAuthenticated) {
+		const {httpGet} = useHttpClient();
+		const {currentUser, setUser} = useState();
+
+		if (!currentUser.value) {
+			try {
+				const data = await httpGet<UserApi>("/state/user-state");
+				setUser(new User(data));
+			}
+			catch {
+				localStorage.removeItem("authenticated");
 				return {name: "login"};
 			}
 		}
@@ -54,7 +61,6 @@ router.beforeEach(async (_to, from) => {
 
 	return true;
 });
-
 export default router;
 
 export function getPreviousRouteName() {

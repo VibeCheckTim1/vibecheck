@@ -11,6 +11,7 @@ async function logout() {
     if (currentUser.value) {
         const {logoutAction} = useProfileService(currentUser.value.idUser);
         await logoutAction();
+        localStorage.removeItem("authenticated");
         window.location.href = "/";
     }
 }
