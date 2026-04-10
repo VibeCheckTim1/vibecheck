@@ -45,6 +45,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/user/create").permitAll()
                         .requestMatchers("/api/user/addAvatar").authenticated()
+                        .requestMatchers("/api/user/changePassword").authenticated()
                         .requestMatchers("/error").permitAll()
                         //.requestMatchers("/api/user/addAvatar").authenticated()
                         .anyRequest().authenticated()
@@ -73,7 +74,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of("http://localhost:5173"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
