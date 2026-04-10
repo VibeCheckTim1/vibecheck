@@ -9,15 +9,20 @@ export interface UpdateProfileRequest {
 	"visibility": string
 }
 
+export interface ChangePasswordRequest {
+	"oldPassword": string,
+	"newPassword": string
+}
+
 export function useProfileService(userId: number) {
-	const {httpPut, httpPost, httpDelete} = useHttpClient();
+	const {httpPatch, httpPost, httpDelete} = useHttpClient();
 
 	async function logoutAction(): Promise<void> {
 		await httpPost<void>(`/auth/logout`, {});
 	}
 
 	async function updateAction(body: UpdateProfileRequest): Promise<User> {
-		const data = await httpPut<UserApi>(`/user/edit/${String(userId)}`, body);
+		const data = await httpPatch<UserApi>(`/user/edit/${String(userId)}`, body);
 		return new User(data);
 	}
 
@@ -30,10 +35,15 @@ export function useProfileService(userId: number) {
 		await httpDelete<void>(`/user/delete/${String(userId)}`);
 	}
 
+	async function changePasswordAction(body: ChangePasswordRequest): Promise<void> {
+		await httpPatch<void>(`/user/changePassword`, body);
+	}
+
 	return {
 		logoutAction,
 		updateAction,
 		uploadAvatarAction,
-		deleteAction
+		deleteAction,
+		changePasswordAction
 	};
 }
