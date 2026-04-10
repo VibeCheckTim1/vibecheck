@@ -11,11 +11,13 @@ const props = withDefaults(defineProps<{
     disabled?: boolean;
     required?: boolean;
     helpMessage?: string;
+    autocomplete?: string;
 }>(), {
     multiline: false,
     type: "text",
     disabled: false,
     required: true,
+    autocomplete: "off",
 });
 
 const uniqueId = `form-field-${Math.random().toString(36).slice(2, 9)}`;
@@ -83,6 +85,7 @@ function onBlur(): void {
                    v-model="model"
                    :type="props.type"
                    :placeholder="placeholder || label"
+                   :autocomplete="props.autocomplete"
                    @click="isFocused = true"
                    @blur="onBlur"
                    :disabled="disabled"/>

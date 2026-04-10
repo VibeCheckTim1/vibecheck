@@ -14,6 +14,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 @Service
@@ -52,16 +54,10 @@ public class JwtService {
     }
 
     private String generateToken(Instant expiration, String type, String token) {
-        VibeCheckUserDetails userDetails;
         String username;
         var auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth != null) {
-
-            userDetails = (VibeCheckUserDetails) auth.getPrincipal();
-
-            if (userDetails == null) return null; // TODO: throw error
-
+        if (auth != null && auth.getPrincipal() instanceof VibeCheckUserDetails userDetails) {
             username = userDetails.getUsername();
 
         } else {

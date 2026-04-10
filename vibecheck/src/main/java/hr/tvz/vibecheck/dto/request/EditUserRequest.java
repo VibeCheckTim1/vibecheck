@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotNull;
 public record EditUserRequest(
         @NotBlank String firstName,
         @NotBlank String lastName,
-        @NotBlank String username,
         String bio,
         @NotNull ProfileVisibility visibility
 ) {
