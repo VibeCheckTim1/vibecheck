@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import PageHeaderComponent from "../../../components/PageHeaderComponent.vue";
-import {useFormField} from "../../../composables/useFormField.ts";
-import InputText from "../../../components/InputText.vue";
-
-const searchKeyword = useFormField<string>(null);
+import SearchBoxComponent from "../components/SearchBoxComponent.vue";
 </script>
 
 <template>
@@ -12,12 +9,7 @@ const searchKeyword = useFormField<string>(null);
     </PageHeaderComponent>
     <div class="center-content-container">
         <div class="search-input-holder">
-            <InputText :control="searchKeyword"
-                       placeholder="Search...">
-                <template #prefix>
-                    <i class="icon-magnify"></i>
-                </template>
-            </InputText>
+            <SearchBoxComponent/>
         </div>
         <section>
             <div class="section-title">
