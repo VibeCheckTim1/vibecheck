@@ -14,6 +14,7 @@ import UploadAvatarForm from "../components/UploadAvatarForm.vue";
 import {useDialog} from "../../../composables/useDialog.ts";
 import type {User} from "../../../entities/user.ts";
 import {useConfirm} from "../../../composables/useConfirm.ts";
+import ChangePasswordForm from "../components/ChangePasswordForm.vue";
 
 const {currentUser, setUser} = useState();
 const {openDialog} = useDialog();
@@ -32,6 +33,14 @@ function uploadAvatar() {
             });
         }
     });
+}
+
+function changePassword() {
+    openDialog(ChangePasswordForm, "Change password", {
+        callback: async() => {
+            showSuccess("Password changed successfully!");
+        }
+    })
 }
 
 const form = useForm({
@@ -151,7 +160,7 @@ async function deleteAccount() {
                         <span class="description">*****</span>
                     </div>
                     <div class="action-holder">
-                        <button class="decorative-link" type="button">Change</button>
+                        <button class="decorative-link" type="button" @click="changePassword">Change</button>
                     </div>
                 </div>
                 <div class="form-section-container">
