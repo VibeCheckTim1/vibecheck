@@ -1,6 +1,7 @@
 package hr.tvz.vibecheck.service.user;
 
 import hr.tvz.vibecheck.cloudinary.CloudinaryService;
+import hr.tvz.vibecheck.dto.request.ChangeEmailRequest;
 import hr.tvz.vibecheck.dto.request.ChangePasswordRequest;
 import hr.tvz.vibecheck.dto.request.CreateUserRequest;
 import hr.tvz.vibecheck.dto.request.EditUserRequest;
@@ -9,7 +10,6 @@ import hr.tvz.vibecheck.dto.response.UserEditResponse;
 import hr.tvz.vibecheck.dtoMapper.UserMapper;
 import hr.tvz.vibecheck.entity.User;
 import hr.tvz.vibecheck.enums.ProfileVisibility;
-import hr.tvz.vibecheck.projections.UserStateResponse;
 import hr.tvz.vibecheck.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -101,7 +101,6 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
-
     @Transactional
     public void changePassword(Long userId, ChangePasswordRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -113,7 +112,19 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.newPassword()));
 
         userRepository.save(user);
+    }
 
+    @Transactional
+    public void changeMail(Long userId, ChangeEmailRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getEmail().equalsIgnoreCase(request.newEmail())) {
+            throw new IllegalArgumentException("New email cannot match old email");
+        }
+
+        user.setEmail(request.newEmail());
+
+        userRepository.save(user);
     }
 
 
