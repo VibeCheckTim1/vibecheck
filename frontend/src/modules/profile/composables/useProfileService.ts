@@ -14,8 +14,8 @@ export interface ChangePasswordRequest {
 	"newPassword": string
 }
 
-export function useUserService(userId: number) {
-	const {httpGet, httpPut, httpPost, httpDelete} = useHttpClient();
+export function useProfileService(userId: number) {
+	const {httpGet, httpPatch, httpPost, httpDelete} = useHttpClient();
 
 	async function getUser(): Promise<User> {
 		const data = await httpGet<UserApi>(`/user/${String(userId)}`);

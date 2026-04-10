@@ -8,7 +8,7 @@ import {useFormField} from "../../../composables/useFormField.ts";
 import {ApiError} from "../../../composables/useHttpClient.ts";
 import InputText from "../../../components/InputText.vue";
 import InputToggle from "../../../components/InputToggle.vue";
-import {useUserService} from "../composables/useUserService.ts";
+import {useProfileService} from "../composables/useProfileService.ts";
 import {useRouter} from "vue-router";
 import UploadAvatarForm from "../components/UploadAvatarForm.vue";
 import {useDialog} from "../../../composables/useDialog.ts";
@@ -40,7 +40,7 @@ function uploadAvatar() {
 
 function changePassword() {
     openDialog(ChangePasswordForm, "Change password", {
-        callback: async() => {
+        callback: async () => {
             showSuccess("Password changed successfully!");
         }
     })
@@ -57,7 +57,7 @@ const form = useForm({
 async function submitForm() {
     if (form.validateForm() && currentUser.value) {
         try {
-            const {updateAction} = useUserService(currentUser.value.idUser);
+            const {updateAction} = useProfileService(currentUser.value.idUser);
             const user = await updateAction({
                 firstName: form.firstName.getInputValue(),
                 lastName: form.lastName.getInputValue(),
@@ -91,7 +91,7 @@ async function deleteAccount() {
     });
 
     if (confirmed && currentUser.value) {
-        const {deleteAction} = useUserService(currentUser.value.idUser);
+        const {deleteAction} = useProfileService(currentUser.value.idUser);
         await deleteAction();
         window.location.href = "/";
     }

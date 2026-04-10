@@ -7,7 +7,7 @@ import {useRoute} from "vue-router";
 import {ApiError} from "../../../composables/useHttpClient.ts";
 import router from "../../../router";
 import {useToast} from "../../../composables/useToast.ts";
-import {useUserService} from "../composables/useUserService.ts";
+import {useProfileService} from "../composables/useProfileService.ts";
 import type {User} from "../../../entities/user.ts";
 
 const {currentUser} = useState();
@@ -19,9 +19,8 @@ const {showError} = useToast();
 
 async function logout() {
     if (currentUser.value) {
-        const {logoutAction} = useUserService(currentUser.value.idUser);
+        const {logoutAction} = useProfileService(currentUser.value.idUser);
         await logoutAction();
-        localStorage.removeItem("authenticated");
         window.location.href = "/";
     }
 }
@@ -69,7 +68,7 @@ const loadUser = async (userIdRoute: number) => {
     }
     else {
         try {
-            const {getUser} = useUserService(userIdRoute);
+            const {getUser} = useProfileService(userIdRoute);
             viewedUser.value = await getUser();
         }
         catch (error) {
