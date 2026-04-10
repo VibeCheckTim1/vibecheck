@@ -2,6 +2,7 @@ package hr.tvz.vibecheck.entity;
 
 import hr.tvz.vibecheck.enums.ProfileVisibility;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -40,6 +41,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private ProfileVisibility visibility;
 
+    @Email
     private String email;
 
     private String password;

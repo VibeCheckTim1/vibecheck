@@ -1,9 +1,6 @@
 package hr.tvz.vibecheck.controller;
 
-import hr.tvz.vibecheck.dto.request.ChangePasswordRequest;
-import hr.tvz.vibecheck.dto.request.CreateUserRequest;
-import hr.tvz.vibecheck.dto.request.EditUserRequest;
-import hr.tvz.vibecheck.dto.request.LoginRequest;
+import hr.tvz.vibecheck.dto.request.*;
 import hr.tvz.vibecheck.dto.response.UserEditResponse;
 import hr.tvz.vibecheck.dto.response.UserResponse;
 import hr.tvz.vibecheck.enums.TokenType;
@@ -90,6 +87,17 @@ public class UserController {
         userService.changePassword(userDetails.getId(), request);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/changeEmail")
+    public ResponseEntity<UserStateResponse> changeEmail(@RequestBody @Valid ChangeEmailRequest request,
+                                                         @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
+        userService.changeMail(userDetails.getId(), request);
+
+        var userState = stateService.getUserState();
+        if (userState == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        return ResponseEntity.ok(userState);
     }
 
 }
