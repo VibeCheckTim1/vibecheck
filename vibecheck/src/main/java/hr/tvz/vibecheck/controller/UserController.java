@@ -1,5 +1,6 @@
 package hr.tvz.vibecheck.controller;
 
+import hr.tvz.vibecheck.dto.request.ChangePasswordRequest;
 import hr.tvz.vibecheck.dto.request.CreateUserRequest;
 import hr.tvz.vibecheck.dto.request.EditUserRequest;
 import hr.tvz.vibecheck.dto.request.LoginRequest;
@@ -65,19 +66,7 @@ public class UserController {
         return ResponseEntity.ok(userState);
     }
 
-    /*@PutMapping(value = "/edit/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<User> editUser(
-            @PathVariable Long userId,
-            @RequestPart("request") EditUserRequest request,
-            @RequestPart(value = "file", required = false) MultipartFile avatar)
-            throws IOException {
-        return ResponseEntity.ok(userService.editUser(userId, request, avatar));
-    }*/
-
-    /*@PutMapping("avatarEdit/{userId}")
-    public*/
-
-    @PutMapping("/edit/{userId}")
+    @PatchMapping("/edit/{userId}")
     public ResponseEntity<UserEditResponse> edit(@PathVariable Long userId, @RequestBody @Valid EditUserRequest request) {
         return ResponseEntity.ok(userService.editUser(userId, request));
     }
@@ -91,6 +80,14 @@ public class UserController {
 
         response.addCookie(accessCookieToken);
         response.addCookie(refreshCookieToken);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestBody @Valid ChangePasswordRequest request,
+                                            @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
+        userService.changePassword(userDetails.getId(), request);
 
         return ResponseEntity.noContent().build();
     }

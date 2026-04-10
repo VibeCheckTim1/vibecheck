@@ -1,6 +1,7 @@
 package hr.tvz.vibecheck.service.user;
 
 import hr.tvz.vibecheck.cloudinary.CloudinaryService;
+import hr.tvz.vibecheck.dto.request.ChangePasswordRequest;
 import hr.tvz.vibecheck.dto.request.CreateUserRequest;
 import hr.tvz.vibecheck.dto.request.EditUserRequest;
 import hr.tvz.vibecheck.dto.response.ImageUploadResponse;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -37,6 +39,7 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    @Transactional
     public void createUser(CreateUserRequest request) {
         if (checkDuplicate(request.email()))
             throw new RuntimeException("User with " + request.email() +  " email already exists");
@@ -73,6 +76,7 @@ public class UserService {
         }
     }
 
+    @Transactional
     public void uploadAvatar(Long userId, MultipartFile avatar) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -89,9 +93,9 @@ public class UserService {
         userRepository.save(user);
     }
 
-
+    @Transactional
     public UserEditResponse editUser(Long userId, EditUserRequest request) {
-        var user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
         userMapper.updateUserFromRequest(request, user); //update request mapper
 
@@ -101,11 +105,28 @@ public class UserService {
     }
 
 
+    @Transactional
     public void deleteUser(Long userId) {
         userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
         userRepository.deleteById(userId);
     }
+
+
+    @Transactional
+    public void changePassword(Long userId, ChangePasswordRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+
+        userRepository.save(user);
+
+    }
+
 
 
 }

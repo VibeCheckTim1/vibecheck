@@ -18,7 +18,7 @@ export type RequestOptions = Omit<RequestInit, "method" | "body"> & {
 
 export function useHttpClient() {
 	const MAX_RETRIES = 3;
-	const SERVER_HOST = "http://localhost:8080";
+	const SERVER_HOST = "http://127.0.0.1:8080";
 
 	async function request<T = void>(
 		method: string,
