@@ -56,6 +56,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/create").permitAll()
                         .requestMatchers("/api/user/addAvatar").authenticated()
                         .requestMatchers("/api/user/changePassword").authenticated()
+                        .requestMatchers("/api/search").authenticated()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/login/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated()
