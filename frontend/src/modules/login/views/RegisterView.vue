@@ -47,6 +47,14 @@ async function submitForm() {
         }
     }
 }
+
+function redirectToGoogleOAuth() {
+    window.location.href = "http://127.0.0.1:8080/oauth2/authorization/google";
+}
+
+function redirectToSpotifyOAuth() {
+    window.location.href = "http://127.0.0.1:8080/oauth2/authorization/spotify";
+}
 </script>
 
 <template>
@@ -103,10 +111,10 @@ async function submitForm() {
             </div>
 
             <div class="sso-options-container">
-                <button class="secondary-button large-button" type="button">
+                <button class="secondary-button large-button" type="button" @click="redirectToGoogleOAuth">
                     <strong>Google</strong>
                 </button>
-                <button class="secondary-button large-button" type="button">
+                <button class="secondary-button large-button" type="button" @click="redirectToSpotifyOAuth">
                     <strong>Spotify</strong>
                 </button>
             </div>
