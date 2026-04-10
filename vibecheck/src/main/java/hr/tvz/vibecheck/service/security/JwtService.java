@@ -11,6 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
@@ -41,27 +45,25 @@ public class JwtService {
 
     public String generateAccessToken(String token) {
         Instant accessExpiration = Instant.now().plus(accessExpirationMinutes, ChronoUnit.MINUTES);
-
-        return generateToken(Date.from(accessExpiration), TokenType.ACCESS, token);
+        return generateToken(accessExpiration, TokenType.ACCESS, token);
     }
 
     public String generateRefreshToken() {
-
-        var refreshExpiration = Instant.now().plus(refreshExpirationDays, ChronoUnit.DAYS);
-
-        return generateToken(Date.from(refreshExpiration), TokenType.REFRESH, null);
+        Instant refreshExpiration = Instant.now().plus(refreshExpirationDays, ChronoUnit.DAYS);
+        return generateToken(refreshExpiration, TokenType.REFRESH, null);
     }
 
-    private String generateToken(Date expiration, String type, String token) {
+    private String generateToken(Instant expiration, String type, String token) {
         String username;
         var auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth != null && auth.getPrincipal() instanceof VibeCheckUserDetails userDetails) {
             username = userDetails.getUsername();
+
         } else {
+
             username = extractUsername(token);
         }
-
 
         if (type.equals(TokenType.ACCESS) && (token == null || !isValid(token, TokenType.REFRESH))) return null;  // TODO: throw error
 
@@ -69,7 +71,7 @@ public class JwtService {
                 .withSubject(username)
                 .withClaim(TYPE, type)
                 .withIssuedAt(new Date())
-                .withExpiresAt(expiration)
+                .withExpiresAt(Date.from(expiration))
                 .sign(Algorithm.HMAC256(secret));
     }
 

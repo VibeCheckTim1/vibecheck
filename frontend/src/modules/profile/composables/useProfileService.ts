@@ -15,7 +15,12 @@ export interface ChangePasswordRequest {
 }
 
 export function useProfileService(userId: number) {
-	const {httpPatch, httpPost, httpDelete} = useHttpClient();
+	const {httpGet, httpPatch, httpPost, httpDelete} = useHttpClient();
+
+	async function getUser(): Promise<User> {
+		const data = await httpGet<UserApi>(`/user/${String(userId)}`);
+		return new User(data);
+	}
 
 	async function logoutAction(): Promise<void> {
 		await httpPost<void>(`/auth/logout`, {});
@@ -40,6 +45,7 @@ export function useProfileService(userId: number) {
 	}
 
 	return {
+		getUser,
 		logoutAction,
 		updateAction,
 		uploadAvatarAction,
