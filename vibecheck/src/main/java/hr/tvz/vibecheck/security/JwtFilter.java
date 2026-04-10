@@ -45,9 +45,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 var user = userDetailsService.loadUserByUsername(username);
 
-                var auth = new UsernamePasswordAuthenticationToken(
-                        user, null, user.getAuthorities()
-                );
+                var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -55,6 +53,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         catch (Exception e) {
             SecurityContextHolder.clearContext();
+            //TODO: klijentu vratiti 401 statusni kod
         }
 
         chain.doFilter(request, response);

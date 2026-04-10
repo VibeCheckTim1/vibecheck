@@ -92,4 +92,8 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserResponse> show(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.findOneById(userId));
+    }
 }
