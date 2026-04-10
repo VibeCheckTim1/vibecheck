@@ -14,6 +14,10 @@ export interface ChangePasswordRequest {
 	"newPassword": string
 }
 
+export interface ChangeEmailRequest {
+	"newEmail": string
+}
+
 export function useProfileService(userId: number) {
 	const {httpPatch, httpPost, httpDelete} = useHttpClient();
 
@@ -39,11 +43,17 @@ export function useProfileService(userId: number) {
 		await httpPatch<void>(`/user/changePassword`, body);
 	}
 
+	async function changeEmailAction(body: ChangeEmailRequest): Promise<User> {
+		const data = await httpPatch<UserApi>(`/user/changeEmail`, body);
+		return new User(data);
+	}
+
 	return {
 		logoutAction,
 		updateAction,
 		uploadAvatarAction,
 		deleteAction,
-		changePasswordAction
+		changePasswordAction,
+		changeEmailAction
 	};
 }

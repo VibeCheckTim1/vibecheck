@@ -15,6 +15,7 @@ import {useDialog} from "../../../composables/useDialog.ts";
 import type {User} from "../../../entities/user.ts";
 import {useConfirm} from "../../../composables/useConfirm.ts";
 import ChangePasswordForm from "../components/ChangePasswordForm.vue";
+import ChangeEmailForm from "../components/ChangeEmailForm.vue";
 
 const {currentUser, setUser} = useState();
 const {openDialog} = useDialog();
@@ -39,6 +40,18 @@ function changePassword() {
     openDialog(ChangePasswordForm, "Change password", {
         callback: async() => {
             showSuccess("Password changed successfully!");
+        }
+    })
+}
+
+function changeEmail() {
+    openDialog(ChangeEmailForm, "Change email", {
+        callback: async(user: User) => {
+            setUser(user);
+            showSuccess("Email changed successfully!");
+            await router.push({
+                name: "profile"
+            });
         }
     })
 }
@@ -148,7 +161,7 @@ async function deleteAccount() {
                         <span class="description">{{ currentUser.email }}</span>
                     </div>
                     <div class="action-holder">
-                        <button class="decorative-link" type="button">Change</button>
+                        <button class="decorative-link" type="button" @click="changeEmail">Change</button>
                     </div>
                 </div>
                 <div class="form-section-container">
