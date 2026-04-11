@@ -2,7 +2,6 @@ package hr.tvz.vibecheck.controller;
 
 import hr.tvz.vibecheck.dto.request.*;
 import hr.tvz.vibecheck.dto.response.UserEditResponse;
-import hr.tvz.vibecheck.dto.response.UserResponse;
 import hr.tvz.vibecheck.enums.TokenType;
 import hr.tvz.vibecheck.projections.UserStateResponse;
 import hr.tvz.vibecheck.security.VibeCheckUserDetails;
@@ -89,15 +88,27 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/changeEmail")
-    public ResponseEntity<UserStateResponse> changeEmail(@RequestBody @Valid ChangeEmailRequest request,
-                                                         @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
-        userService.changeMail(userDetails.getId(), request);
+    @PostMapping("/emailVerificationCode")
+    public ResponseEntity<?> sendEmailVerificationCode(@RequestBody @Valid NewEmailRequest request,
+                                                                       @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
+        userService.sendEmailVerificationCode(userDetails.getId(), request);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/confirmMailEdit")
+    public ResponseEntity<UserStateResponse> confirmMailEdit(@RequestBody @Valid VerificationCodeRequest request,
+                                                       @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
+        userService.confirmEmailEdit(userDetails.getId(), request);
 
         var userState = stateService.getUserState();
         if (userState == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         return ResponseEntity.ok(userState);
     }
+
+
+
+
 
 }
