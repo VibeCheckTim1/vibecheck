@@ -8,11 +8,10 @@ import { useToast } from '../../../composables/useToast';
 import { useValidators } from '../../../composables/useValidators';
 import { useProfileService } from '../composables/useProfileService';
 import { ApiError } from '../../../composables/useHttpClient';
-import type { User } from '../../../entities/user';
 import InputText from '../../../components/InputText.vue';
 
 const props = defineProps<{
-    callback: (user: User) => Promise<void>;
+    callback: (newEmail: string) => Promise<void>;
 }>();
 
 
@@ -36,18 +35,16 @@ const canSubmit = computed(() => {
 
 
 async function submitForm() {
-    if (!form.validateForm || !currentUser.value) {
+    if (!form.validateForm() || !currentUser.value) {
         return;
     }
 
     try {
-        const { changeEmailAction } = useProfileService(currentUser.value.idUser);
+        const { emailVerificationCodeAction } = useProfileService(currentUser.value.idUser);
+        const newEmail = form.newEmail.getInputValue();
+        await emailVerificationCodeAction({ newEmail });
 
-        const user = await changeEmailAction({
-            newEmail: form.newEmail.getInputValue(),
-        });
-
-        await props.callback(user);
+        await props.callback(newEmail);
         closeDialog();
 
     }
@@ -74,7 +71,7 @@ async function submitForm() {
 
 
             <button type="submit" class="primary-button large-button" :disabled="!canSubmit">
-                Save
+                Send verification code
             </button>
         </form>
     </div>
