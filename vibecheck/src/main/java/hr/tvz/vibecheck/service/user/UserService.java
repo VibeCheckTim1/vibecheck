@@ -1,15 +1,14 @@
 package hr.tvz.vibecheck.service.user;
 
 import hr.tvz.vibecheck.cloudinary.CloudinaryService;
-import hr.tvz.vibecheck.dto.request.ChangeEmailRequest;
-import hr.tvz.vibecheck.dto.request.ChangePasswordRequest;
-import hr.tvz.vibecheck.dto.request.CreateUserRequest;
-import hr.tvz.vibecheck.dto.request.EditUserRequest;
+import hr.tvz.vibecheck.dto.request.*;
 import hr.tvz.vibecheck.dto.response.ImageUploadResponse;
 import hr.tvz.vibecheck.dto.response.UserEditResponse;
 import hr.tvz.vibecheck.dtoMapper.UserMapper;
+import hr.tvz.vibecheck.entity.EmailChange;
 import hr.tvz.vibecheck.entity.User;
 import hr.tvz.vibecheck.enums.ProfileVisibility;
+import hr.tvz.vibecheck.repository.EmailChangeRepository;
 import hr.tvz.vibecheck.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,15 +17,21 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final EmailChangeRepository emailRepository;
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryService cloudinaryService;
     private final UserMapper userMapper;
+
+    private static final int CODE_EXPIRATION_MINUTES = 10;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     @Transactional
     public void createUser(CreateUserRequest request) {
@@ -115,16 +120,68 @@ public class UserService {
     }
 
     @Transactional
-    public void changeMail(Long userId, ChangeEmailRequest request) {
+    public void sendEmailVerificationCode(Long userId, NewEmailRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (user.getEmail().equalsIgnoreCase(request.newEmail())) {
+        String newMail = request.newEmail().trim().toLowerCase();
+
+        if (user.getEmail().trim().toLowerCase().equals(newMail)) {
             throw new IllegalArgumentException("New email cannot match old email");
         }
 
-        user.setEmail(request.newEmail());
+        if (userRepository.existsByEmail(request.newEmail())) {
+            throw new IllegalArgumentException("Email: " + request.newEmail() + " is already in use");
+        }
 
-        userRepository.save(user);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expirationTime = now.plusMinutes(CODE_EXPIRATION_MINUTES);
+
+        EmailChange codeReq;
+        Optional<EmailChange> reqOpt = emailRepository.findByUser(user);
+
+        if (reqOpt.isPresent()) {
+            codeReq = reqOpt.get();
+            codeReq.setNewEmail(newMail);
+            codeReq.setVerificationCode(generateVerificationCode());
+            codeReq.setExpiration(expirationTime);
+        }
+        else {
+            codeReq = EmailChange.builder()
+                    .user(user)
+                    .newEmail(newMail)
+                    .verificationCode(generateVerificationCode())
+                    .expiration(expirationTime)
+                    .build();
+        }
+
+        emailRepository.save(codeReq);
+    }
+
+
+    private String generateVerificationCode() {
+        int code = 100000 + SECURE_RANDOM.nextInt(900000);
+        return String.valueOf(code);
+    }
+
+    @Transactional
+    public void confirmEmailEdit(Long userId, VerificationCodeRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        EmailChange codeReq = emailRepository.findByUser(user).orElseThrow(()
+                -> new IllegalArgumentException("No pending email change request found for user: " + user.getUsername()));
+
+
+        if (!codeReq.getVerificationCode().equals(request.code())) {
+            throw new IllegalArgumentException("Invalid Verification code, please try again");
+        }
+
+        if (codeReq.getExpiration().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Verification code has expired, please make a new verification code request");
+        }
+
+        user.setEmail(codeReq.getNewEmail().trim().toLowerCase());
+        emailRepository.delete(codeReq);
+
     }
 
 
