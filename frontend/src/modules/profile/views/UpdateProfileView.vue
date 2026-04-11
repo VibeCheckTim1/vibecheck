@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import {useState} from "../../../composables/useState.ts";
+import { useState } from "../../../composables/useState.ts";
 import PageHeaderComponent from "../../../components/PageHeaderComponent.vue";
-import {useValidators} from "../../../composables/useValidators.ts";
-import {useToast} from "../../../composables/useToast.ts";
-import {useForm} from "../../../composables/useForm.ts";
-import {useFormField} from "../../../composables/useFormField.ts";
-import {ApiError} from "../../../composables/useHttpClient.ts";
+import { useValidators } from "../../../composables/useValidators.ts";
+import { useToast } from "../../../composables/useToast.ts";
+import { useForm } from "../../../composables/useForm.ts";
+import { useFormField } from "../../../composables/useFormField.ts";
+import { ApiError } from "../../../composables/useHttpClient.ts";
 import InputText from "../../../components/InputText.vue";
 import InputToggle from "../../../components/InputToggle.vue";
-import {useProfileService} from "../composables/useProfileService.ts";
-import {useRouter} from "vue-router";
+import { useProfileService } from "../composables/useProfileService.ts";
+import { useRouter } from "vue-router";
 import UploadAvatarForm from "../components/UploadAvatarForm.vue";
-import {useDialog} from "../../../composables/useDialog.ts";
-import type {User} from "../../../entities/user.ts";
-import {useConfirm} from "../../../composables/useConfirm.ts";
+import { useDialog } from "../../../composables/useDialog.ts";
+import type { User } from "../../../entities/user.ts";
+import { useConfirm } from "../../../composables/useConfirm.ts";
 import ChangePasswordForm from "../components/ChangePasswordForm.vue";
 import ChangeEmailForm from "../components/ChangeEmailForm.vue";
 
-const {currentUser, setUser} = useState();
-const {openDialog} = useDialog();
-const {required} = useValidators();
-const {showSuccess, showError} = useToast();
-const {openConfirm} = useConfirm();
+const { currentUser, setUser } = useState();
+const { openDialog } = useDialog();
+const { required } = useValidators();
+const { showSuccess, showError } = useToast();
+const { openConfirm } = useConfirm();
 const router = useRouter();
 
 function uploadAvatar() {
@@ -38,23 +38,25 @@ function uploadAvatar() {
 
 function changePassword() {
     openDialog(ChangePasswordForm, "Change password", {
-        callback: async() => {
+        callback: async () => {
             showSuccess("Password changed successfully!");
         }
     })
 }
 
-function changeEmail() {
+function sendEmailVerificationCode() {
     openDialog(ChangeEmailForm, "Change email", {
-        callback: async(user: User) => {
-            setUser(user);
-            showSuccess("Email changed successfully!");
+        callback: async (newEmail: string) => {
             await router.push({
-                name: "profile"
+                name: "confirmEmailChange",
+                query: { email: newEmail }
             });
         }
     })
 }
+
+
+
 
 const form = useForm({
     firstName: useFormField<string>(currentUser.value?.firstName, [required]),
@@ -67,7 +69,7 @@ const form = useForm({
 async function submitForm() {
     if (form.validateForm() && currentUser.value) {
         try {
-            const {updateAction} = useProfileService(currentUser.value.idUser);
+            const { updateAction } = useProfileService(currentUser.value.idUser);
             const user = await updateAction({
                 firstName: form.firstName.getInputValue(),
                 lastName: form.lastName.getInputValue(),
@@ -98,7 +100,7 @@ async function deleteAccount() {
     });
 
     if (confirmed && currentUser.value) {
-        const {deleteAction} = useProfileService(currentUser.value.idUser);
+        const { deleteAction } = useProfileService(currentUser.value.idUser);
         await deleteAction();
         window.location.href = "/";
     }
@@ -122,19 +124,13 @@ async function deleteAccount() {
             </div>
             <span class="change-avatar-message">Change profile photo</span>
             <form @submit.prevent="submitForm">
-                <InputText :control="form.firstName"
-                           label="First name"/>
-                <InputText :control="form.lastName"
-                           label="Last name"/>
-                <InputText :control="form.username"
-                           label="Username"
-                           help-message="Only letters, numbers, and underscores">
+                <InputText :control="form.firstName" label="First name" />
+                <InputText :control="form.lastName" label="Last name" />
+                <InputText :control="form.username" label="Username"
+                    help-message="Only letters, numbers, and underscores">
                     <template #prefix>@</template>
                 </InputText>
-                <InputText :control="form.bio"
-                           :multiline="true"
-                           placeholder="Tell us about yourself..."
-                           label="Bio"/>
+                <InputText :control="form.bio" :multiline="true" placeholder="Tell us about yourself..." label="Bio" />
                 <div class="form-section-container">
                     <div class="icon-holder">
                         <i class="icon-web"></i>
@@ -144,7 +140,7 @@ async function deleteAccount() {
                         <span class="description">Everyone can see your playlists</span>
                     </div>
                     <div class="action-holder">
-                        <InputToggle :control="form.isPrivate"/>
+                        <InputToggle :control="form.isPrivate" />
                     </div>
                 </div>
             </form>
@@ -161,7 +157,7 @@ async function deleteAccount() {
                         <span class="description">{{ currentUser.email }}</span>
                     </div>
                     <div class="action-holder">
-                        <button class="decorative-link" type="button" @click="changeEmail">Change</button>
+                        <button class="decorative-link" type="button" @click="sendEmailVerificationCode">Change</button>
                     </div>
                 </div>
                 <div class="form-section-container">

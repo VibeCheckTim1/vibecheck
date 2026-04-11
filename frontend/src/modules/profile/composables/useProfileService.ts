@@ -18,6 +18,14 @@ export interface ChangeEmailRequest {
 	"newEmail": string
 }
 
+export interface NewEmailRequest {
+	"newEmail": string
+}
+
+export interface VerificationCodeRequest {
+	"code": string
+}
+
 export function useProfileService(userId: number) {
 	const {httpPatch, httpPost, httpDelete} = useHttpClient();
 
@@ -48,12 +56,24 @@ export function useProfileService(userId: number) {
 		return new User(data);
 	}
 
+	async function emailVerificationCodeAction(body: NewEmailRequest): Promise<void> {
+		await httpPost<UserApi>(`/user/emailVerificationCode`, body);
+	}
+
+	async function confirmMailEdit(body: VerificationCodeRequest): Promise<User> {
+		const data = await httpPatch<UserApi>(`/user/confirmMailEdit`, body);
+		return new User(data);
+	}
+
+
 	return {
 		logoutAction,
 		updateAction,
 		uploadAvatarAction,
 		deleteAction,
 		changePasswordAction,
-		changeEmailAction
+		changeEmailAction,
+		emailVerificationCodeAction,
+		confirmMailEdit
 	};
 }
