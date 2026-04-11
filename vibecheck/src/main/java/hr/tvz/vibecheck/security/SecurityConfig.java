@@ -58,6 +58,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/changePassword").authenticated()
                         .requestMatchers("/api/user/emailVerificationCode").authenticated()
                         .requestMatchers("/api/user/confirmMailEdit").authenticated()
+                        .requestMatchers("/api/search").authenticated()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/login/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated()

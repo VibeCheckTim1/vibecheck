@@ -30,7 +30,10 @@ function uploadAvatar() {
             setUser(user);
             showSuccess("Updated successfully!");
             await router.push({
-                name: "profile"
+                name: "profile",
+                params: {
+                    userId: user.idUser
+                }
             });
         }
     });
@@ -80,7 +83,10 @@ async function submitForm() {
             setUser(user);
             showSuccess("Updated successfully!");
             await router.push({
-                name: "profile"
+                name: "profile",
+                params: {
+                    userId: user.idUser
+                }
             });
         }
         catch (error) {
@@ -191,7 +197,7 @@ async function deleteAccount() {
 
 <style scoped>
 .update-profile-container {
-    padding-block: var(--spacing-10);
+    padding-block: var(--spacing-5);
     display: flex;
     align-items: center;
     justify-content: center;
