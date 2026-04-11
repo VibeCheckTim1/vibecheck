@@ -2,6 +2,7 @@ package hr.tvz.vibecheck.controller;
 
 import hr.tvz.vibecheck.dto.request.*;
 import hr.tvz.vibecheck.dto.response.UserEditResponse;
+import hr.tvz.vibecheck.dto.response.UserResponse;
 import hr.tvz.vibecheck.enums.TokenType;
 import hr.tvz.vibecheck.projections.UserStateResponse;
 import hr.tvz.vibecheck.security.VibeCheckUserDetails;
@@ -90,7 +91,7 @@ public class UserController {
 
     @PostMapping("/emailVerificationCode")
     public ResponseEntity<?> sendEmailVerificationCode(@RequestBody @Valid NewEmailRequest request,
-                                                                       @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
+                                                       @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
         userService.sendEmailVerificationCode(userDetails.getId(), request);
 
         return ResponseEntity.ok().build();
@@ -98,7 +99,7 @@ public class UserController {
 
     @PatchMapping("/confirmMailEdit")
     public ResponseEntity<UserStateResponse> confirmMailEdit(@RequestBody @Valid VerificationCodeRequest request,
-                                                       @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
+                                                             @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
         userService.confirmEmailEdit(userDetails.getId(), request);
 
         var userState = stateService.getUserState();
@@ -107,8 +108,10 @@ public class UserController {
         return ResponseEntity.ok(userState);
     }
 
-
-
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserResponse> show(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.findOneById(userId));
+    }
 
 
 }

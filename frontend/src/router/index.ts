@@ -32,29 +32,20 @@ router.beforeEach(async (_to, from) => {
 	closeConfirm();
 
 	const {httpGet} = useHttpClient();
-	const {
-		currentUser,
-		setUser,
-	} = useState();
+	const {currentUser, setUser} = useState();
 
-	/*
-	 * USER
-	 */
 	if (!currentUser.value) {
 		try {
 			const data = await httpGet<UserApi>("/state/user-state");
 			setUser(new User(data));
 		}
 		catch {
-			if (_to.name !== "login" && _to.name !== "register") {
-				return {name: "login"};
-			}
+			return;
 		}
 	}
 
 	return true;
 });
-
 export default router;
 
 export function getPreviousRouteName() {

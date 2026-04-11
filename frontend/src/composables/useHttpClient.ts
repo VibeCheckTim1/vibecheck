@@ -1,3 +1,5 @@
+import {useState} from "./useState.ts";
+
 export class ApiError extends Error {
 	public status: number;
 	public responseBody: any;
@@ -58,9 +60,9 @@ export function useHttpClient() {
 				fetchOptions.body = JSON.stringify(options.body);
 			}
 
+			const {isLoggedIn} = useState();
 			const response = await fetch(`${SERVER_HOST}${apiUrl}`, fetchOptions);
-
-			if (response.status === 401) {
+			if (response.status === 401 && isLoggedIn.value) {
 				if (retryCount >= MAX_RETRIES) {
 					window.location.href = "/";
 					throw new Error("Too many unauthorized retries");
