@@ -27,6 +27,10 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
 
+    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
+    private final RestAccessDeniedHandler restAccessDeniedHandler;
+
     private final CustomOAuth2UserService customOAuth2UserService;
 
     private final OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
@@ -36,8 +40,12 @@ public class SecurityConfig {
         http
                 .cors(cors -> {})
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(mdcFilter, JwtFilter.class)
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(restAuthenticationEntryPoint)
+                        .accessDeniedHandler(restAccessDeniedHandler)
+                )
+                .addFilterBefore(mdcFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtFilter, MDCfilter.class)
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(auth -> auth
                                 .authorizationRequestRepository(cookieAuthorizationRequestRepository())
