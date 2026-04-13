@@ -23,6 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final MDCfilter mdcFilter;
+
     private final JwtFilter jwtFilter;
 
     private final CustomOAuth2UserService customOAuth2UserService;
@@ -34,6 +36,7 @@ public class SecurityConfig {
         http
                 .cors(cors -> {})
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(mdcFilter, JwtFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(auth -> auth
