@@ -5,6 +5,7 @@ import hr.tvz.vibecheck.entity.User;
 import hr.tvz.vibecheck.enums.ProfileVisibility;
 import hr.tvz.vibecheck.repository.OAuthAccountRepository;
 import hr.tvz.vibecheck.repository.UserRepository;
+import hr.tvz.vibecheck.service.MailService.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +29,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
     private final OAuthAccountRepository oAuthAccountRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     @Override
     @Transactional
@@ -110,6 +112,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         var password = generatePassword(); //TODO: send via email
         log.info("Generated password: " + password);
+        mailService.sendOAuthPasswordEmail(email, password);
         var encodedPassword = passwordEncoder.encode(password);
 
         User user = User.builder()

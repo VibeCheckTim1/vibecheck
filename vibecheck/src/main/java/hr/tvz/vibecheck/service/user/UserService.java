@@ -9,9 +9,9 @@ import hr.tvz.vibecheck.dtoMapper.UserMapper;
 import hr.tvz.vibecheck.entity.EmailChange;
 import hr.tvz.vibecheck.entity.User;
 import hr.tvz.vibecheck.enums.ProfileVisibility;
-import hr.tvz.vibecheck.projections.UserStateResponse;
 import hr.tvz.vibecheck.repository.EmailChangeRepository;
 import hr.tvz.vibecheck.repository.UserRepository;
+import hr.tvz.vibecheck.service.MailService.MailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +36,8 @@ public class UserService {
 
     private static final int CODE_EXPIRATION_MINUTES = 10;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
+    private final MailService mailService;
 
     public UserResponse findOneById(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
@@ -152,22 +154,26 @@ public class UserService {
         EmailChange codeReq;
         Optional<EmailChange> reqOpt = emailRepository.findByUser(user);
 
+        String verificationCode = generateVerificationCode();
+
         if (reqOpt.isPresent()) {
             codeReq = reqOpt.get();
             codeReq.setNewEmail(newMail);
-            codeReq.setVerificationCode(generateVerificationCode());
+            codeReq.setVerificationCode(verificationCode);
             codeReq.setExpiration(expirationTime);
         }
         else {
             codeReq = EmailChange.builder()
                     .user(user)
                     .newEmail(newMail)
-                    .verificationCode(generateVerificationCode())
+                    .verificationCode(verificationCode)
                     .expiration(expirationTime)
                     .build();
         }
 
+        mailService.sendEmailChangeVerificationCodeEmail(newMail, verificationCode);
         emailRepository.save(codeReq);
+
     }
 
 

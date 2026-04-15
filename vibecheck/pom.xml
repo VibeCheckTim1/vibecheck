@@ -118,10 +118,17 @@
 			<version>2.0.0</version>
 		</dependency>
 
+		<!--DTO Mapping-->
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
 			<version>1.6.3</version>
+		</dependency>
+
+		<!--Email sender-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 
 	</dependencies>
