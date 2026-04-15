@@ -52,7 +52,7 @@ const {currentUser} = useState();
                     </router-link>
                 </li>
                 <li>
-                    <router-link :to="{name: 'profile', params: {userId: String(currentUser.idUser)}}"
+                    <router-link :to="{name: 'account', params: {userId: String(currentUser.idUser)}}"
                                  active-class="highlight">
                         <div class="icon-holder">
                             <i class="icon-account-outline"></i>

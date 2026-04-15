@@ -1,7 +1,5 @@
 package hr.tvz.vibecheck.projections;
 
-import hr.tvz.vibecheck.enums.ProfileVisibility;
-
 import java.time.LocalDateTime;
 
 public interface UserStateResponse {
@@ -11,7 +9,7 @@ public interface UserStateResponse {
     String getUsername();
     String getAvatarUrl();
     String getBio();
-    ProfileVisibility getVisibility();
+    Boolean getIsPrivate();
     String getEmail();
     LocalDateTime getTstamp();
 }

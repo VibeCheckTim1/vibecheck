@@ -1,5 +1,6 @@
 package hr.tvz.vibecheck.entity;
 
+import hr.tvz.vibecheck.api.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 

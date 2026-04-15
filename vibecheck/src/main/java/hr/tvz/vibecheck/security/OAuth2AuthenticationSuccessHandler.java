@@ -2,7 +2,7 @@ package hr.tvz.vibecheck.security;
 
 import hr.tvz.vibecheck.enums.TokenType;
 import hr.tvz.vibecheck.repository.OAuthAccountRepository;
-import hr.tvz.vibecheck.service.security.JwtService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,6 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-
-    private final JwtService jwtService;
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final OAuthAccountRepository oAuthAccountRepository;
 
@@ -42,13 +40,19 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             }
         }
 
-        var refreshCookieToken = jwtService.generateTokenCookie(TokenType.REFRESH, null);
-        response.addCookie(refreshCookieToken);
+        response.addCookie(deleteCookie(TokenType.ACCESS));
+        response.addCookie(deleteCookie(TokenType.REFRESH));
 
-        var accessCookieToken = jwtService.generateTokenCookie(TokenType.ACCESS, refreshCookieToken.getValue());
-        response.addCookie(accessCookieToken);
+        getRedirectStrategy().sendRedirect(request, response, "http://127.0.0.1:5173/home");
+    }
 
+    private Cookie deleteCookie(String name) {
+        Cookie cookie = new Cookie(name, null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
 
-        getRedirectStrategy().sendRedirect(request, response, "http://127.0.0.1:5173/dashboard");
+        return cookie;
     }
 }

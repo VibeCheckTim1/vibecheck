@@ -1,11 +1,10 @@
 package hr.tvz.vibecheck.security;
 
+import hr.tvz.vibecheck.api.user.repository.UserRepository;
 import hr.tvz.vibecheck.entity.OAuthAccount;
-import hr.tvz.vibecheck.entity.User;
-import hr.tvz.vibecheck.enums.ProfileVisibility;
+import hr.tvz.vibecheck.api.user.entity.User;
 import hr.tvz.vibecheck.repository.OAuthAccountRepository;
-import hr.tvz.vibecheck.repository.UserRepository;
-import hr.tvz.vibecheck.service.MailService.MailService;
+import hr.tvz.vibecheck.api.account.service.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -122,7 +121,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .lastName(lastName)
                 .avatarUrl("https://res.cloudinary.com/dqqjdinyg/image/upload/v1774976056/default_qpersr.svg")
                 .avatarPublicId(null)
-                .visibility(ProfileVisibility.PRIVATE)
+                .isPrivate(true)
                 .password(encodedPassword)
                 .tstamp(LocalDateTime.now())
                 .build();

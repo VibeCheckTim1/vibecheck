@@ -1,7 +1,6 @@
 package hr.tvz.vibecheck.security;
 
 import hr.tvz.vibecheck.enums.TokenType;
-import hr.tvz.vibecheck.service.security.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,7 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain chain) throws ServletException, IOException {
 
-        var token = jwtService.getTokenFromCookie(request, TokenType.ACCESS);
+        var token = jwtService.extractTokenFromCookie(request, TokenType.ACCESS);
 
         if (token == null) {
             chain.doFilter(request, response);
@@ -42,18 +41,18 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             if (jwtService.isValid(token, TokenType.ACCESS)) {
                 var username = jwtService.extractUsername(token);
-
                 var user = userDetailsService.loadUserByUsername(username);
-
                 var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-
                 SecurityContextHolder.getContext().setAuthentication(auth);
-
             }
         }
         catch (Exception e) {
             SecurityContextHolder.clearContext();
-            //TODO: klijentu vratiti 401 statusni kod
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Invalid or expired token\"}");
+            return;
         }
 
         chain.doFilter(request, response);
