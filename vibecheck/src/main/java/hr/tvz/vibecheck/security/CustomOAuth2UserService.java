@@ -110,9 +110,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         username = Normalizer.normalize(username, Normalizer.Form.NFD).replaceAll("\\p{M}", "");
         username = username.replaceAll("[^a-z0-9]", "");
 
-        var password = generatePassword(); //TODO: send via email
-        log.info("Generated password: " + password);
+        var password = generatePassword();
         mailService.sendOAuthPasswordEmail(email, password);
+
         var encodedPassword = passwordEncoder.encode(password);
 
         User user = User.builder()
