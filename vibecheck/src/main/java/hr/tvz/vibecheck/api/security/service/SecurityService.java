@@ -8,7 +8,7 @@ import hr.tvz.vibecheck.api.user.entity.User;
 import hr.tvz.vibecheck.api.user.mapper.UserMapper;
 import hr.tvz.vibecheck.api.user.repository.UserRepository;
 import hr.tvz.vibecheck.exception.UserNotFoundException;
-import hr.tvz.vibecheck.projections.UserStateResponse;
+import hr.tvz.vibecheck.api.security.projections.UserStateResponse;
 import hr.tvz.vibecheck.security.VibeCheckUserDetails;
 import hr.tvz.vibecheck.security.JwtService;
 import hr.tvz.vibecheck.security.VibeCheckUserDetailsService;

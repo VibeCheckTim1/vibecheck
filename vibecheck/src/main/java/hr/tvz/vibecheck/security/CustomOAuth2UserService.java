@@ -1,9 +1,9 @@
 package hr.tvz.vibecheck.security;
 
 import hr.tvz.vibecheck.api.user.repository.UserRepository;
-import hr.tvz.vibecheck.entity.OAuthAccount;
+import hr.tvz.vibecheck.api.security.entity.OAuthAccount;
 import hr.tvz.vibecheck.api.user.entity.User;
-import hr.tvz.vibecheck.repository.OAuthAccountRepository;
+import hr.tvz.vibecheck.api.security.repository.OAuthAccountRepository;
 import hr.tvz.vibecheck.api.account.service.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

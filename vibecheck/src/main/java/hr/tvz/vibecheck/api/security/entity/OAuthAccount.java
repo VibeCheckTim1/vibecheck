@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.entity;
+package hr.tvz.vibecheck.api.security.entity;
 
 import hr.tvz.vibecheck.api.user.entity.User;
 import jakarta.persistence.*;

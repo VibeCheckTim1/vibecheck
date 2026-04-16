@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.enums;
+package hr.tvz.vibecheck.api.security.enums;
 
 public class TokenType {
 

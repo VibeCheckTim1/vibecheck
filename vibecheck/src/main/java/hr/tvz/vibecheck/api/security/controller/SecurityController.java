@@ -3,9 +3,9 @@ package hr.tvz.vibecheck.api.security.controller;
 import hr.tvz.vibecheck.api.security.dto.RegisterRequestDto;
 import hr.tvz.vibecheck.api.security.dto.LoginRequestDto;
 import hr.tvz.vibecheck.api.security.dto.TokenOutputDto;
-import hr.tvz.vibecheck.enums.TokenType;
+import hr.tvz.vibecheck.api.security.enums.TokenType;
 import hr.tvz.vibecheck.api.security.service.SecurityService;
-import hr.tvz.vibecheck.projections.UserStateResponse;
+import hr.tvz.vibecheck.api.security.projections.UserStateResponse;
 import hr.tvz.vibecheck.security.JwtService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -116,7 +116,7 @@ public class SecurityController {
         Cookie accessTokenCookie = jwtService.generateAccessTokenCookie(tokenOutputDto.accessToken());
         response.addCookie(accessTokenCookie);
 
-        Cookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(tokenOutputDto.accessToken());
+        Cookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(tokenOutputDto.refreshToken());
         response.addCookie(refreshTokenCookie);
     }
 }

@@ -2,7 +2,7 @@ package hr.tvz.vibecheck.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import hr.tvz.vibecheck.enums.TokenType;
+import hr.tvz.vibecheck.api.security.enums.TokenType;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,7 +1,9 @@
 package hr.tvz.vibecheck.security;
 
-import hr.tvz.vibecheck.enums.TokenType;
-import hr.tvz.vibecheck.repository.OAuthAccountRepository;
+import hr.tvz.vibecheck.api.security.dto.TokenOutputDto;
+import hr.tvz.vibecheck.api.security.enums.TokenType;
+import hr.tvz.vibecheck.api.security.repository.OAuthAccountRepository;
+import hr.tvz.vibecheck.api.security.service.SecurityService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +22,7 @@ import java.io.IOException;
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final OAuthAccountRepository oAuthAccountRepository;
+    private final JwtService jwtService;
 
     @Override
     public void onAuthenticationSuccess(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Authentication authentication) throws IOException {
@@ -40,19 +43,17 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             }
         }
 
-        response.addCookie(deleteCookie(TokenType.ACCESS));
-        response.addCookie(deleteCookie(TokenType.REFRESH));
+        if (authentication.getPrincipal() instanceof VibeCheckUserDetails userDetails) {
+            var accessToken = jwtService.generateAccessToken(userDetails);
+            var refreshToken = jwtService.generateRefreshToken(userDetails);
 
-        getRedirectStrategy().sendRedirect(request, response, "http://127.0.0.1:5173/home");
-    }
+            Cookie accessTokenCookie = jwtService.generateAccessTokenCookie(accessToken);
+            response.addCookie(accessTokenCookie);
 
-    private Cookie deleteCookie(String name) {
-        Cookie cookie = new Cookie(name, null);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
+            Cookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(refreshToken);
+            response.addCookie(refreshTokenCookie);
 
-        return cookie;
+            getRedirectStrategy().sendRedirect(request, response, "http://127.0.0.1:5173/home");
+        }
     }
 }

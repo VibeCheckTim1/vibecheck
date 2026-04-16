@@ -1,6 +1,6 @@
 package hr.tvz.vibecheck.security;
 
-import hr.tvz.vibecheck.enums.TokenType;
+import hr.tvz.vibecheck.api.security.enums.TokenType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

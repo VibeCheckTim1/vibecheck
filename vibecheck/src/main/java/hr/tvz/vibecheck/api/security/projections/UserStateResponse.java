@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.projections;
+package hr.tvz.vibecheck.api.security.projections;
 
 import java.time.LocalDateTime;
 

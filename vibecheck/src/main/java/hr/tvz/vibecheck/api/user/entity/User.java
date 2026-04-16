@@ -1,6 +1,6 @@
 package hr.tvz.vibecheck.api.user.entity;
 
-import hr.tvz.vibecheck.entity.OAuthAccount;
+import hr.tvz.vibecheck.api.security.entity.OAuthAccount;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;

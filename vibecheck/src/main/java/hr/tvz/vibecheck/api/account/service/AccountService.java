@@ -8,7 +8,6 @@ import hr.tvz.vibecheck.exception.UserNotFoundException;
 import hr.tvz.vibecheck.api.user.entity.User;
 import hr.tvz.vibecheck.api.user.mapper.UserMapper;
 import hr.tvz.vibecheck.api.user.repository.UserRepository;
-import hr.tvz.vibecheck.cloudinary.CloudinaryService;
 import hr.tvz.vibecheck.api.account.repository.EmailChangeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

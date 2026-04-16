@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.cloudinary;
+package hr.tvz.vibecheck.api.account.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;

@@ -1,6 +1,6 @@
 package hr.tvz.vibecheck.api.user.repository;
 
-import hr.tvz.vibecheck.projections.UserStateResponse;
+import hr.tvz.vibecheck.api.security.projections.UserStateResponse;
 import hr.tvz.vibecheck.api.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
