@@ -2,7 +2,6 @@ package hr.tvz.vibecheck.controller.follow_request;
 
 import hr.tvz.vibecheck.dto.request.FollowRequestRequest;
 import hr.tvz.vibecheck.dto.response.FollowActionResponse;
-import hr.tvz.vibecheck.enums.FollowActionResult;
 import hr.tvz.vibecheck.service.follow_request.FollowRequestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +18,8 @@ public class FollowRequestController {
     private final FollowRequestService followRequestService;
 
     @PostMapping("/createFollowRequest")
-    public ResponseEntity<FollowActionResponse> createFriendRequest(@Valid @RequestBody FollowRequestRequest request) {
-        return ResponseEntity.ok(followRequestService.createFollowRequest(request));
+    public ResponseEntity<FollowActionResponse> createFriendRequestOrFollow(@Valid @RequestBody FollowRequestRequest request) {
+        return ResponseEntity.ok(followRequestService.createFollowRequestOrFollow(request));
     }
 
 }

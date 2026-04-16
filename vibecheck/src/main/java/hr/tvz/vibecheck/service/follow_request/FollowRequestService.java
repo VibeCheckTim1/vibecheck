@@ -26,7 +26,7 @@ public class FollowRequestService {
     private final UserRepository userRepository;
     private final FollowsRepository followsRepository;
 
-    public FollowActionResponse createFollowRequest(FollowRequestRequest followRequest) {
+    public FollowActionResponse createFollowRequestOrFollow(FollowRequestRequest followRequest) {
         User sender = userRepository.findById(followRequest.senderId()).orElseThrow(()
                 -> new RuntimeException("User not found"));
 
