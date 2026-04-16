@@ -1,5 +1,5 @@
-import {useHttpClient} from "../../../composables/useHttpClient.ts";
-import {User, type UserApi} from "../../../entities/user.ts";
+import { useHttpClient } from "../../../composables/useHttpClient.ts";
+import { User, type UserApi } from "../../../entities/user.ts";
 
 export interface UpdateProfileRequest {
 	"firstName": string,
@@ -27,7 +27,7 @@ export interface VerificationCodeRequest {
 }
 
 export function useProfileService(userId: number) {
-	const {httpGet, httpPatch, httpPost, httpDelete} = useHttpClient();
+	const { httpGet, httpPatch, httpPost, httpDelete } = useHttpClient();
 
 	async function getUser(): Promise<User> {
 		const data = await httpGet<UserApi>(`/user/${String(userId)}`);
