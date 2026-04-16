@@ -21,14 +21,19 @@ export function useFollowingService() {
 
 
     async function cancelFollowRequest(receiverId: number): Promise<void> {
-        await httpDelete<void>(`{{apiUrl}}/${String(receiverId)}`);
+        await httpDelete<void>(`${apiUrl}/${receiverId}`);
+    }
+
+    async function unfollow(receiverId: number): Promise<void> {
+        await httpDelete<void>(`${apiUrl}/unfollow/${receiverId}`);
     }
 
 
 
     return {
         createFollowRequest,
-        cancelFollowRequest
+        cancelFollowRequest,
+        unfollow
     }
         
 

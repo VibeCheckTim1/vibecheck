@@ -85,11 +85,32 @@ async function cancelFollowRequest() {
                 showError(error.message);
             }
         }
-
-
     }
+}
 
+async function unfollow() {
+    if (!currentUser.value || !viewedUser.value) return;
 
+    const confirmed = await openConfirm({
+        isDanger: true,
+        title: "Unfollow user",
+        subtitle: "Are you sure you want to unfollow this user?",
+        acceptMessage: "Yes, unfollow user",
+    });
+
+    if (confirmed) {
+        try {
+            const { unfollow } = useFollowingService();
+            await unfollow(viewedUser.value.idUser);
+
+            followResult.value = 'FOLLOW';
+        }
+        catch (error) {
+            if (error instanceof ApiError) {
+                showError(error.message);
+            }
+        }
+    }
 }
 
 const followButtonText = computed(() => {
@@ -106,7 +127,7 @@ const handleButtonClass = computed(() => {
 
 async function handleFollowClick() {
     if (followResult.value === 'FOLLOWING') { //unfollow
-        followResult.value = 'FOLLOW'
+        await unfollow();
         return;
     }
     if (followResult.value === 'PENDING') { //cancel follow req
