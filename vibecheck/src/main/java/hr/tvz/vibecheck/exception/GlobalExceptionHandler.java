@@ -50,4 +50,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
     }
 
+    @ExceptionHandler(FollowNotFoundException.class)
+    public ResponseEntity<?> handleFollowNotFoundException(FollowNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(SelfFollowException.class)
+    public ResponseEntity<?> handleSelfFollowException(SelfFollowException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+    }
+
 }

@@ -23,11 +23,18 @@ public class FollowRequestController {
         return ResponseEntity.ok(followRequestService.createFollowRequestOrFollow(userDetailsService.getId(), request));
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> cancelFollowRequest(
-            @Valid @RequestBody FollowRequestRequest request,
+    @DeleteMapping("{receiverId}")
+    public ResponseEntity<?> cancelFollowRequest(@PathVariable Long receiverId,
             @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
-        followRequestService.cancelFollowRequest(userDetails.getId(), request);
+        followRequestService.cancelFollowRequest(userDetails.getId(), receiverId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/unfollow/{receiverId}")
+    public ResponseEntity<?> unfollow(
+            @PathVariable Long receiverId,
+            @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
+        followRequestService.unfollow(userDetails.getId(), receiverId);
         return ResponseEntity.noContent().build();
     }
 
