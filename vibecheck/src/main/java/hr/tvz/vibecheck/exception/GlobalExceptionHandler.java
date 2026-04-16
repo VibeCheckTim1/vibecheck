@@ -21,12 +21,22 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DuplicateFollowRequestException.class)
-    public ResponseEntity<?> handleDuplicateFollowRequestException(DuplicateFollowRequestException ex) {
+    public ResponseEntity<?> handleDuplicateFollowException(DuplicateFollowRequestException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
     }
 
     @ExceptionHandler(DuplicateFollowException.class)
-    public ResponseEntity<?> handleDuplicateFollowRequestException(DuplicateFollowException ex) {
+    public ResponseEntity<?> handleDuplicateFollowException(DuplicateFollowException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(FollowRequestNotFoundException.class)
+    public ResponseEntity<?> handleFollowRequestNotFoundException(FollowRequestNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(NotPendingStatusException.class)
+    public ResponseEntity<?> handleNotPendingStatusException(NotPendingStatusException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
     }
 

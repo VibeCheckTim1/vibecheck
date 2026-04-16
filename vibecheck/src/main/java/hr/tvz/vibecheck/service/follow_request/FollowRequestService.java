@@ -10,6 +10,8 @@ import hr.tvz.vibecheck.enums.FollowRequestStatus;
 import hr.tvz.vibecheck.enums.ProfileVisibility;
 import hr.tvz.vibecheck.exception.DuplicateFollowException;
 import hr.tvz.vibecheck.exception.DuplicateFollowRequestException;
+import hr.tvz.vibecheck.exception.FollowRequestNotFoundException;
+import hr.tvz.vibecheck.exception.NotPendingStatusException;
 import hr.tvz.vibecheck.repository.follow_request.FollowRequestRepository;
 import hr.tvz.vibecheck.repository.follows.FollowsRepository;
 import hr.tvz.vibecheck.repository.user.UserRepository;
@@ -33,6 +35,10 @@ public class FollowRequestService {
         User receiver = userRepository.findById(followRequest.receiverId()).orElseThrow(()
                 -> new RuntimeException("User not found"));
 
+        if (sender.getIdUser().equals(receiver.getIdUser())) {
+            throw new IllegalArgumentException("You cannot follow yourself");
+        }
+
         if (followsRepository.existsByUser1_IdUserAndUser2_IdUser(sender.getIdUser(), receiver.getIdUser())) {
             throw new DuplicateFollowException("Follow for " + receiver.getUsername() + " already exists");
         }
@@ -52,7 +58,7 @@ public class FollowRequestService {
             if (existingRequestOpt.isPresent()) {
                 FollowRequest existingReq = existingRequestOpt.get();
 
-                if (existingReq.getStatus().equals(FollowRequestStatus.DECLINED)) {
+                if (existingReq.getStatus() == FollowRequestStatus.DECLINED) {
                     existingReq.setStatus(FollowRequestStatus.PENDING);
                     followRequestRepository.save(existingReq);
                     return new FollowActionResponse(FollowActionResult.PENDING);
@@ -73,13 +79,27 @@ public class FollowRequestService {
             }
 
         }
-
-
-
-
     }
 
+    public void cancelFollowRequest(FollowRequestRequest requestToCancel) {
+        User sender = userRepository.findById(requestToCancel.senderId()).orElseThrow(()
+                -> new RuntimeException("User not found"));
 
+        User receiver = userRepository.findById(requestToCancel.receiverId()).orElseThrow(()
+                -> new RuntimeException("User not found"));
+
+        FollowRequest existingReq = followRequestRepository.findBySender_IdUserAndReceiver_IdUser
+                (sender.getIdUser(), receiver.getIdUser()).orElseThrow(()
+                -> new FollowRequestNotFoundException("Follow request for user " + sender.getUsername() + " not found!"));
+
+
+        if (!existingReq.getStatus().equals(FollowRequestStatus.PENDING)) {
+            throw new NotPendingStatusException("You cannot delete a follow request that is not \"Pending\"");
+        }
+
+        followRequestRepository.delete(existingReq);
+
+    }
 
 
 }
