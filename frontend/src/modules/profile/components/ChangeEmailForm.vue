@@ -83,6 +83,16 @@ async function submitForm() {
     padding: var(--spacing-4);
 }
 
+.primary-button:disabled {
+    background-color: #e0e0e0;
+    color: #9e9e9e;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+    opacity: 0.6;
+    border: #9e9e9e;
+}
+
 .form-error {
     color: var(--color-red-5);
     font-size: var(--font-size-1);
