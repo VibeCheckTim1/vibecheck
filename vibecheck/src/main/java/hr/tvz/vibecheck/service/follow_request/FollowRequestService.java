@@ -8,10 +8,7 @@ import hr.tvz.vibecheck.entity.User;
 import hr.tvz.vibecheck.enums.FollowActionResult;
 import hr.tvz.vibecheck.enums.FollowRequestStatus;
 import hr.tvz.vibecheck.enums.ProfileVisibility;
-import hr.tvz.vibecheck.exception.DuplicateFollowException;
-import hr.tvz.vibecheck.exception.DuplicateFollowRequestException;
-import hr.tvz.vibecheck.exception.FollowRequestNotFoundException;
-import hr.tvz.vibecheck.exception.NotPendingStatusException;
+import hr.tvz.vibecheck.exception.*;
 import hr.tvz.vibecheck.repository.follow_request.FollowRequestRepository;
 import hr.tvz.vibecheck.repository.follows.FollowsRepository;
 import hr.tvz.vibecheck.repository.user.UserRepository;
@@ -28,12 +25,12 @@ public class FollowRequestService {
     private final UserRepository userRepository;
     private final FollowsRepository followsRepository;
 
-    public FollowActionResponse createFollowRequestOrFollow(FollowRequestRequest followRequest) {
-        User sender = userRepository.findById(followRequest.senderId()).orElseThrow(()
-                -> new RuntimeException("User not found"));
+    public FollowActionResponse createFollowRequestOrFollow(Long senderId, FollowRequestRequest followRequest) {
+        User sender = userRepository.findById(senderId).orElseThrow(()
+                -> new UserNotFoundException("User not found"));
 
         User receiver = userRepository.findById(followRequest.receiverId()).orElseThrow(()
-                -> new RuntimeException("User not found"));
+                -> new UserNotFoundException("User not found"));
 
         if (sender.getIdUser().equals(receiver.getIdUser())) {
             throw new IllegalArgumentException("You cannot follow yourself");
@@ -81,12 +78,12 @@ public class FollowRequestService {
         }
     }
 
-    public void cancelFollowRequest(FollowRequestRequest requestToCancel) {
-        User sender = userRepository.findById(requestToCancel.senderId()).orElseThrow(()
-                -> new RuntimeException("User not found"));
+    public void cancelFollowRequest(Long senderId, FollowRequestRequest requestToCancel) {
+        User sender = userRepository.findById(senderId).orElseThrow(()
+                -> new UserNotFoundException("User with ID " + requestToCancel.receiverId() + " not found"));
 
         User receiver = userRepository.findById(requestToCancel.receiverId()).orElseThrow(()
-                -> new RuntimeException("User not found"));
+                -> new UserNotFoundException("User with ID " + requestToCancel.receiverId() + " not found"));
 
         FollowRequest existingReq = followRequestRepository.findBySender_IdUserAndReceiver_IdUser
                 (sender.getIdUser(), receiver.getIdUser()).orElseThrow(()

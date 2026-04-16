@@ -9,6 +9,8 @@ import hr.tvz.vibecheck.dto.dtoMapper.UserMapper;
 import hr.tvz.vibecheck.entity.EmailChange;
 import hr.tvz.vibecheck.entity.User;
 import hr.tvz.vibecheck.enums.ProfileVisibility;
+import hr.tvz.vibecheck.exception.DuplicateUserException;
+import hr.tvz.vibecheck.exception.UserNotFoundException;
 import hr.tvz.vibecheck.repository.email.EmailChangeRepository;
 import hr.tvz.vibecheck.repository.user.UserRepository;
 import hr.tvz.vibecheck.service.email.MailService;
@@ -40,7 +42,7 @@ public class UserService {
     private final MailService mailService;
 
     public UserResponse findOneById(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         return userMapper.toUserResponse(user);
     }
@@ -48,7 +50,7 @@ public class UserService {
     @Transactional
     public void createUser(CreateUserRequest request) {
         if (checkDuplicate(request.email()))
-            throw new RuntimeException("User with " + request.email() +  " email already exists");
+            throw new DuplicateUserException("User with " + request.email() +  " email already exists");
 
         User user = User.builder()
                 .firstName(request.firstName())
@@ -84,7 +86,7 @@ public class UserService {
 
     @Transactional
     public void uploadAvatar(Long userId, MultipartFile avatar) throws IOException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         avatarValidation(avatar);
 
@@ -101,7 +103,7 @@ public class UserService {
 
     @Transactional
     public UserEditResponse editUser(Long userId, EditUserRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         userMapper.updateUserFromRequest(request, user); //update request mapper
 
@@ -113,7 +115,7 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long userId) {
-        userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         userRepository.deleteById(userId);
     }
@@ -121,7 +123,7 @@ public class UserService {
 
     @Transactional
     public void changePassword(Long userId, ChangePasswordRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
             throw new IllegalArgumentException("Old password is incorrect");
@@ -136,7 +138,7 @@ public class UserService {
 
     @Transactional
     public void sendEmailVerificationCode(Long userId, NewEmailRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         String newMail = request.newEmail().trim().toLowerCase();
 
@@ -184,7 +186,7 @@ public class UserService {
 
     @Transactional
     public void confirmEmailEdit(Long userId, VerificationCodeRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         EmailChange codeReq = emailRepository.findByUser(user).orElseThrow(()
                 -> new IllegalArgumentException("No pending email change request found for user: " + user.getUsername()));

@@ -40,7 +40,6 @@ async function follow() {
     try {
         const { createFollowRequest } = useFollowingService();
         const followApiResult = await createFollowRequest({
-            senderId: currentUser.value.idUser,
             receiverId: viewedUser.value?.idUser
         });
 
