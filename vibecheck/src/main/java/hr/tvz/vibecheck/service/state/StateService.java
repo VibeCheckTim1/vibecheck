@@ -1,7 +1,7 @@
-package hr.tvz.vibecheck.service;
+package hr.tvz.vibecheck.service.state;
 
 import hr.tvz.vibecheck.projections.UserStateResponse;
-import hr.tvz.vibecheck.repository.UserRepository;
+import hr.tvz.vibecheck.repository.user.UserRepository;
 import hr.tvz.vibecheck.security.VibeCheckUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;

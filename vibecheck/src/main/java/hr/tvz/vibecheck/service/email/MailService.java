@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.service.MailService;
+package hr.tvz.vibecheck.service.email;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.repository;
+package hr.tvz.vibecheck.repository.oauth;
 
 import hr.tvz.vibecheck.entity.OAuthAccount;
 import org.springframework.data.jpa.repository.JpaRepository;

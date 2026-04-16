@@ -72,6 +72,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/search").authenticated()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/login/**", "/oauth2/**").permitAll()
+
+                        .requestMatchers("/api/followRequest").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers

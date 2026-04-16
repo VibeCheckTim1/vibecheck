@@ -1,8 +1,8 @@
-package hr.tvz.vibecheck.controller;
+package hr.tvz.vibecheck.controller.login;
 
 import hr.tvz.vibecheck.dto.request.LoginRequest;
 import hr.tvz.vibecheck.enums.TokenType;
-import hr.tvz.vibecheck.service.StateService;
+import hr.tvz.vibecheck.service.state.StateService;
 import hr.tvz.vibecheck.service.security.AuthService;
 import hr.tvz.vibecheck.service.security.JwtService;
 import jakarta.servlet.http.HttpServletRequest;

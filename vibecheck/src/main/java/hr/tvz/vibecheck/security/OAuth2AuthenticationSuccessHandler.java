@@ -1,7 +1,7 @@
 package hr.tvz.vibecheck.security;
 
 import hr.tvz.vibecheck.enums.TokenType;
-import hr.tvz.vibecheck.repository.OAuthAccountRepository;
+import hr.tvz.vibecheck.repository.oauth.OAuthAccountRepository;
 import hr.tvz.vibecheck.service.security.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

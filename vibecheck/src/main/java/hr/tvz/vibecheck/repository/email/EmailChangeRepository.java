@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.repository;
+package hr.tvz.vibecheck.repository.email;
 
 import hr.tvz.vibecheck.entity.EmailChange;
 import hr.tvz.vibecheck.entity.User;

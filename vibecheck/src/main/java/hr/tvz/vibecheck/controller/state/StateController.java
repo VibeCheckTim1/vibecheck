@@ -1,6 +1,6 @@
-package hr.tvz.vibecheck.controller;
+package hr.tvz.vibecheck.controller.state;
 
-import hr.tvz.vibecheck.service.StateService;
+import hr.tvz.vibecheck.service.state.StateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

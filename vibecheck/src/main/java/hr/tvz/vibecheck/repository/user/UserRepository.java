@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.repository;
+package hr.tvz.vibecheck.repository.user;
 
 import hr.tvz.vibecheck.projections.UserStateResponse;
 import hr.tvz.vibecheck.entity.User;

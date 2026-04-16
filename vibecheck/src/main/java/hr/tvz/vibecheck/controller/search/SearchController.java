@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.controller;
+package hr.tvz.vibecheck.controller.search;
 
 import hr.tvz.vibecheck.dto.response.SearchResult;
 import hr.tvz.vibecheck.service.search.SearchService;

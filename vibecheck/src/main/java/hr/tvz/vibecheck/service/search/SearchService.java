@@ -2,7 +2,7 @@ package hr.tvz.vibecheck.service.search;
 
 import hr.tvz.vibecheck.dto.response.SearchResult;
 import hr.tvz.vibecheck.entity.User;
-import hr.tvz.vibecheck.repository.UserRepository;
+import hr.tvz.vibecheck.repository.user.UserRepository;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;

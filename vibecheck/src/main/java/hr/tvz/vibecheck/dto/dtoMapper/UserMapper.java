@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.dtoMapper;
+package hr.tvz.vibecheck.dto.dtoMapper;
 
 
 import hr.tvz.vibecheck.dto.request.EditUserRequest;

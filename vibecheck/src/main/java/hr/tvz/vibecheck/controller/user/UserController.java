@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.controller;
+package hr.tvz.vibecheck.controller.user;
 
 import hr.tvz.vibecheck.dto.request.*;
 import hr.tvz.vibecheck.dto.response.UserEditResponse;
@@ -6,7 +6,7 @@ import hr.tvz.vibecheck.dto.response.UserResponse;
 import hr.tvz.vibecheck.enums.TokenType;
 import hr.tvz.vibecheck.projections.UserStateResponse;
 import hr.tvz.vibecheck.security.VibeCheckUserDetails;
-import hr.tvz.vibecheck.service.StateService;
+import hr.tvz.vibecheck.service.state.StateService;
 import hr.tvz.vibecheck.service.security.AuthService;
 import hr.tvz.vibecheck.service.security.JwtService;
 import hr.tvz.vibecheck.service.user.UserService;
