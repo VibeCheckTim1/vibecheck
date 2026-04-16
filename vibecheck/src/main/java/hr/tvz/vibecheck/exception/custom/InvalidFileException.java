@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.exception;
+package hr.tvz.vibecheck.exception.custom;
 
 public class InvalidFileException extends RuntimeException {
     public InvalidFileException(String message) {

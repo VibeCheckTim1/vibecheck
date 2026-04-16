@@ -1,31 +1,14 @@
 package hr.tvz.vibecheck.api.search.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public class SearchResult {
     private Long id;
     private String type;
     private String titleText;
     private String subtitleText;
 
-    public SearchResult(Long id, String type, String titleText, String subtitleText) {
-        this.id = id;
-        this.type = type;
-        this.titleText = titleText;
-        this.subtitleText = subtitleText;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getTitleText() {
-        return titleText;
-    }
-
-    public String getSubtitleText() {
-        return subtitleText;
-    }
 }

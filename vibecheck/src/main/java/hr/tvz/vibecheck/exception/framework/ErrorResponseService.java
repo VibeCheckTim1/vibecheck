@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.exception;
+package hr.tvz.vibecheck.exception.framework;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,11 +36,16 @@ public class ErrorResponseService {
 
         var httpStatus = HttpStatus.valueOf(errorEntry.code());
 
+        String message;
+        if (ex.getMessage() != null) message = ex.getMessage();
+        else if (errorEntry.message() != null) message = errorEntry.message();
+        else message = httpStatus.getReasonPhrase();
+
         var errorResponse = new ErrorResponse(
                 sid,
                 request.getRequestURI(),
                 httpStatus.value(),
-                errorEntry.message(),
+                message,
                 LocalDateTime.now()
         );
 

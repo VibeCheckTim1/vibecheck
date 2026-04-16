@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.security;
+package hr.tvz.vibecheck.security.oauth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

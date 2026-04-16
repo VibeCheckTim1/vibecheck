@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.security;
+package hr.tvz.vibecheck.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

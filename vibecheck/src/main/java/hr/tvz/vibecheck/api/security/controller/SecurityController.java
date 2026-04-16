@@ -6,7 +6,7 @@ import hr.tvz.vibecheck.api.security.dto.TokenOutputDto;
 import hr.tvz.vibecheck.api.security.enums.TokenType;
 import hr.tvz.vibecheck.api.security.service.SecurityService;
 import hr.tvz.vibecheck.api.security.projections.UserStateResponse;
-import hr.tvz.vibecheck.security.JwtService;
+import hr.tvz.vibecheck.security.jwt.JwtService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.security;
+package hr.tvz.vibecheck.security.exception;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.exception;
+package hr.tvz.vibecheck.exception.framework;
 
 public enum ErrorKey {
     INTERNAL_SERVER_ERROR("internal-server-error"),

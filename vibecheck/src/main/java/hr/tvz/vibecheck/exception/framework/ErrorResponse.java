@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.exception;
+package hr.tvz.vibecheck.exception.framework;
 
 import java.time.LocalDateTime;
 

@@ -2,13 +2,14 @@ package hr.tvz.vibecheck.api.account.service;
 
 import hr.tvz.vibecheck.api.account.dto.*;
 import hr.tvz.vibecheck.api.account.entity.EmailChange;
-import hr.tvz.vibecheck.exception.InvalidFileException;
-import hr.tvz.vibecheck.exception.InvalidPasswordException;
-import hr.tvz.vibecheck.exception.UserNotFoundException;
+import hr.tvz.vibecheck.exception.custom.InvalidFileException;
+import hr.tvz.vibecheck.exception.custom.InvalidPasswordException;
+import hr.tvz.vibecheck.exception.custom.UserNotFoundException;
 import hr.tvz.vibecheck.api.user.entity.User;
 import hr.tvz.vibecheck.api.user.mapper.UserMapper;
 import hr.tvz.vibecheck.api.user.repository.UserRepository;
 import hr.tvz.vibecheck.api.account.repository.EmailChangeRepository;
+import hr.tvz.vibecheck.exception.framework.ErrorKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

@@ -1,10 +1,11 @@
-package hr.tvz.vibecheck.security;
+package hr.tvz.vibecheck.security.oauth;
 
 import hr.tvz.vibecheck.api.user.repository.UserRepository;
 import hr.tvz.vibecheck.api.security.entity.OAuthAccount;
 import hr.tvz.vibecheck.api.user.entity.User;
 import hr.tvz.vibecheck.api.security.repository.OAuthAccountRepository;
 import hr.tvz.vibecheck.api.account.service.MailService;
+import hr.tvz.vibecheck.security.VibeCheckUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;

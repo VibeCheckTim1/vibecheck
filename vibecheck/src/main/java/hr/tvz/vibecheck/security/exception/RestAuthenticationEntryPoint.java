@@ -1,7 +1,7 @@
-package hr.tvz.vibecheck.security;
+package hr.tvz.vibecheck.security.exception;
 
-import hr.tvz.vibecheck.exception.ErrorKey;
-import hr.tvz.vibecheck.exception.ErrorResponseService;
+import hr.tvz.vibecheck.exception.framework.ErrorKey;
+import hr.tvz.vibecheck.exception.framework.ErrorResponseService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

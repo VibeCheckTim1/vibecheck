@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.exception;
+package hr.tvz.vibecheck.exception.custom;
 
 public class InvalidPasswordException extends RuntimeException {
     public InvalidPasswordException() {

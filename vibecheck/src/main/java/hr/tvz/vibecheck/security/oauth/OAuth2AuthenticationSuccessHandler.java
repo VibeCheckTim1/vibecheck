@@ -1,9 +1,8 @@
-package hr.tvz.vibecheck.security;
+package hr.tvz.vibecheck.security.oauth;
 
-import hr.tvz.vibecheck.api.security.dto.TokenOutputDto;
-import hr.tvz.vibecheck.api.security.enums.TokenType;
 import hr.tvz.vibecheck.api.security.repository.OAuthAccountRepository;
-import hr.tvz.vibecheck.api.security.service.SecurityService;
+import hr.tvz.vibecheck.security.jwt.JwtService;
+import hr.tvz.vibecheck.security.VibeCheckUserDetails;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

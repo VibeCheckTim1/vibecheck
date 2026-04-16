@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.security;
+package hr.tvz.vibecheck.security.jwt;
 
 import hr.tvz.vibecheck.api.security.enums.TokenType;
 import jakarta.servlet.FilterChain;
