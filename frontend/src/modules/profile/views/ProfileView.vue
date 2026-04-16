@@ -10,6 +10,7 @@ import { useToast } from "../../../composables/useToast.ts";
 import { useProfileService } from "../composables/useProfileService.ts";
 import type { User } from "../../../entities/user.ts";
 import { useFollowingService } from "../../followers/composables/useFollowingService.ts";
+import { useConfirm } from "../../../composables/useConfirm.ts";
 
 const { currentUser } = useState();
 const route = useRoute();
@@ -19,6 +20,7 @@ const viewedUser = ref<User | null>(null);
 const { showError } = useToast();
 
 const followResult = ref<'FOLLOW' | 'FOLLOWING' | 'PENDING'>('FOLLOW');
+const { openConfirm } = useConfirm();
 
 async function logout() {
     if (currentUser.value) {
@@ -44,18 +46,49 @@ async function follow() {
         });
 
         console.log(followApiResult);
+
         if (followApiResult.result === 'FOLLOWING') {
             followResult.value = 'FOLLOWING';
         }
         else if (followApiResult.result === 'PENDING') {
             followResult.value = 'PENDING';
         }
+
     }
     catch (error) {
         if (error instanceof ApiError) {
             showError(error.message);
         }
     }
+}
+
+
+async function cancelFollowRequest() {
+    if (!currentUser.value || !viewedUser.value) return;
+
+    const confirmed = await openConfirm({
+        isDanger: true,
+        title: "Cancel follow request",
+        subtitle: "Are you sure you want to cancel follow request for this user?",
+        acceptMessage: "Yes, cancel request",
+    });
+
+    if (confirmed) {
+        try {
+            const { cancelFollowRequest } = useFollowingService();
+            await cancelFollowRequest({ receiverId: viewedUser.value.idUser });
+
+            followResult.value = 'FOLLOW';
+        }
+        catch (error) {
+            if (error instanceof ApiError) {
+                showError(error.message);
+            }
+        }
+
+
+    }
+
 
 }
 
@@ -71,9 +104,17 @@ const handleButtonClass = computed(() => {
     return 'follow-btn--follow';
 });
 
-/* const handleFollowClick() {
-    if (followResult)
-} */
+async function handleFollowClick() {
+    if (followResult.value === 'FOLLOWING') { //unfollow
+        followResult.value = 'FOLLOW'
+        return;
+    }
+    if (followResult.value === 'PENDING') { //cancel follow req
+        await cancelFollowRequest();
+        return;
+    }
+    await follow(); //follow
+}
 
 
 
@@ -159,7 +200,8 @@ onMounted(() => {
             <div class="user-username">{{ viewedUser.username }}</div>
             <p class="user-description" v-if="viewedUser.bio">{{ viewedUser.bio }}</p>
 
-            <button :class="['follow-btn', handleButtonClass]" v-if="!isOwnProfile" @click="follow">{{ followButtonText
+            <button :class="['follow-btn', handleButtonClass]" v-if="!isOwnProfile" @click="handleFollowClick">{{
+                followButtonText
                 }}</button>
 
             <router-link :to="{ name: 'updateProfile' }" class="primary-button" v-if="isOwnProfile">Edit
