@@ -19,12 +19,12 @@ export function useLoginService() {
 	const {httpPost} = useHttpClient();
 
 	async function loginAction(body: LoginRequest): Promise<User> {
-		const data = await httpPost<UserApi>("/auth/login", body);
+		const data = await httpPost<UserApi>("/security/login", body);
 		return new User(data);
 	}
 
 	async function registerAction(body: RegisterRequest): Promise<User> {
-		const data = await httpPost<UserApi>("/user/create", body);
+		const data = await httpPost<UserApi>("/security/register", body);
 		return new User(data);
 	}
 

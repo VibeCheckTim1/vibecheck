@@ -1,5 +1,12 @@
 package hr.tvz.vibecheck.security;
 
+import hr.tvz.vibecheck.security.exception.MDCfilter;
+import hr.tvz.vibecheck.security.exception.RestAccessDeniedHandler;
+import hr.tvz.vibecheck.security.exception.RestAuthenticationEntryPoint;
+import hr.tvz.vibecheck.security.jwt.JwtFilter;
+import hr.tvz.vibecheck.security.oauth.CustomOAuth2UserService;
+import hr.tvz.vibecheck.security.oauth.HttpCookieOAuth2AuthorizationRequestRepository;
+import hr.tvz.vibecheck.security.oauth.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,16 +67,16 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
 
-                        .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/error/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/security/register").permitAll()
+                        .requestMatchers("/security/login").permitAll()
+                        .requestMatchers("/security/current-user").authenticated()
+                        .requestMatchers("/security/refresh-token").permitAll()
+                        .requestMatchers("/security/logout").authenticated()
 
-                        .requestMatchers("/api/user/create").permitAll()
-                        .requestMatchers("/api/user/addAvatar").authenticated()
-                        .requestMatchers("/api/user/changePassword").authenticated()
-                        .requestMatchers("/api/user/emailVerificationCode").authenticated()
-                        .requestMatchers("/api/user/confirmMailEdit").authenticated()
-                        .requestMatchers("/api/search").authenticated()
+                        .requestMatchers("/user/**").authenticated()
+                        .requestMatchers("/search").authenticated()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/login/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated()

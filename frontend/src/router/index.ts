@@ -4,7 +4,7 @@ import {homeRoutes} from "../modules/home/routes.ts";
 import {searchRoutes} from "../modules/search/routes.ts";
 import {createRoutes} from "../modules/create/routes.ts";
 import {notificationsRoutes} from "../modules/notifications/routes.ts";
-import {profileRoutes} from "../modules/profile/routes.ts";
+import {accountRoutes} from "../modules/account/routes.ts";
 import {useState} from "../composables/useState.ts";
 import {useHttpClient} from "../composables/useHttpClient.ts";
 import {User, type UserApi} from "../entities/user.ts";
@@ -20,7 +20,7 @@ const router = createRouter({
 		...searchRoutes,
 		...createRoutes,
 		...notificationsRoutes,
-		...profileRoutes
+		...accountRoutes
 	],
 });
 
@@ -31,16 +31,20 @@ router.beforeEach(async (_to, from) => {
 	closeAllDialogs();
 	closeConfirm();
 
+	if (_to.name === "login" || _to.name === "register") {
+		return true;
+	}
+
 	const {httpGet} = useHttpClient();
 	const {currentUser, setUser} = useState();
 
 	if (!currentUser.value) {
 		try {
-			const data = await httpGet<UserApi>("/state/user-state");
+			const data = await httpGet<UserApi>("/security/current-user");
 			setUser(new User(data));
 		}
 		catch {
-			return;
+			return {name: "login"};
 		}
 	}
 

@@ -22,7 +22,7 @@ const handleClick = (item: SearchItem) => {
     switch (item.type) {
         case "user":
             router.push({
-                name: "profile",
+                name: "account",
                 params: {
                     userId: item.id,
                 }

@@ -28,7 +28,7 @@ export function useHttpClient() {
 		options: RequestOptions = {},
 		retryCount = 0
 	): Promise<T> {
-		const apiUrl = url.startsWith("/") ? `/api${url}` : `/api/${url}`;
+		const apiUrl = url.startsWith("/") ? url : `/${url}`;
 
 		async function doFetch(): Promise<T> {
 			const fetchOptions: RequestInit = {
@@ -117,7 +117,7 @@ export function useHttpClient() {
 
 	async function refreshToken(): Promise<boolean> {
 		try {
-			const response = await fetch(`${SERVER_HOST}/api/auth/extend-login`, {
+			const response = await fetch(`${SERVER_HOST}/security/refresh-token`, {
 				method: "POST",
 				credentials: "include",
 				headers: {

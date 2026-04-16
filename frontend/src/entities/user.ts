@@ -6,7 +6,7 @@ export interface UserApi {
 	bio: string | null;
 	email: string;
 	username: string;
-	visibility: string;
+	isPrivate: boolean;
 	tstamp: string;
 }
 
@@ -29,7 +29,7 @@ export class User {
 		this.bio = apiObject.bio;
 		this.email = apiObject.email;
 		this.username = apiObject.username;
-		this.isPrivate = apiObject.visibility === "PRIVATE";
+		this.isPrivate = apiObject.isPrivate;
 		this.tstamp = new Date(apiObject.tstamp);
 	}
 }
