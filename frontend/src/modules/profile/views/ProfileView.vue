@@ -76,7 +76,7 @@ async function cancelFollowRequest() {
     if (confirmed) {
         try {
             const { cancelFollowRequest } = useFollowingService();
-            await cancelFollowRequest({ receiverId: viewedUser.value.idUser });
+            await cancelFollowRequest(viewedUser.value.idUser);
 
             followResult.value = 'FOLLOW';
         }

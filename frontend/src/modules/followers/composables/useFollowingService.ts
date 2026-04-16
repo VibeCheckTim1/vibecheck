@@ -20,10 +20,9 @@ export function useFollowingService() {
     }
 
 
-    async function cancelFollowRequest(followRequestToCancel: FollowRequestRequest): Promise<void> {
-        await httpDelete<void>(apiUrl, followRequestToCancel);
+    async function cancelFollowRequest(receiverId: number): Promise<void> {
+        await httpDelete<void>(`{{apiUrl}}/${String(receiverId)}`);
     }
-
 
 
 
