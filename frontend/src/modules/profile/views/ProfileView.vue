@@ -37,19 +37,27 @@ const isPrivateProfile = computed(() => {
 async function follow() {
     if (!currentUser.value || !viewedUser.value) return;
 
-    const { createFollowRequest } = useFollowingService();
-    const followApiResult = await createFollowRequest({
-        senderId: currentUser.value.idUser,
-        receiverId: viewedUser.value?.idUser
-    });
+    try {
+        const { createFollowRequest } = useFollowingService();
+        const followApiResult = await createFollowRequest({
+            senderId: currentUser.value.idUser,
+            receiverId: viewedUser.value?.idUser
+        });
 
-    console.log(followApiResult);
-    if (followApiResult.result === 'FOLLOWING') {
-        followResult.value = 'FOLLOWING';
+        console.log(followApiResult);
+        if (followApiResult.result === 'FOLLOWING') {
+            followResult.value = 'FOLLOWING';
+        }
+        else if (followApiResult.result === 'PENDING') {
+            followResult.value = 'PENDING';
+        }
     }
-    else if (followApiResult.result === 'PENDING') {
-        followResult.value = 'PENDING';
+    catch (error) {
+        if (error instanceof ApiError) {
+            showError(error.message);
+        }
     }
+
 }
 
 const followButtonText = computed(() => {
@@ -152,7 +160,8 @@ onMounted(() => {
             <div class="user-username">{{ viewedUser.username }}</div>
             <p class="user-description" v-if="viewedUser.bio">{{ viewedUser.bio }}</p>
 
-            <button :class="['follow-btn', handleButtonClass]" v-if="!isOwnProfile" @click="follow">{{ followButtonText }}</button>
+            <button :class="['follow-btn', handleButtonClass]" v-if="!isOwnProfile" @click="follow">{{ followButtonText
+                }}</button>
 
             <router-link :to="{ name: 'updateProfile' }" class="primary-button" v-if="isOwnProfile">Edit
                 profile</router-link>
