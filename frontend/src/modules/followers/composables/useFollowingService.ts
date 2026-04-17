@@ -5,9 +5,14 @@ export interface FollowRequestRequest {
 }
 
 type FollowActionResult = 'FOLLOW' | 'FOLLOWING' | 'PENDING';
+type FollowRequestUserResponse = 'ACCEPT' | 'DECLINE';
 
 export interface FollowActionResponse {
     result: FollowActionResult
+}
+
+export interface FollowRequestActionRequest {
+    action: FollowRequestUserResponse 
 }
 
 export interface FollowRequestResponse {
@@ -47,8 +52,8 @@ export function useFollowingService(receiverId?: number) {
         return data;
     }
 
-    async function acceptFollowRequest(requestId: number) {
-        await httpPatch<void>(`${apiUrl}/acceptFollowRequest/${requestId}`);
+    async function acceptOrDeclineFollowRequest(requestId: number, body: FollowRequestActionRequest) {
+        await httpPatch<void>(`${apiUrl}/acceptOrDeclineFollowRequest/${requestId}`, body);
     }
 
 
@@ -58,7 +63,7 @@ export function useFollowingService(receiverId?: number) {
         unfollow,
         getFollowStatus,
         getAllFollowRequests,
-        acceptFollowRequest
+        acceptOrDeclineFollowRequest
     }
 
 

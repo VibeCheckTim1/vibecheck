@@ -66,9 +66,26 @@ async function acceptFollowRequest(requestId: number) {
     if (!currentUser.value) return;
 
     try {
-        const { acceptFollowRequest } = useFollowingService();
-        await acceptFollowRequest(requestId);
+        const { acceptOrDeclineFollowRequest } = useFollowingService();
+        await acceptOrDeclineFollowRequest(requestId, { action: "ACCEPT" });
         showSuccess("Follow request accepted!");
+        followRequests.value = followRequests.value.filter(req => req.idRequest !== requestId);
+    }
+    catch (error) {
+        if (error instanceof ApiError) {
+            showError(error.message);
+        }
+    }
+
+}
+
+async function declineFollowRequest(requestId: number) {
+    if (!currentUser.value) return;
+
+    try {
+        const { acceptOrDeclineFollowRequest } = useFollowingService();
+        await acceptOrDeclineFollowRequest(requestId, { action: "DECLINE" });
+        showSuccess("Follow request declined!");
         followRequests.value = followRequests.value.filter(req => req.idRequest !== requestId);
     }
     catch (error) {
@@ -110,7 +127,7 @@ async function acceptFollowRequest(requestId: number) {
 
                 <div class="request-actions">
                     <button class="request-btn request-btn--accept" @click.stop @click="acceptFollowRequest(req.idRequest)">Accept</button>
-                    <button class="request-btn request-btn--decline" @click.stop>Decline</button>
+                    <button class="request-btn request-btn--decline" @click.stop @click="declineFollowRequest(req.idRequest)">Decline</button>
                 </div>
             </div>
         </div>

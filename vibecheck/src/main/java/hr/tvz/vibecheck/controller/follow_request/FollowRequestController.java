@@ -1,8 +1,10 @@
 package hr.tvz.vibecheck.controller.follow_request;
 
+import hr.tvz.vibecheck.dto.request.FollowRequestActionRequest;
 import hr.tvz.vibecheck.dto.request.FollowRequestRequest;
 import hr.tvz.vibecheck.dto.response.FollowActionResponse;
 import hr.tvz.vibecheck.dto.response.FollowRequestResponse;
+import hr.tvz.vibecheck.enums.FollowRequestUserResponse;
 import hr.tvz.vibecheck.security.VibeCheckUserDetails;
 import hr.tvz.vibecheck.service.follow_request.FollowRequestService;
 import jakarta.validation.Valid;
@@ -49,11 +51,11 @@ public class FollowRequestController {
         return ResponseEntity.ok(followRequestService.getFollowStatus(userDetails.getId(), receiverId));
     }
 
-    @PatchMapping("/acceptFollowRequest/{requestId}")
-    public ResponseEntity<?> acceptFollowRequest(
+    @PatchMapping("/acceptOrDeclineFollowRequest/{requestId}")
+    public ResponseEntity<?> acceptOrDeclineFollowRequest(
             @PathVariable Long requestId,
-            @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
-        followRequestService.acceptFollowRequest(requestId, userDetails.getId());
+            @AuthenticationPrincipal VibeCheckUserDetails userDetails, @RequestBody FollowRequestActionRequest userResponse) {
+        followRequestService.acceptOrDeclineFollowRequest(requestId, userDetails.getId(), userResponse);
         return ResponseEntity.ok().build();
     }
 
