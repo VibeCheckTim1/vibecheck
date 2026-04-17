@@ -4,28 +4,34 @@ export interface FollowRequestRequest {
     "receiverId" : Number
 }
 
+type FollowActionResult = 'FOLLOW' | 'FOLLOWING' | 'PENDING';
+
 export interface FollowActionResponse {
-    "result": String
+    result: FollowActionResult
 }
 
 const apiUrl = "followRequest";
 
 
-export function useFollowingService() {
-    const { /* httpGet, httpPatch,  */httpPost, httpDelete } = useHttpClient();
+export function useFollowingService(receiverId: number) {
+    const { httpGet, /* httpPatch, */ httpPost, httpDelete } = useHttpClient();
 
     async function createFollowRequest(followRequest: FollowRequestRequest): Promise<FollowActionResponse> {
         const data = await httpPost<FollowActionResponse>(apiUrl, followRequest);
         return data;
     }
 
-
-    async function cancelFollowRequest(receiverId: number): Promise<void> {
+    async function cancelFollowRequest(): Promise<void> {
         await httpDelete<void>(`${apiUrl}/${receiverId}`);
     }
 
-    async function unfollow(receiverId: number): Promise<void> {
+    async function unfollow(): Promise<void> {
         await httpDelete<void>(`${apiUrl}/unfollow/${receiverId}`);
+    }
+
+    async function getFollowStatus(): Promise<FollowActionResponse> {
+        const data = await httpGet<FollowActionResponse>(`${apiUrl}/getFollowStatus/${receiverId}`);
+        return data;
     }
 
 
@@ -33,7 +39,8 @@ export function useFollowingService() {
     return {
         createFollowRequest,
         cancelFollowRequest,
-        unfollow
+        unfollow,
+        getFollowStatus
     }
         
 

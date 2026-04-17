@@ -43,13 +43,12 @@ public class FollowRequestService {
 
         if (receiver.getVisibility() == ProfileVisibility.PUBLIC) {
             Follows newFollow = Follows.builder()
-                            .user1(sender)
-                            .user2(receiver)
-                            .build();
+                    .user1(sender)
+                    .user2(receiver)
+                    .build();
             followsRepository.save(newFollow);
             return new FollowActionResponse(FollowActionResult.FOLLOWING);
-        }
-        else {
+        } else {
             Optional<FollowRequest> existingRequestOpt =
                     followRequestRepository.findBySender_IdUserAndReceiver_IdUser(sender.getIdUser(), receiver.getIdUser());
 
@@ -60,12 +59,10 @@ public class FollowRequestService {
                     existingReq.setStatus(FollowRequestStatus.PENDING);
                     followRequestRepository.save(existingReq);
                     return new FollowActionResponse(FollowActionResult.PENDING);
-                }
-                else {
+                } else {
                     throw new DuplicateFollowRequestException("Follow request for user " + receiver.getUsername() + " already exists");
                 }
-            }
-            else {
+            } else {
                 FollowRequest newFollowRequest = FollowRequest.builder()
                         .sender(sender)
                         .receiver(receiver)
@@ -118,6 +115,27 @@ public class FollowRequestService {
 
     }
 
+    public FollowActionResponse getFollowStatus(Long senderId, Long receiverId) {
+        Optional<Follows> followExistsOpt =
+                followsRepository.findByUser1_IdUserAndUser2_IdUser(senderId, receiverId);
+
+        if (followExistsOpt.isPresent()) {
+            return new FollowActionResponse(FollowActionResult.FOLLOWING);
+        }
+
+        Optional<FollowRequest> followRequestExistsOtp =
+                followRequestRepository.findBySender_IdUserAndReceiver_IdUser(senderId, receiverId);
+
+        if (followRequestExistsOtp.isPresent()) {
+            FollowRequest followRequest = followRequestExistsOtp.get();
+
+            if (followRequest.getStatus() == FollowRequestStatus.DECLINED) {
+                return new FollowActionResponse(FollowActionResult.FOLLOW);
+            }
+            return new FollowActionResponse(FollowActionResult.PENDING);
+        }
+        return new FollowActionResponse(FollowActionResult.FOLLOW);
+    }
 
 
 }

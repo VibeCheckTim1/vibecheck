@@ -40,12 +40,13 @@ async function follow() {
     if (!currentUser.value || !viewedUser.value) return;
 
     try {
-        const { createFollowRequest } = useFollowingService();
+        const { createFollowRequest } = useFollowingService(viewedUser.value?.idUser);
         const followApiResult = await createFollowRequest({
             receiverId: viewedUser.value?.idUser
         });
+        //followResult.value = (await createFollowRequest({  receiverId: viewedUser.value?.idUser })).result;
+        console.log(followResult.value);
 
-        console.log(followApiResult);
 
         if (followApiResult.result === 'FOLLOWING') {
             followResult.value = 'FOLLOWING';
@@ -75,8 +76,8 @@ async function cancelFollowRequest() {
 
     if (confirmed) {
         try {
-            const { cancelFollowRequest } = useFollowingService();
-            await cancelFollowRequest(viewedUser.value.idUser);
+            const { cancelFollowRequest } = useFollowingService(viewedUser.value.idUser);
+            await cancelFollowRequest();
 
             followResult.value = 'FOLLOW';
         }
@@ -100,8 +101,8 @@ async function unfollow() {
 
     if (confirmed) {
         try {
-            const { unfollow } = useFollowingService();
-            await unfollow(viewedUser.value.idUser);
+            const { unfollow } = useFollowingService(viewedUser.value.idUser);
+            await unfollow();
 
             followResult.value = 'FOLLOW';
         }
@@ -191,6 +192,13 @@ const loadUser = async (userIdRoute: number) => {
     }
 };
 
+async function getFollowStatus() {
+    if (!viewedUser.value || isOwnProfile.value) return;
+    const { getFollowStatus } = useFollowingService(viewedUser.value?.idUser);
+
+    followResult.value = (await getFollowStatus()).result;
+}
+
 watch(() => route.params.userId, async (newUserId) => {
     if (!newUserId) return;
 
@@ -199,9 +207,12 @@ watch(() => route.params.userId, async (newUserId) => {
     immediate: true,
 });
 
-onMounted(() => {
+onMounted(async () => {
     const userIdRoute = Number(route.params.userId);
-    loadUser(userIdRoute);
+    await loadUser(userIdRoute);
+
+    await getFollowStatus();
+
 });
 </script>
 

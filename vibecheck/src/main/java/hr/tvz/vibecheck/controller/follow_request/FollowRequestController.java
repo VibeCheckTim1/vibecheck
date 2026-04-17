@@ -17,14 +17,15 @@ public class FollowRequestController {
     private final FollowRequestService followRequestService;
 
     @PostMapping
-    public ResponseEntity<FollowActionResponse> createFriendRequestOrFollow(
+    public ResponseEntity<FollowActionResponse> createFollowRequestOrFollow(
             @Valid @RequestBody FollowRequestRequest request,
             @AuthenticationPrincipal VibeCheckUserDetails userDetailsService) {
         return ResponseEntity.ok(followRequestService.createFollowRequestOrFollow(userDetailsService.getId(), request));
     }
 
     @DeleteMapping("{receiverId}")
-    public ResponseEntity<?> cancelFollowRequest(@PathVariable Long receiverId,
+    public ResponseEntity<?> cancelFollowRequest(
+            @PathVariable Long receiverId,
             @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
         followRequestService.cancelFollowRequest(userDetails.getId(), receiverId);
         return ResponseEntity.noContent().build();
@@ -36,6 +37,13 @@ public class FollowRequestController {
             @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
         followRequestService.unfollow(userDetails.getId(), receiverId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/getFollowStatus/{receiverId}")
+    public ResponseEntity<FollowActionResponse> getFollowStatus(
+            @PathVariable Long receiverId,
+            @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
+        return ResponseEntity.ok(followRequestService.getFollowStatus(userDetails.getId(), receiverId));
     }
 
 }
