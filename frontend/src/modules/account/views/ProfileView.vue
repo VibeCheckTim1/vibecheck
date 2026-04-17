@@ -1,32 +1,146 @@
 <script setup lang="ts">
-import {useState} from "../../../composables/useState.ts";
-import {computed, onMounted, ref, watch} from "vue";
-import type {Playlist} from "../../../entities/playlist.ts";
+import { useState } from "../../../composables/useState.ts";
+import { computed, onMounted, ref, watch } from "vue";
+import type { Playlist } from "../../../entities/playlist.ts";
 import PageHeaderComponent from "../../../components/PageHeaderComponent.vue";
-import {useRoute} from "vue-router";
-import {ApiError} from "../../../composables/useHttpClient.ts";
+import { useRoute } from "vue-router";
+import { ApiError } from "../../../composables/useHttpClient.ts";
 import router from "../../../router";
-import {useToast} from "../../../composables/useToast.ts";
-import type {User} from "../../../entities/user.ts";
-import {useSecurityService} from "../../../composables/useSecurityService.ts";
+import { useToast } from "../../../composables/useToast.ts";
+import type { User } from "../../../entities/user.ts";
+import { useFollowingService } from "../../followers/composables/useFollowingService.ts";
+import { useConfirm } from "../../../composables/useConfirm.ts";
 import {useUserService} from "../../../composables/useUserService.ts";
+import {useSecurityService} from "../../../composables/useSecurityService.ts";
 
-const {currentUser} = useState();
+const { currentUser } = useState();
 const route = useRoute();
 
 const isOwnProfile = ref(true);
 const viewedUser = ref<User | null>(null);
-const {showError} = useToast();
+const { showError } = useToast();
+
+const followResult = ref<'FOLLOW' | 'FOLLOWING' | 'PENDING'>('FOLLOW');
+const { openConfirm } = useConfirm();
 
 async function logout() {
-    const {logoutAction} = useSecurityService();
-    await logoutAction();
-    window.location.href = "/";
+    if (currentUser.value) {
+        const { logoutAction } = useSecurityService();
+        await logoutAction();
+        window.location.href = "/";
+    }
 }
 
 const isPrivateProfile = computed(() => {
     return isOwnProfile.value === false && viewedUser.value?.isPrivate;
 });
+
+
+
+async function follow() {
+    if (!currentUser.value || !viewedUser.value) return;
+
+    try {
+        const { createFollowRequest } = useFollowingService(viewedUser.value?.idUser);
+        const followApiResult = await createFollowRequest({
+            receiverId: viewedUser.value?.idUser
+        });
+        //followResult.value = (await createFollowRequest({  receiverId: viewedUser.value?.idUser })).result;
+        console.log(followResult.value);
+
+
+        if (followApiResult.result === 'FOLLOWING') {
+            followResult.value = 'FOLLOWING';
+        }
+        else if (followApiResult.result === 'PENDING') {
+            followResult.value = 'PENDING';
+        }
+
+    }
+    catch (error) {
+        if (error instanceof ApiError) {
+            showError(error.message);
+        }
+    }
+}
+
+
+async function cancelFollowRequest() {
+    if (!currentUser.value || !viewedUser.value) return;
+
+    const confirmed = await openConfirm({
+        isDanger: true,
+        title: "Cancel follow request",
+        subtitle: "Are you sure you want to cancel follow request for this user?",
+        acceptMessage: "Yes, cancel request",
+    });
+
+    if (confirmed) {
+        try {
+            const { cancelFollowRequest } = useFollowingService(viewedUser.value.idUser);
+            await cancelFollowRequest();
+
+            followResult.value = 'FOLLOW';
+        }
+        catch (error) {
+            if (error instanceof ApiError) {
+                showError(error.message);
+            }
+        }
+    }
+}
+
+async function unfollow() {
+    if (!currentUser.value || !viewedUser.value) return;
+
+    const confirmed = await openConfirm({
+        isDanger: true,
+        title: "Unfollow user",
+        subtitle: "Are you sure you want to unfollow this user?",
+        acceptMessage: "Yes, unfollow user",
+    });
+
+    if (confirmed) {
+        try {
+            const { unfollow } = useFollowingService(viewedUser.value.idUser);
+            await unfollow();
+
+            followResult.value = 'FOLLOW';
+        }
+        catch (error) {
+            if (error instanceof ApiError) {
+                showError(error.message);
+            }
+        }
+    }
+}
+
+const followButtonText = computed(() => {
+    if (followResult.value === 'FOLLOWING') return 'Following';
+    if (followResult.value === 'PENDING') return 'Pending';
+    return 'Follow';
+});
+
+const handleButtonClass = computed(() => {
+    if (followResult.value === 'FOLLOWING') return 'follow-btn--following'
+    if (followResult.value === 'PENDING') return 'follow-btn--pending';
+    return 'follow-btn--follow';
+});
+
+async function handleFollowClick() {
+    if (followResult.value === 'FOLLOWING') { //unfollow
+        await unfollow();
+        return;
+    }
+    if (followResult.value === 'PENDING') { //cancel follow req
+        await cancelFollowRequest();
+        return;
+    }
+    await follow(); //follow
+}
+
+
+
 
 const playlists = ref<Playlist[]>([
     {
@@ -67,17 +181,24 @@ const loadUser = async (userIdRoute: number) => {
     }
     else {
         try {
-            const {getUser} = useUserService();
+            const { getUser } = useUserService();
             viewedUser.value = await getUser(userIdRoute);
         }
         catch (error) {
-            await router.push({name: "home"});
+            await router.push({ name: "home" });
             if (error instanceof ApiError) {
                 showError(error.message);
             }
         }
     }
 };
+
+async function getFollowStatus() {
+    if (!viewedUser.value || isOwnProfile.value) return;
+    const { getFollowStatus } = useFollowingService(viewedUser.value?.idUser);
+
+    followResult.value = (await getFollowStatus()).result;
+}
 
 watch(() => route.params.userId, async (newUserId) => {
     if (!newUserId) return;
@@ -87,9 +208,12 @@ watch(() => route.params.userId, async (newUserId) => {
     immediate: true,
 });
 
-onMounted(() => {
+onMounted(async () => {
     const userIdRoute = Number(route.params.userId);
-    loadUser(userIdRoute);
+    await loadUser(userIdRoute);
+
+    await getFollowStatus();
+
 });
 </script>
 
@@ -108,7 +232,13 @@ onMounted(() => {
             <div class="user-full-name">{{ viewedUser.email }}</div>
             <div class="user-username">{{ viewedUser.username }}</div>
             <p class="user-description" v-if="viewedUser.bio">{{ viewedUser.bio }}</p>
-            <router-link :to="{name: 'updateProfile'}" class="primary-button" v-if="isOwnProfile">Edit profile</router-link>
+
+            <button :class="['follow-btn', handleButtonClass]" v-if="!isOwnProfile" @click="handleFollowClick">{{
+                    followButtonText
+                }}</button>
+
+            <router-link :to="{ name: 'updateProfile' }" class="primary-button" v-if="isOwnProfile">Edit
+                profile</router-link>
             <template v-if="isPrivateProfile === false">
                 <div class="profile-info">
                     <ul>
@@ -157,7 +287,7 @@ onMounted(() => {
                     </div>
                 </section>
             </template>
-            <div class="private-profile-container" v-else>
+            <div v-if="viewedUser.isPrivate" class="private-profile-container">
                 <div class="icon-holder">
                     <i class="icon-shield-lock-outline"></i>
                 </div>
@@ -351,5 +481,83 @@ onMounted(() => {
             font-weight: bold;
         }
     }
+
+    .follow-btn {
+        min-width: 130px;
+        height: 44px;
+        padding: 0 20px;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        letter-spacing: 0.2px;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    /* FOLLOW */
+    .follow-btn--follow {
+        background: linear-gradient(135deg, #7c3aed, #9333ea);
+        color: #fff;
+        box-shadow: 0 6px 18px rgba(124, 58, 237, 0.35);
+    }
+
+    .follow-btn--follow:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(124, 58, 237, 0.45);
+    }
+
+    .follow-btn--follow:active {
+        transform: scale(0.97);
+    }
+
+
+    /* FOLLOWING */
+    .follow-btn--following {
+        background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+        color: #5b21b6;
+        border: 1px solid #c4b5fd;
+    }
+
+    .follow-btn--following::before {
+        content: "✓";
+        font-size: 14px;
+    }
+
+    /* hover = unfollow hint */
+    .follow-btn--following:hover {
+        background: #ef4444;
+        color: #fff;
+        border-color: #ef4444;
+    }
+
+
+    /* PENDING */
+    .follow-btn--pending {
+        background: rgba(245, 158, 11, 0.14);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .follow-btn--pending:hover {
+        background: rgba(245, 158, 11, 0.22);
+        border-color: rgba(245, 158, 11, 0.45);
+    }
+
+
+    /* DISABLED */
+    .follow-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+
 }
 </style>

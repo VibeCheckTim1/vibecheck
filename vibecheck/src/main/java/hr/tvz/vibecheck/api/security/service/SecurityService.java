@@ -88,7 +88,7 @@ public class SecurityService {
         var auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null || !(auth.getPrincipal() instanceof VibeCheckUserDetails user)) {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException("User not found");
         }
 
         return userRepository.findUserStateByUsername(user.getUsername()).orElse(null);

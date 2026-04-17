@@ -4,8 +4,9 @@
 
 <template>
     <h1>Home</h1>
-</template>
 
+    
+</template>
 <style scoped>
 
 </style>
