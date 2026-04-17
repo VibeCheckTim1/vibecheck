@@ -1,6 +1,6 @@
 package hr.tvz.vibecheck.security;
 
-import hr.tvz.vibecheck.repository.user.UserRepository;
+import hr.tvz.vibecheck.api.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.userdetails.UserDetails;

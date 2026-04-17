@@ -9,7 +9,7 @@ CREATE TABLE users (
     avatar_url VARCHAR(255) NOT NULL,
     avatar_public_id VARCHAR(255),
     bio VARCHAR(500),
-    profile_visibility VARCHAR(20) NOT NULL CHECK (profile_visibility IN ('PUBLIC', 'PRIVATE')),
+    is_private BOOL NOT NULL DEFAULT TRUE,
     email VARCHAR(255) UNIQUE,
     password VARCHAR(60) NOT NULL,
     tstamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL

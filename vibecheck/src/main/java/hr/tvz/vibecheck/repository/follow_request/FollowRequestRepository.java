@@ -1,7 +1,7 @@
 package hr.tvz.vibecheck.repository.follow_request;
 
-import hr.tvz.vibecheck.dto.response.FollowRequestResponse;
-import hr.tvz.vibecheck.entity.FollowRequest;
+import hr.tvz.vibecheck.api.account.dto.FollowRequestResponse;
+import hr.tvz.vibecheck.api.account.entity.FollowRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -14,7 +14,7 @@ public interface FollowRequestRepository extends JpaRepository<FollowRequest, Lo
     Optional<FollowRequest> findBySender_IdUserAndReceiver_IdUser(Long senderId, Long receiverId);
 
     @Query("""
-    SELECT new hr.tvz.vibecheck.dto.response.FollowRequestResponse(
+    SELECT new hr.tvz.vibecheck.api.account.dto.FollowRequestResponse(
         fr.idRequest,
         fr.sender.idUser,
         fr.sender.firstName,

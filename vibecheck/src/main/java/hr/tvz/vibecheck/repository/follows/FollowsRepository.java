@@ -1,6 +1,6 @@
 package hr.tvz.vibecheck.repository.follows;
 
-import hr.tvz.vibecheck.entity.Follows;
+import hr.tvz.vibecheck.api.account.entity.Follows;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

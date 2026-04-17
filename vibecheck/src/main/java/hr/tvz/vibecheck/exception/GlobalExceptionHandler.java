@@ -1,5 +1,10 @@
 package hr.tvz.vibecheck.exception;
 
+import hr.tvz.vibecheck.exception.custom.*;
+import hr.tvz.vibecheck.exception.custom.UserNotFoundException;
+import hr.tvz.vibecheck.exception.framework.ErrorKey;
+import hr.tvz.vibecheck.exception.framework.ErrorResponse;
+import hr.tvz.vibecheck.exception.framework.ErrorResponseService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,9 +20,19 @@ public class GlobalExceptionHandler {
 
     private final ErrorResponseService errorResponseService;
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception ex, HttpServletRequest request) {
-        return errorResponseService.buildError(ex, request, ErrorKey.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<?> handleUserNotFound(UserNotFoundException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<?> handleInvalidPassword(InvalidPasswordException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidFileException.class)
+    public ResponseEntity<?> handleInvalidFile(InvalidFileException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     @ExceptionHandler(DuplicateFollowRequestException.class)
@@ -38,11 +53,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotPendingStatusException.class)
     public ResponseEntity<?> handleNotPendingStatusException(NotPendingStatusException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
-    }
-
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<?> handleUserNotFoundException(UserNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
     }
 
     @ExceptionHandler(DuplicateUserException.class)
@@ -70,4 +80,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", ex.getMessage()));
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.INTERNAL_SERVER_ERROR);
+    }
 }
