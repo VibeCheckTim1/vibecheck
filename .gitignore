@@ -1,4 +1,8 @@
 .env
+*.env
+*.env.*
+vibecheck/src/main/resources/.env
+vibecheck/src/main/resources/.env.txt
 vibecheck/src/main/resources/env
 HELP.md
 target/
