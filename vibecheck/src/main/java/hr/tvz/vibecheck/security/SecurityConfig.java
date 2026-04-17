@@ -4,6 +4,7 @@ import hr.tvz.vibecheck.security.exception.MDCfilter;
 import hr.tvz.vibecheck.security.exception.RestAccessDeniedHandler;
 import hr.tvz.vibecheck.security.exception.RestAuthenticationEntryPoint;
 import hr.tvz.vibecheck.security.jwt.JwtFilter;
+import hr.tvz.vibecheck.security.oauth.OAuth2AuthenticationFailureHandler;
 import hr.tvz.vibecheck.security.oauth.CustomOAuth2UserService;
 import hr.tvz.vibecheck.security.oauth.HttpCookieOAuth2AuthorizationRequestRepository;
 import hr.tvz.vibecheck.security.oauth.OAuth2AuthenticationSuccessHandler;
@@ -42,6 +43,10 @@ public class SecurityConfig {
 
     private final OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
 
+    private final OAuth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler;
+
+    private final HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
         http
@@ -55,10 +60,11 @@ public class SecurityConfig {
                 .addFilterAfter(jwtFilter, MDCfilter.class)
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(auth -> auth
-                                .authorizationRequestRepository(cookieAuthorizationRequestRepository())
+                                .authorizationRequestRepository(cookieAuthorizationRequestRepository)
                         )
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(oauth2AuthenticationSuccessHandler)
+                        .failureHandler(oauth2AuthenticationFailureHandler)
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -92,11 +98,6 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) {
         return config.getAuthenticationManager();
-    }
-
-    @Bean
-    public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
-        return new HttpCookieOAuth2AuthorizationRequestRepository();
     }
 
     @Bean

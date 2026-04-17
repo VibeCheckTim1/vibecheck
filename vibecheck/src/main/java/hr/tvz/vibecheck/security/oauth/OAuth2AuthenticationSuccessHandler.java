@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -22,6 +23,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final OAuthAccountRepository oAuthAccountRepository;
     private final JwtService jwtService;
+
+    @Value("${app.frontend.base-url}")
+    private String frontendBaseUrl;
 
     @Override
     public void onAuthenticationSuccess(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Authentication authentication) throws IOException {
@@ -46,13 +50,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             var accessToken = jwtService.generateAccessToken(userDetails);
             var refreshToken = jwtService.generateRefreshToken(userDetails);
 
-            Cookie accessTokenCookie = jwtService.generateAccessTokenCookie(accessToken);
+            var accessTokenCookie = jwtService.generateAccessTokenCookie(accessToken);
             response.addCookie(accessTokenCookie);
 
-            Cookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(refreshToken);
+            var refreshTokenCookie = jwtService.generateRefreshTokenCookie(refreshToken);
             response.addCookie(refreshTokenCookie);
 
-            getRedirectStrategy().sendRedirect(request, response, "http://127.0.0.1:5173/home");
+            getRedirectStrategy().sendRedirect(request, response, frontendBaseUrl + "/home");
         }
     }
 }
