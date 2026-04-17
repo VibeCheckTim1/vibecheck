@@ -60,4 +60,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
     }
 
+    @ExceptionHandler(NotPendingRequestException.class)
+    public ResponseEntity<?> handleNotPendingException(NotPendingRequestException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(NotYourRequestException.class)
+    public ResponseEntity<?> handleNotYourRequestException(NotYourRequestException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", ex.getMessage()));
+    }
+
 }

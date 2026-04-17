@@ -2,6 +2,7 @@ package hr.tvz.vibecheck.service.follow_request;
 
 import hr.tvz.vibecheck.dto.request.FollowRequestRequest;
 import hr.tvz.vibecheck.dto.response.FollowActionResponse;
+import hr.tvz.vibecheck.dto.response.FollowRequestResponse;
 import hr.tvz.vibecheck.entity.FollowRequest;
 import hr.tvz.vibecheck.entity.Follows;
 import hr.tvz.vibecheck.entity.User;
@@ -14,9 +15,11 @@ import hr.tvz.vibecheck.repository.follows.FollowsRepository;
 import hr.tvz.vibecheck.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,12 +29,13 @@ public class FollowRequestService {
     private final UserRepository userRepository;
     private final FollowsRepository followsRepository;
 
+    @Transactional
     public FollowActionResponse createFollowRequestOrFollow(Long senderId, FollowRequestRequest followRequest) {
         User sender = userRepository.findById(senderId).orElseThrow(()
-                -> new UserNotFoundException("User not found"));
+                -> new UserNotFoundException("User with ID " + senderId + " not found"));
 
         User receiver = userRepository.findById(followRequest.receiverId()).orElseThrow(()
-                -> new UserNotFoundException("User not found"));
+                -> new UserNotFoundException("User with ID " + followRequest.receiverId() + " not found"));
 
         if (sender.getIdUser().equals(receiver.getIdUser())) {
             throw new SelfFollowException("You cannot follow yourself");
@@ -85,7 +89,7 @@ public class FollowRequestService {
 
         FollowRequest existingReq = followRequestRepository.findBySender_IdUserAndReceiver_IdUser
                 (sender.getIdUser(), receiver.getIdUser()).orElseThrow(()
-                -> new FollowRequestNotFoundException("Follow request for user " + sender.getUsername() + " not found!"));
+                -> new FollowRequestNotFoundException("Follow request for user " + sender.getUsername() + " not found"));
 
 
         if (!existingReq.getStatus().equals(FollowRequestStatus.PENDING)) {
@@ -95,6 +99,7 @@ public class FollowRequestService {
         followRequestRepository.delete(existingReq);
     }
 
+    @Transactional
     public void unfollow(Long senderId, Long receiverId) {
         User sender = userRepository.findById(senderId).orElseThrow(()
                 -> new UserNotFoundException("User with ID " + senderId + " not found"));
@@ -135,6 +140,51 @@ public class FollowRequestService {
             return new FollowActionResponse(FollowActionResult.PENDING);
         }
         return new FollowActionResponse(FollowActionResult.FOLLOW);
+    }
+
+
+    @Transactional
+    public void acceptFollowRequest(Long requestId, Long receiverId) {
+        User receiver = userRepository.findById(receiverId).orElseThrow(()
+                -> new UserNotFoundException("User with ID " + receiverId + " not found"));
+
+        FollowRequest existingReq = followRequestRepository.findById(requestId).orElseThrow(() ->
+                new FollowRequestNotFoundException("Follow request for user " + receiver.getUsername() + " not found"));
+
+        if (!existingReq.getReceiver().getIdUser().equals(receiverId)) {
+            throw new NotYourRequestException("You cannot accept someone else's follow request");
+        }
+
+        if (existingReq.getStatus() != FollowRequestStatus.PENDING) {
+            throw new NotPendingStatusException("You cannot accept a follow request that is not \"Pending\"");
+        }
+
+        boolean alreadyFollowing = followsRepository
+                .findByUser1_IdUserAndUser2_IdUser(existingReq.getSender().getIdUser(), receiver.getIdUser())
+                .isPresent();
+
+        if (alreadyFollowing) {
+            throw new DuplicateFollowException("User already follows this profile");
+        }
+
+        existingReq.setStatus(FollowRequestStatus.ACCEPTED);
+        followRequestRepository.delete(existingReq);
+
+        Follows newFollow = Follows.builder()
+                .user1(existingReq.getSender())
+                .user2(receiver)
+                .build();
+
+        followsRepository.save(newFollow);
+    }
+
+
+    public List<FollowRequestResponse> getAllFollowRequests(Long receiverId) {
+        userRepository.findById(receiverId).orElseThrow(()
+                -> new UserNotFoundException("User with ID " + receiverId + " not found"));
+
+        return followRequestRepository.findAllByReceiverId(receiverId);
+
     }
 
 

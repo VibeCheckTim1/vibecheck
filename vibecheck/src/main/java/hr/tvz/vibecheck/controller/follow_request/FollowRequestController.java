@@ -2,6 +2,7 @@ package hr.tvz.vibecheck.controller.follow_request;
 
 import hr.tvz.vibecheck.dto.request.FollowRequestRequest;
 import hr.tvz.vibecheck.dto.response.FollowActionResponse;
+import hr.tvz.vibecheck.dto.response.FollowRequestResponse;
 import hr.tvz.vibecheck.security.VibeCheckUserDetails;
 import hr.tvz.vibecheck.service.follow_request.FollowRequestService;
 import jakarta.validation.Valid;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,6 +47,19 @@ public class FollowRequestController {
             @PathVariable Long receiverId,
             @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
         return ResponseEntity.ok(followRequestService.getFollowStatus(userDetails.getId(), receiverId));
+    }
+
+    @PatchMapping("/acceptFollowRequest/{requestId}")
+    public ResponseEntity<?> acceptFollowRequest(
+            @PathVariable Long requestId,
+            @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
+        followRequestService.acceptFollowRequest(requestId, userDetails.getId());
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/getAll")
+    public List<FollowRequestResponse> getAllFollowRequests(@AuthenticationPrincipal VibeCheckUserDetails userDetails) {
+        return followRequestService.getAllFollowRequests(userDetails.getId());
     }
 
 }
