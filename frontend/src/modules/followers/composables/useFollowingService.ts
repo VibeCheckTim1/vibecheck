@@ -1,4 +1,6 @@
-import { useHttpClient } from "../../../composables/useHttpClient";
+import {useHttpClient} from "../../../composables/useHttpClient";
+import {useFollowingStore} from "../stores/useFollowingStore.ts";
+import {storeToRefs} from "pinia";
 
 export interface FollowRequestRequest {
     "receiverId": Number
@@ -28,10 +30,11 @@ const apiUrl = "followRequest";
 
 export function useFollowingService(receiverId?: number) {
     const { httpGet, httpPatch, httpPost, httpDelete } = useHttpClient();
+    const followingStore = useFollowingStore();
+    const {followRequests} = storeToRefs(followingStore);
 
     async function createFollowRequest(followRequest: FollowRequestRequest): Promise<FollowActionResponse> {
-        const data = await httpPost<FollowActionResponse>(apiUrl, followRequest);
-        return data;
+        return await httpPost<FollowActionResponse>(apiUrl, followRequest);
     }
 
     async function cancelFollowRequest(): Promise<void> {
@@ -43,13 +46,16 @@ export function useFollowingService(receiverId?: number) {
     }
 
     async function getFollowStatus(): Promise<FollowActionResponse> {
-        const data = await httpGet<FollowActionResponse>(`${apiUrl}/getFollowStatus/${receiverId}`);
-        return data;
+        return await httpGet<FollowActionResponse>(`${apiUrl}/getFollowStatus/${receiverId}`);
     }
 
-    async function getAllFollowRequests(): Promise<FollowRequestResponse[]> {
-        const data = await httpGet<FollowRequestResponse[]>(`${apiUrl}/getAll`);
-        return data;
+    async function getAllFollowRequests(forceFetch = false): Promise<FollowRequestResponse[]> {
+        if (forceFetch || followRequests.value.length === 0) {
+            const data = await httpGet<FollowRequestResponse[]>(`${apiUrl}/getAll`);
+            followingStore.setFollowRequests(data);
+        }
+
+        return followRequests.value;
     }
 
     async function acceptOrDeclineFollowRequest(requestId: number, body: FollowRequestActionRequest) {

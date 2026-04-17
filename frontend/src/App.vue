@@ -1,11 +1,24 @@
 <script setup lang="ts">
-
-import ToastOutlet from "./components/ToastOutlet.vue";
+import {watch} from 'vue';
 import {useState} from "./composables/useState.ts";
+import {useFollowingService} from "./modules/followers/composables/useFollowingService.ts";
 import DialogOutlet from "./components/DialogOutlet.vue";
+import ToastOutlet from "./components/ToastOutlet.vue";
 import ConfirmOutlet from "./components/ConfirmOutlet.vue";
+import {useFollowingStore} from "./modules/followers/stores/useFollowingStore.ts";
 
-const {currentUser} = useState();
+const { currentUser } = useState();
+
+const followingStore = useFollowingStore();
+const { getAllFollowRequests } = useFollowingService();
+
+watch(() => currentUser.value, async (user) => {
+    if (!user) return;
+    await getAllFollowRequests(true);
+},
+{
+    immediate: true
+});
 </script>
 
 <template>
@@ -46,6 +59,7 @@ const {currentUser} = useState();
                     <router-link :to="{name: 'notifications'}"
                                  active-class="highlight">
                         <div class="icon-holder">
+                            <span class="notifications-badge" v-if="followingStore.followRequests.length > 0">{{followingStore.followRequests.length}}</span>
                             <i class="icon-bell-outline"></i>
                         </div>
                         <span>Notifications</span>
@@ -105,6 +119,25 @@ main {
 
             &.highlight {
                 color: var(--color-primary-4);
+            }
+
+            .icon-holder {
+                position: relative;
+
+                .notifications-badge {
+                    position: absolute;
+                    top: -5px;
+                    right: -5px;
+                    background-color: var(--color-red-5);
+                    color: white;
+                    font-size: var(--font-size-1);
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
             }
         }
     }

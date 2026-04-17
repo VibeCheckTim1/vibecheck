@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useState } from '../../../composables/useState';
 import PageHeaderComponent from "../../../components/PageHeaderComponent.vue";
 import { useRouter } from 'vue-router';
@@ -13,35 +13,17 @@ const { currentUser } = useState();
 const followRequests = ref<FollowRequestResponse[]>([]);
 
 const now = ref(Date.now());
-let interval: number;
 
 const router = useRouter();
 
 const { showSuccess, showError } = useToast();
 
 
-async function getAllFollowRequests() {
+async function fetchAllFollowRequests() {
     if (!currentUser.value) return;
     const { getAllFollowRequests } = useFollowingService();
-
-    followRequests.value = await getAllFollowRequests();
-
+    followRequests.value = await getAllFollowRequests(true);
 }
-
-
-onMounted(() => {
-    interval = setInterval(() => {
-        now.value = Date.now();
-    }, 60000);
-
-    getAllFollowRequests();
-})
-
-onUnmounted(() => {
-    clearInterval(interval);
-})
-
-
 
 function timeAgo(dateStr: string) {
     const diff = now.value - new Date(dateStr).getTime();
@@ -69,7 +51,7 @@ async function acceptFollowRequest(requestId: number) {
         const { acceptOrDeclineFollowRequest } = useFollowingService();
         await acceptOrDeclineFollowRequest(requestId, { action: "ACCEPT" });
         showSuccess("Follow request accepted!");
-        followRequests.value = followRequests.value.filter(req => req.idRequest !== requestId);
+        await fetchAllFollowRequests();
     }
     catch (error) {
         if (error instanceof ApiError) {
@@ -86,7 +68,7 @@ async function declineFollowRequest(requestId: number) {
         const { acceptOrDeclineFollowRequest } = useFollowingService();
         await acceptOrDeclineFollowRequest(requestId, { action: "DECLINE" });
         showSuccess("Follow request declined!");
-        followRequests.value = followRequests.value.filter(req => req.idRequest !== requestId);
+        await fetchAllFollowRequests();
     }
     catch (error) {
         if (error instanceof ApiError) {
@@ -96,7 +78,9 @@ async function declineFollowRequest(requestId: number) {
 
 }
 
-
+onMounted(async () => {
+    await fetchAllFollowRequests();
+});
 </script>
 
 
@@ -126,8 +110,8 @@ async function declineFollowRequest(requestId: number) {
                 </div>
 
                 <div class="request-actions">
-                    <button class="request-btn request-btn--accept" @click.stop @click="acceptFollowRequest(req.idRequest)">Accept</button>
-                    <button class="request-btn request-btn--decline" @click.stop @click="declineFollowRequest(req.idRequest)">Decline</button>
+                    <button class="primary-button" @click.stop @click="acceptFollowRequest(req.idRequest)">Accept</button>
+                    <button class="secondary-button" @click.stop @click="declineFollowRequest(req.idRequest)">Decline</button>
                 </div>
             </div>
         </div>
@@ -157,17 +141,7 @@ async function declineFollowRequest(requestId: number) {
     border-radius: 18px;
     background: #ffffff;
     border: 1px solid #ede9fe;
-    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: pointer;
 }
-
-.request-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 30px rgba(139, 92, 246, 0.14);
-    opacity: 0.85;
-}
-
 
 .request-user-section {
     display: flex;
@@ -257,7 +231,6 @@ async function declineFollowRequest(requestId: number) {
     background: #ffffff;
     border: 1px solid #ede9fe;
     border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
 }
 
 .empty-title {
