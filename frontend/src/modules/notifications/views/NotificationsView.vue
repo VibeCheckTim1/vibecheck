@@ -5,12 +5,16 @@ import PageHeaderComponent from "../../../components/PageHeaderComponent.vue";
 import { useRouter } from 'vue-router';
 import { ApiError } from '../../../composables/useHttpClient';
 import { useToast } from '../../../composables/useToast';
-import { useFollowingService, type FollowRequestResponse } from '../../followers/composables/useFollowingService';
+import { useFollowingService/* , type FollowRequestResponse  */} from '../../followers/composables/useFollowingService';
+import { useFollowingStore } from '../../followers/stores/useFollowingStore';
+import { storeToRefs } from 'pinia';
 
 
 const { currentUser } = useState();
 
-const followRequests = ref<FollowRequestResponse[]>([]);
+//const followRequests = ref<FollowRequestResponse[]>([]);
+const followingStore = useFollowingStore();
+const { followRequests } = storeToRefs(followingStore);
 
 const now = ref(Date.now());
 
@@ -22,7 +26,7 @@ const { showSuccess, showError } = useToast();
 async function fetchAllFollowRequests() {
     if (!currentUser.value) return;
     const { getAllFollowRequests } = useFollowingService();
-    followRequests.value = await getAllFollowRequests(true);
+    await getAllFollowRequests(true);
 }
 
 function timeAgo(dateStr: string) {

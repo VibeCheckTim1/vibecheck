@@ -8,8 +8,7 @@ import hr.tvz.vibecheck.exception.custom.UserNotFoundException;
 import hr.tvz.vibecheck.api.user.entity.User;
 import hr.tvz.vibecheck.api.user.mapper.UserMapper;
 import hr.tvz.vibecheck.api.user.repository.UserRepository;
-import hr.tvz.vibecheck.api.account.repository.EmailChangeRepository;
-import hr.tvz.vibecheck.exception.framework.ErrorKey;
+import hr.tvz.vibecheck.api.account.repository.email_change.EmailChangeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -62,7 +61,7 @@ public class AccountService {
 
         userMapper.updateUserFromRequest(request, user);
 
-        userRepository.save(user);
+        //userRepository.save(user);
     }
 
 

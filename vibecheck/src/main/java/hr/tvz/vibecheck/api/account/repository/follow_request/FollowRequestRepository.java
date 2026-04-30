@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.repository.follow_request;
+package hr.tvz.vibecheck.api.account.repository.follow_request;
 
 import hr.tvz.vibecheck.api.account.dto.FollowRequestResponse;
 import hr.tvz.vibecheck.api.account.entity.FollowRequest;
@@ -22,7 +22,8 @@ public interface FollowRequestRepository extends JpaRepository<FollowRequest, Lo
         fr.createdAt
     )
     FROM FollowRequest fr
-    WHERE fr.receiver.idUser = :receiverId
+    WHERE fr.receiver.idUser = :receiverId AND
+          fr.status != 'DECLINED'
 """)
     List<FollowRequestResponse> findAllByReceiverId(Long receiverId);
 

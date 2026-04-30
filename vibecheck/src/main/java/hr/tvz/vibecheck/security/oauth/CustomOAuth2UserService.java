@@ -20,6 +20,7 @@ import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -61,8 +62,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             oAuthAccountRepository.save(account);
 
         } else {
-            user = registerNewUser(oAuth2User);
-
+            String email = oAuth2User.getAttribute("email");
+            Optional<User> userOpt = userRepository.findByEmail(email);
+            if (userOpt.isPresent()) {
+                user = userOpt.get();
+            }
+            else {
+                user = registerNewUser(oAuth2User);
+            }
             var newAccount = OAuthAccount.builder()
                     .user(user)
                     .provider(provider)
@@ -70,6 +77,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .build();
             updateOAuthAccount(newAccount, userRequest);
             oAuthAccountRepository.save(newAccount);
+
         }
 
         return VibeCheckUserDetails.builder()

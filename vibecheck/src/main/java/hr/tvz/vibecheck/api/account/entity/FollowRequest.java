@@ -1,7 +1,7 @@
 package hr.tvz.vibecheck.api.account.entity;
 
+import hr.tvz.vibecheck.api.security.enums.FollowRequestStatus;
 import hr.tvz.vibecheck.api.user.entity.User;
-import hr.tvz.vibecheck.enums.FollowRequestStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
