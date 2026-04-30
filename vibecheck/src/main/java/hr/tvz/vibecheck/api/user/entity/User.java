@@ -1,5 +1,6 @@
 package hr.tvz.vibecheck.api.user.entity;
 
+import hr.tvz.vibecheck.api.security.entity.Role;
 import hr.tvz.vibecheck.api.security.entity.OAuthAccount;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -50,4 +51,12 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OAuthAccount> oauthAccounts;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private List<Role> roles;
 }

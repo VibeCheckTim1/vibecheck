@@ -39,7 +39,7 @@ public class VibeCheckUserDetails implements UserDetails, OAuth2User {
 
     @Override
     public @Nonnull Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
+        return (roles == null ? List.<String>of() : roles).stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .toList();
     }
