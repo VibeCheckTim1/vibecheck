@@ -7,5 +7,6 @@ public record FollowRequestResponse(
         Long senderId,
         String senderName,
         String senderLastName,
+        String avatarUrl,
         LocalDateTime createdAt) {
 }

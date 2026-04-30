@@ -19,6 +19,7 @@ public interface FollowRequestRepository extends JpaRepository<FollowRequest, Lo
         fr.sender.idUser,
         fr.sender.firstName,
         fr.sender.lastName,
+        fr.sender.avatarUrl,
         fr.createdAt
     )
     FROM FollowRequest fr

@@ -22,6 +22,7 @@ export interface FollowRequestResponse {
     senderId: number;
     senderName: string;
     senderLastName: string;
+    avatarUrl: string;
     createdAt: string;
 }
 

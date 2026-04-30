@@ -5,7 +5,7 @@ import PageHeaderComponent from "../../../components/PageHeaderComponent.vue";
 import { useRouter } from 'vue-router';
 import { ApiError } from '../../../composables/useHttpClient';
 import { useToast } from '../../../composables/useToast';
-import { useFollowingService/* , type FollowRequestResponse  */} from '../../followers/composables/useFollowingService';
+import { useFollowingService/* , type FollowRequestResponse  */ } from '../../followers/composables/useFollowingService';
 import { useFollowingStore } from '../../followers/stores/useFollowingStore';
 import { storeToRefs } from 'pinia';
 
@@ -42,7 +42,7 @@ function timeAgo(dateStr: string) {
 
 function goToProfile(userId: number) {
     router.push({
-        name: "profile",
+        name: "account",
         params: { userId }
     });
 }
@@ -101,10 +101,16 @@ onMounted(async () => {
         </div>
 
         <div v-else class="requests-list">
-            <div v-for="req in followRequests" :key="req.idRequest" class="request-card" @click="goToProfile(req.senderId)">
+            <div v-for="req in followRequests" :key="req.idRequest" class="request-card"
+                @click="goToProfile(req.senderId)">
                 <div class="request-user-section">
-                    <div class="avatar-placeholder">
-                        {{ req.senderName.charAt(0) }}{{ req.senderLastName.charAt(0) }}
+                    <div class="request-avatar">
+                        <img v-if="req.avatarUrl" :src="req.avatarUrl" :alt="`${req.senderName} ${req.senderLastName}`"
+                            class="request-avatar-img" />
+
+                        <span v-else class="request-avatar-initials">
+                            {{ req.senderName?.charAt(0) }}{{ req.senderLastName?.charAt(0) }}
+                        </span>
                     </div>
 
                     <div class="request-user-info">
@@ -114,8 +120,10 @@ onMounted(async () => {
                 </div>
 
                 <div class="request-actions">
-                    <button class="primary-button" @click.stop @click="acceptFollowRequest(req.idRequest)">Accept</button>
-                    <button class="secondary-button" @click.stop @click="declineFollowRequest(req.idRequest)">Decline</button>
+                    <button class="primary-button" @click.stop
+                        @click="acceptFollowRequest(req.idRequest)">Accept</button>
+                    <button class="secondary-button" @click.stop
+                        @click="declineFollowRequest(req.idRequest)">Decline</button>
                 </div>
             </div>
         </div>
@@ -124,6 +132,38 @@ onMounted(async () => {
 
 
 <style scoped>
+.request-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    color: white;
+
+    box-shadow: 0 6px 16px rgba(109, 40, 217, 0.25);
+}
+
+.request-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 50%;
+}
+
+.request-avatar-initials {
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
 .follow-requests-page {
     max-width: 720px;
     margin: 0 auto;
@@ -145,6 +185,7 @@ onMounted(async () => {
     border-radius: 18px;
     background: #ffffff;
     border: 1px solid #ede9fe;
+    cursor: pointer;
 }
 
 .request-user-section {
@@ -152,23 +193,6 @@ onMounted(async () => {
     align-items: center;
     gap: 0.9rem;
     min-width: 0;
-}
-
-
-.avatar-placeholder {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-    color: white;
-    font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: 0.5px;
-    box-shadow: 0 6px 16px rgba(109, 40, 217, 0.25);
 }
 
 .request-user-info {
@@ -264,6 +288,4 @@ onMounted(async () => {
         flex: 1;
     }
 }
-
-
 </style>
