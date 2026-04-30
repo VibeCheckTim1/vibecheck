@@ -18,8 +18,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -43,6 +41,8 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
 
+    private final EndpointAuthorizationService endpointAuthorizationService;
+
     private final OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
 
     private final OAuth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler;
@@ -52,7 +52,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
         http
-                .cors(cors -> {})
+                .cors(_ -> {})
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(restAuthenticationEntryPoint)
@@ -71,6 +71,16 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth ->
+                        endpointAuthorizationService.getEndpointAccessRules().forEach(
+                                rule -> {
+                                    if (rule.roles().isEmpty()) {
+                                        auth.requestMatchers(rule.method(), rule.path()).authenticated();
+                                        return;
+                                    }
+                                    auth.requestMatchers(rule.method(), rule.path())
+                                            .hasAnyRole(rule.roles().toArray(String[]::new));
+                                }))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
@@ -79,15 +89,14 @@ public class SecurityConfig {
                         .requestMatchers("/error/**").permitAll()
                         .requestMatchers("/security/register").permitAll()
                         .requestMatchers("/security/login").permitAll()
-                        .requestMatchers("/security/current-user").authenticated()
                         .requestMatchers("/security/refresh-token").permitAll()
-                        .requestMatchers("/security/logout").authenticated()
-
-                        .requestMatchers("/user/**").authenticated()
-                        .requestMatchers("/search").authenticated()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/login/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated()
+                        //.requestMatchers("/security/current-user").authenticated()
+                        //.requestMatchers("/security/logout").authenticated()
+                        //.requestMatchers("/user/**").authenticated()
+                        //.requestMatchers("/search").authenticated()
                 )
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)

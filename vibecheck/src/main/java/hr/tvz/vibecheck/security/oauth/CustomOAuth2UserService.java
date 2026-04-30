@@ -1,9 +1,11 @@
 package hr.tvz.vibecheck.security.oauth;
 
+import hr.tvz.vibecheck.api.security.entity.Role;
 import hr.tvz.vibecheck.api.user.repository.UserRepository;
 import hr.tvz.vibecheck.api.security.entity.OAuthAccount;
 import hr.tvz.vibecheck.api.user.entity.User;
 import hr.tvz.vibecheck.api.security.repository.OAuthAccountRepository;
+import hr.tvz.vibecheck.api.security.repository.RoleRepository;
 import hr.tvz.vibecheck.api.account.service.MailService;
 import hr.tvz.vibecheck.security.VibeCheckUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -29,6 +30,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
     private final OAuthAccountRepository oAuthAccountRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final MailService mailService;
 
@@ -64,12 +66,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         } else {
             String email = oAuth2User.getAttribute("email");
             Optional<User> userOpt = userRepository.findByEmail(email);
-            if (userOpt.isPresent()) {
-                user = userOpt.get();
-            }
-            else {
-                user = registerNewUser(oAuth2User);
-            }
+            user = userOpt.orElseGet(() -> registerNewUser(oAuth2User));
             var newAccount = OAuthAccount.builder()
                     .user(user)
                     .provider(provider)
@@ -85,7 +82,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .password(user.getPassword())
-                .roles(List.of()) //TODO: kada se dodaju role
+                .roles(roleRepository.findAllByUserId(user.getIdUser()).stream()
+                        .map(Role::getName)
+                        .toList())
                 .attributes(oAuth2User.getAttributes())
                 .build();
     }
