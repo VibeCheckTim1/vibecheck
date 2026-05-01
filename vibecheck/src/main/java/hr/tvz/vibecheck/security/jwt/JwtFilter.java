@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -20,6 +21,12 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     private final UserDetailsService userDetailsService;
+
+    private static final List<String> PATHS_TO_SKIP = List.of(
+            "/security/refresh-token",
+            "/security/login",
+            "/security/register"
+    );
 
     public JwtFilter(JwtService jwtService, UserDetailsService userDetailsService) {
         this.jwtService = jwtService;
@@ -30,6 +37,11 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain chain) throws ServletException, IOException {
+
+        if (PATHS_TO_SKIP.contains(request.getServletPath())) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         var token = jwtService.extractTokenFromCookie(request, TokenType.ACCESS);
 
