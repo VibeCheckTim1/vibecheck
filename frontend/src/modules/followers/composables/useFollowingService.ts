@@ -26,6 +26,11 @@ export interface FollowRequestResponse {
     createdAt: string;
 }
 
+export interface FollowStatsResponse {
+    followersCount: number,
+    followingCount: number
+}
+
 const apiUrl = "followRequest";
 
 
@@ -63,6 +68,11 @@ export function useFollowingService(receiverId?: number) {
         await httpPatch<void>(`${apiUrl}/acceptOrDeclineFollowRequest/${requestId}`, body);
     }
 
+    async function getFollowStats(): Promise<FollowStatsResponse> {
+        const data = await httpGet<FollowStatsResponse>(`${apiUrl}/stats`);
+        return data;
+    } 
+
 
     return {
         createFollowRequest,
@@ -70,7 +80,8 @@ export function useFollowingService(receiverId?: number) {
         unfollow,
         getFollowStatus,
         getAllFollowRequests,
-        acceptOrDeclineFollowRequest
+        acceptOrDeclineFollowRequest,
+        getFollowStats
     }
 
 

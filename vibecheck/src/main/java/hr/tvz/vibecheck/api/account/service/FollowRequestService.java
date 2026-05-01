@@ -1,5 +1,6 @@
 package hr.tvz.vibecheck.api.account.service;
 
+import hr.tvz.vibecheck.api.account.dto.FollowStatsResponse;
 import hr.tvz.vibecheck.api.account.entity.FollowRequest;
 import hr.tvz.vibecheck.api.security.enums.FollowActionResult;
 import hr.tvz.vibecheck.api.security.enums.FollowRequestStatus;
@@ -195,6 +196,17 @@ public class FollowRequestService {
                 -> new UserNotFoundException("User with ID " + receiverId + " not found"));
 
         return followRequestRepository.findAllByReceiverId(receiverId);
+
+    }
+
+
+    public FollowStatsResponse getFollowStats(Long userId) {
+        userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        long followersCount = followsRepository.countByUser2_IdUser(userId);
+        long followingCount = followsRepository.countByUser1_IdUser(userId);
+
+        return new FollowStatsResponse(followersCount, followingCount);
 
     }
 

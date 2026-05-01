@@ -1,5 +1,6 @@
 package hr.tvz.vibecheck.api.account.controller;
 
+import hr.tvz.vibecheck.api.account.dto.FollowStatsResponse;
 import hr.tvz.vibecheck.dto.request.FollowRequestActionRequest;
 import hr.tvz.vibecheck.dto.request.FollowRequestRequest;
 import hr.tvz.vibecheck.api.account.dto.FollowActionResponse;
@@ -61,6 +62,11 @@ public class FollowRequestController {
     @GetMapping("/getAll")
     public List<FollowRequestResponse> getAllFollowRequests(@AuthenticationPrincipal VibeCheckUserDetails userDetails) {
         return followRequestService.getAllFollowRequests(userDetails.getId());
+    }
+
+    @GetMapping("/stats")
+    public FollowStatsResponse getFollowStats(@AuthenticationPrincipal VibeCheckUserDetails userDetails) {
+        return followRequestService.getFollowStats(userDetails.getId());
     }
 
 }

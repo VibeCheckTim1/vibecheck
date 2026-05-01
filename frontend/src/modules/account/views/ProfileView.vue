@@ -8,7 +8,7 @@ import { ApiError } from "../../../composables/useHttpClient.ts";
 import router from "../../../router";
 import { useToast } from "../../../composables/useToast.ts";
 import type { User } from "../../../entities/user.ts";
-import { useFollowingService } from "../../followers/composables/useFollowingService.ts";
+import { type FollowStatsResponse, useFollowingService } from "../../followers/composables/useFollowingService.ts";
 import { useConfirm } from "../../../composables/useConfirm.ts";
 import {useUserService} from "../../../composables/useUserService.ts";
 import {useSecurityService} from "../../../composables/useSecurityService.ts";
@@ -22,6 +22,8 @@ const { showError } = useToast();
 
 const followResult = ref<'FOLLOW' | 'FOLLOWING' | 'PENDING'>('FOLLOW');
 const { openConfirm } = useConfirm();
+
+const stats = ref<FollowStatsResponse | null>(null);
 
 async function logout() {
     if (currentUser.value) {
@@ -139,7 +141,13 @@ async function handleFollowClick() {
     await follow(); //follow
 }
 
+async function getStats() {
+    if (!viewedUser.value) return;
 
+    const { getFollowStats } = useFollowingService();
+    stats.value = await getFollowStats();
+
+}
 
 
 const playlists = ref<Playlist[]>([
@@ -213,6 +221,7 @@ onMounted(async () => {
     await loadUser(userIdRoute);
 
     await getFollowStatus();
+    await getStats();
 
 });
 </script>
@@ -243,11 +252,11 @@ onMounted(async () => {
                 <div class="profile-info">
                     <ul>
                         <li>
-                            <span class="value">1.2K</span>
+                            <span class="value">{{ stats?.followersCount }}</span>
                             <span class="label">Followers</span>
                         </li>
                         <li>
-                            <span class="value">856</span>
+                            <span class="value">{{ stats?.followingCount }}</span>
                             <span class="label">Following</span>
                         </li>
                         <li>
