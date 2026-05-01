@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -78,8 +79,10 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public void revoke(RefreshToken token) {
-        token.setRevoked(true);
-        refreshTokenRepository.save(token);
+    public void revokeAllByUserId(Long userId) {
+        List<RefreshToken> tokens =
+                refreshTokenRepository.findAllByUser_IdUserAndRevokedFalse(userId);
+        tokens.forEach(t -> t.setRevoked(true));
+        refreshTokenRepository.saveAll(tokens);
     }
 }
