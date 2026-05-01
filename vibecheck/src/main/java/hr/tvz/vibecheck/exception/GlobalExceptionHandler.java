@@ -1,18 +1,15 @@
 package hr.tvz.vibecheck.exception;
 
 import hr.tvz.vibecheck.exception.custom.*;
-import hr.tvz.vibecheck.exception.custom.UserNotFoundException;
 import hr.tvz.vibecheck.exception.framework.ErrorKey;
 import hr.tvz.vibecheck.exception.framework.ErrorResponse;
 import hr.tvz.vibecheck.exception.framework.ErrorResponseService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.util.Map;
 
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -21,63 +18,73 @@ public class GlobalExceptionHandler {
     private final ErrorResponseService errorResponseService;
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<?> handleUserNotFound(UserNotFoundException ex, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.NOT_FOUND);
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
-    public ResponseEntity<?> handleInvalidPassword(InvalidPasswordException ex, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleInvalidPassword(InvalidPasswordException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.BAD_REQUEST);
     }
 
     @ExceptionHandler(InvalidFileException.class)
-    public ResponseEntity<?> handleInvalidFile(InvalidFileException ex, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleInvalidFile(InvalidFileException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.BAD_REQUEST);
     }
 
     @ExceptionHandler(DuplicateFollowRequestException.class)
-    public ResponseEntity<?> handleDuplicateFollowException(DuplicateFollowRequestException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
+    public ResponseEntity<ErrorResponse> handleDuplicateFollowRequestException(DuplicateFollowRequestException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.CONFLICT);
     }
 
     @ExceptionHandler(DuplicateFollowException.class)
-    public ResponseEntity<?> handleDuplicateFollowException(DuplicateFollowException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
+    public ResponseEntity<ErrorResponse> handleDuplicateFollowException(DuplicateFollowException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.CONFLICT);
     }
 
     @ExceptionHandler(FollowRequestNotFoundException.class)
-    public ResponseEntity<?> handleFollowRequestNotFoundException(FollowRequestNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
+    public ResponseEntity<ErrorResponse> handleFollowRequestNotFoundException(FollowRequestNotFoundException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.NOT_FOUND);
     }
 
     @ExceptionHandler(NotPendingStatusException.class)
-    public ResponseEntity<?> handleNotPendingStatusException(NotPendingStatusException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
+    public ResponseEntity<ErrorResponse> handleNotPendingStatusException(NotPendingStatusException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.CONFLICT);
     }
 
     @ExceptionHandler(DuplicateUserException.class)
-    public ResponseEntity<?> handleDuplicateUserException(DuplicateUserException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
+    public ResponseEntity<ErrorResponse> handleDuplicateUserException(DuplicateUserException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.CONFLICT);
     }
 
     @ExceptionHandler(FollowNotFoundException.class)
-    public ResponseEntity<?> handleFollowNotFoundException(FollowNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
+    public ResponseEntity<ErrorResponse> handleFollowNotFoundException(FollowNotFoundException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.NOT_FOUND);
     }
 
     @ExceptionHandler(SelfFollowException.class)
-    public ResponseEntity<?> handleSelfFollowException(SelfFollowException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+    public ResponseEntity<ErrorResponse> handleSelfFollowException(SelfFollowException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.BAD_REQUEST);
     }
 
     @ExceptionHandler(NotPendingRequestException.class)
-    public ResponseEntity<?> handleNotPendingException(NotPendingRequestException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+    public ResponseEntity<ErrorResponse> handleNotPendingException(NotPendingRequestException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.BAD_REQUEST);
     }
 
     @ExceptionHandler(NotYourRequestException.class)
-    public ResponseEntity<?> handleNotYourRequestException(NotYourRequestException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", ex.getMessage()));
+    public ResponseEntity<ErrorResponse> handleNotYourRequestException(NotYourRequestException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.FORBIDDEN);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleAuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)
