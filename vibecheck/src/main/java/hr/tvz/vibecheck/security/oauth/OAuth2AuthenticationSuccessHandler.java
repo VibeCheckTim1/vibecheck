@@ -1,9 +1,10 @@
 package hr.tvz.vibecheck.security.oauth;
 
 import hr.tvz.vibecheck.api.security.repository.OAuthAccountRepository;
-import hr.tvz.vibecheck.security.jwt.JwtService;
+import hr.tvz.vibecheck.api.security.service.AccessTokenService;
+import hr.tvz.vibecheck.api.security.service.RefreshTokenService;
+import hr.tvz.vibecheck.api.user.repository.UserRepository;
 import hr.tvz.vibecheck.security.VibeCheckUserDetails;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,9 @@ import java.io.IOException;
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final OAuthAccountRepository oAuthAccountRepository;
-    private final JwtService jwtService;
+    private final UserRepository userRepository;
+    private final AccessTokenService accessTokenService;
+    private final RefreshTokenService refreshTokenService;
 
     @Value("${app.frontend.base-url}")
     private String frontendBaseUrl;
@@ -47,13 +50,15 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         }
 
         if (authentication.getPrincipal() instanceof VibeCheckUserDetails userDetails) {
-            var accessToken = jwtService.generateAccessToken(userDetails);
-            var refreshToken = jwtService.generateRefreshToken(userDetails);
+            var user = userRepository.getReferenceById(userDetails.getId());
 
-            var accessTokenCookie = jwtService.generateAccessTokenCookie(accessToken);
+            var accessToken = accessTokenService.generateToken(userDetails);
+            var refreshToken = refreshTokenService.create(user, request.getRemoteAddr());
+
+            var accessTokenCookie = accessTokenService.generateTokenCookie(accessToken);
             response.addCookie(accessTokenCookie);
 
-            var refreshTokenCookie = jwtService.generateRefreshTokenCookie(refreshToken);
+            var refreshTokenCookie = refreshTokenService.generateTokenCookie(refreshToken.getToken());
             response.addCookie(refreshTokenCookie);
 
             getRedirectStrategy().sendRedirect(request, response, frontendBaseUrl + "/home");

@@ -3,10 +3,11 @@ package hr.tvz.vibecheck.api.security.controller;
 import hr.tvz.vibecheck.api.security.dto.RegisterRequestDto;
 import hr.tvz.vibecheck.api.security.dto.LoginRequestDto;
 import hr.tvz.vibecheck.api.security.dto.TokenOutputDto;
-import hr.tvz.vibecheck.api.security.enums.TokenType;
+import hr.tvz.vibecheck.api.security.entity.RefreshToken;
+import hr.tvz.vibecheck.api.security.service.RefreshTokenService;
 import hr.tvz.vibecheck.api.security.service.SecurityService;
 import hr.tvz.vibecheck.api.security.projections.UserStateResponse;
-import hr.tvz.vibecheck.security.jwt.JwtService;
+import hr.tvz.vibecheck.api.security.service.AccessTokenService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,13 +28,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SecurityController {
     private final SecurityService securityService;
-    private final JwtService jwtService;
+    private final AccessTokenService accessTokenService;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/register")
-    public ResponseEntity<UserStateResponse> register(@RequestBody @Valid RegisterRequestDto registerRequestDto, HttpServletResponse response) {
+    public ResponseEntity<UserStateResponse> register(@RequestBody @Valid RegisterRequestDto registerRequestDto, HttpServletRequest request, HttpServletResponse response) {
         var user = securityService.register(registerRequestDto);
 
-        TokenOutputDto tokenOutputDto = securityService.loginWithUsername(user.username());
+        TokenOutputDto tokenOutputDto = securityService.loginWithUsername(request.getRemoteAddr(), user.username());
         this.populateSecurityResponse(tokenOutputDto, response);
 
         var userState = securityService.getCurrentUser();
@@ -43,8 +45,8 @@ public class SecurityController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-        TokenOutputDto tokenOutputDto = securityService.loginWithCredentials(loginRequestDto);
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request, HttpServletResponse response) {
+        TokenOutputDto tokenOutputDto = securityService.loginWithCredentials(request.getRemoteAddr(), loginRequestDto);
         this.populateSecurityResponse(tokenOutputDto, response);
 
         var userState = securityService.getCurrentUser();
@@ -63,22 +65,21 @@ public class SecurityController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = Optional.ofNullable(request.getCookies())
+        String token = Optional.ofNullable(request.getCookies())
                 .stream()
                 .flatMap(Arrays::stream)
-                .filter(c -> TokenType.REFRESH.equals(c.getName()))
+                .filter(c -> c.getName().equals("REFRESH"))
                 .map(Cookie::getValue)
                 .findFirst()
                 .orElse(null);
 
-        if (refreshToken == null) {
+        if (token == null) {
             return ResponseEntity.status(401).build();
         }
 
-        if (jwtService.isValid(refreshToken, TokenType.REFRESH)) {
-            var username = jwtService.extractUsername(refreshToken);
-
-            TokenOutputDto tokenOutputDto = securityService.loginWithUsername(username);
+        try {
+            RefreshToken refreshToken = refreshTokenService.isValid(token);
+            TokenOutputDto tokenOutputDto = securityService.loginWithUsername(request.getRemoteAddr(), refreshToken.getUser().getUsername());
             this.populateSecurityResponse(tokenOutputDto, response);
 
             var userState = securityService.getCurrentUser();
@@ -86,20 +87,21 @@ public class SecurityController {
 
             return ResponseEntity.ok(userState);
         }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
-        ResponseCookie access = ResponseCookie.from(TokenType.ACCESS, "")
+        ResponseCookie access = ResponseCookie.from("ACCESS", "")
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
                 .maxAge(0)
                 .build();
 
-        ResponseCookie refresh = ResponseCookie.from(TokenType.REFRESH, "")
+        ResponseCookie refresh = ResponseCookie.from("REFRESH", "")
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
@@ -113,10 +115,10 @@ public class SecurityController {
     }
 
     private void populateSecurityResponse(TokenOutputDto tokenOutputDto, HttpServletResponse response) {
-        Cookie accessTokenCookie = jwtService.generateAccessTokenCookie(tokenOutputDto.accessToken());
+        Cookie accessTokenCookie = accessTokenService.generateTokenCookie(tokenOutputDto.accessToken());
         response.addCookie(accessTokenCookie);
 
-        Cookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(tokenOutputDto.refreshToken());
+        Cookie refreshTokenCookie = refreshTokenService.generateTokenCookie(tokenOutputDto.refreshToken());
         response.addCookie(refreshTokenCookie);
     }
 }

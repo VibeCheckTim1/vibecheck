@@ -1,6 +1,6 @@
 package hr.tvz.vibecheck.security.jwt;
 
-import hr.tvz.vibecheck.api.security.enums.TokenType;
+import hr.tvz.vibecheck.api.security.service.AccessTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +18,7 @@ import java.util.List;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+    private final AccessTokenService accessTokenService;
 
     private final UserDetailsService userDetailsService;
 
@@ -31,8 +31,8 @@ public class JwtFilter extends OncePerRequestFilter {
             "/v3/api-docs"
     );
 
-    public JwtFilter(JwtService jwtService, UserDetailsService userDetailsService) {
-        this.jwtService = jwtService;
+    public JwtFilter(AccessTokenService accessTokenService, UserDetailsService userDetailsService) {
+        this.accessTokenService = accessTokenService;
         this.userDetailsService = userDetailsService;
     }
 
@@ -47,7 +47,7 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        var token = jwtService.extractTokenFromCookie(request, TokenType.ACCESS);
+        var token = accessTokenService.extractTokenFromCookie(request);
 
         if (token == null) {
             chain.doFilter(request, response);
@@ -55,8 +55,8 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         try {
-            if (jwtService.isValid(token, TokenType.ACCESS)) {
-                var username = jwtService.extractUsername(token);
+            if (accessTokenService.isValid(token)) {
+                var username = accessTokenService.extractUsername(token);
                 var user = userDetailsService.loadUserByUsername(username);
                 var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(auth);

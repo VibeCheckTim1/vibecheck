@@ -10,7 +10,6 @@ import hr.tvz.vibecheck.api.user.repository.UserRepository;
 import hr.tvz.vibecheck.exception.custom.UserNotFoundException;
 import hr.tvz.vibecheck.api.security.projections.UserStateResponse;
 import hr.tvz.vibecheck.security.VibeCheckUserDetails;
-import hr.tvz.vibecheck.security.jwt.JwtService;
 import hr.tvz.vibecheck.security.VibeCheckUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -28,7 +27,8 @@ import java.time.LocalDateTime;
 public class SecurityService {
     private final AuthenticationManager authenticationManager;
     private final VibeCheckUserDetailsService vibeCheckUserDetailsService;
-    private final JwtService jwtService;
+    private final AccessTokenService accessTokenService;
+    private final RefreshTokenService refreshTokenService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
@@ -53,34 +53,41 @@ public class SecurityService {
         return userMapper.toUserResponse(user);
     }
 
-    public TokenOutputDto loginWithCredentials(LoginRequestDto loginRequestDto) {
-        var auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.username(), loginRequestDto.password()));
-        SecurityContextHolder.getContext().setAuthentication(auth);
+    public TokenOutputDto loginWithCredentials(String ipAddress, LoginRequestDto loginRequestDto) {
+        var auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequestDto.username(), loginRequestDto.password())
+        );
 
+        SecurityContextHolder.getContext().setAuthentication(auth);
         if (!(auth.getPrincipal() instanceof VibeCheckUserDetails user)) {
             throw new AuthenticationCredentialsNotFoundException("Invalid credentials!");
         }
 
-        var accessToken = jwtService.generateAccessToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        User dbUser = userRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        return new TokenOutputDto(accessToken, refreshToken);
+        var accessToken = accessTokenService.generateToken(user);
+        var refreshToken = refreshTokenService.create(dbUser, ipAddress);
+
+        return new TokenOutputDto(accessToken, refreshToken.getToken());
     }
 
-    public TokenOutputDto loginWithUsername(String username) {
+    public TokenOutputDto loginWithUsername(String ipAddress, String username) {
         var loadedUser = vibeCheckUserDetailsService.loadUserByUsername(username);
-
         var auth = new UsernamePasswordAuthenticationToken(loadedUser, null, loadedUser.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(auth);
 
+        SecurityContextHolder.getContext().setAuthentication(auth);
         if (!(auth.getPrincipal() instanceof VibeCheckUserDetails user)) {
             throw new AuthenticationCredentialsNotFoundException("Invalid username!");
         }
 
-        var accessToken = jwtService.generateAccessToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        User dbUser = userRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        return new TokenOutputDto(accessToken, refreshToken);
+        var accessToken = accessTokenService.generateToken(user);
+        var refreshToken = refreshTokenService.create(dbUser, ipAddress);
+
+        return new TokenOutputDto(accessToken, refreshToken.getToken());
     }
 
     @Transactional(readOnly = true)

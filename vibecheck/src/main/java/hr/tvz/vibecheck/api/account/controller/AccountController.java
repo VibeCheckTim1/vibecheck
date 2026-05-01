@@ -6,7 +6,6 @@ import hr.tvz.vibecheck.api.account.dto.VerificationCodeRequestDto;
 import hr.tvz.vibecheck.api.account.service.AccountService;
 import hr.tvz.vibecheck.api.security.service.SecurityService;
 import hr.tvz.vibecheck.api.account.dto.ChangePasswordRequestDto;
-import hr.tvz.vibecheck.api.security.enums.TokenType;
 import hr.tvz.vibecheck.api.security.projections.UserStateResponse;
 import hr.tvz.vibecheck.security.VibeCheckUserDetails;
 import jakarta.validation.Valid;
@@ -47,14 +46,14 @@ public class AccountController {
     public ResponseEntity<?> delete(@AuthenticationPrincipal VibeCheckUserDetails userDetails) {
         accountService.deleteAccount(userDetails.getId());
 
-        ResponseCookie access = ResponseCookie.from(TokenType.ACCESS, "")
+        ResponseCookie access = ResponseCookie.from("ACCESS", "")
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
                 .maxAge(0)
                 .build();
 
-        ResponseCookie refresh = ResponseCookie.from(TokenType.REFRESH, "")
+        ResponseCookie refresh = ResponseCookie.from("REFRESH", "")
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
