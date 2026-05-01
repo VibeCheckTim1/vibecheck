@@ -1,6 +1,5 @@
 package hr.tvz.vibecheck.security.oauth;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +25,6 @@ public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationF
                                         @NonNull HttpServletResponse response,
                                         @NonNull AuthenticationException exception) throws IOException {
         authorizationRequestRepository.removeAuthorizationRequest(request, response);
-        getRedirectStrategy().sendRedirect(request, response, frontendBaseUrl + "/login");
+        getRedirectStrategy().sendRedirect(request, response, frontendBaseUrl + "/?oauth2Error=authentication_failed");
     }
 }

@@ -7,17 +7,25 @@ import InputText from "../../../components/InputText.vue";
 import {useToast} from "../../../composables/useToast.ts";
 import {useLoginService} from "../composables/useLoginService.ts";
 import {ApiError} from "../../../composables/useHttpClient.ts";
-import {useRouter} from "vue-router";
+import {useRouter, useRoute} from "vue-router";
 import {useState} from "../../../composables/useState.ts";
+import {onMounted} from "vue";
 
 const {required} = useValidators();
 const {showError} = useToast();
 const {setUser} = useState();
 const router = useRouter();
+const route = useRoute();
 
 const form = useForm({
     username: useFormField<string>(null, [required]),
     password: useFormField<string>(null, [required]),
+});
+
+onMounted(() => {
+    if (route.query.oauth2Error) {
+        showError("OAuth authentication failed. Please try again.");
+    }
 });
 
 async function submitForm() {
