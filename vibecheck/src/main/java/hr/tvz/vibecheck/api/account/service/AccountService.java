@@ -87,7 +87,7 @@ public class AccountService {
 
     @Transactional
     public void sendEmailVerificationCode(Long userId, ChangeEmailRequestDto request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         String newMail = request.newEmail().trim().toLowerCase();
 
@@ -134,7 +134,7 @@ public class AccountService {
 
     @Transactional
     public void confirmEmailEdit(Long userId, VerificationCodeRequestDto request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         EmailChange codeReq = emailRepository.findByUser(user).orElseThrow(()
                 -> new IllegalArgumentException("No pending email change request found for user: " + user.getUsername()));
