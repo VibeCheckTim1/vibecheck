@@ -25,7 +25,10 @@ public class JwtFilter extends OncePerRequestFilter {
     private static final List<String> PATHS_TO_SKIP = List.of(
             "/security/refresh-token",
             "/security/login",
-            "/security/register"
+            "/security/register",
+            "/swagger-ui",
+            "/swagger-ui.html",
+            "/v3/api-docs"
     );
 
     public JwtFilter(JwtService jwtService, UserDetailsService userDetailsService) {
@@ -38,7 +41,8 @@ public class JwtFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain chain) throws ServletException, IOException {
 
-        if (PATHS_TO_SKIP.contains(request.getServletPath())) {
+        String path = request.getServletPath();
+        if (PATHS_TO_SKIP.stream().anyMatch(path::startsWith)) {
             chain.doFilter(request, response);
             return;
         }
