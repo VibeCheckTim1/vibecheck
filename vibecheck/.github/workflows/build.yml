@@ -2,9 +2,7 @@ name: Build and Analyze
 
 on:
   push:
-    branches: [ develop, test, prod ]
   pull_request:
-    branches: [ develop, test, prod ]
 
 jobs:
   build:
