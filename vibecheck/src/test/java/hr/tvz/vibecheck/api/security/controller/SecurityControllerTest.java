@@ -1,11 +1,17 @@
 package hr.tvz.vibecheck.api.security.controller;
 
+import hr.tvz.vibecheck.api.security.dto.RegisterRequestDto;
 import hr.tvz.vibecheck.api.security.dto.TokenOutputDto;
+import hr.tvz.vibecheck.api.security.entity.RefreshToken;
 import hr.tvz.vibecheck.api.security.projections.UserStateResponse;
 import hr.tvz.vibecheck.api.security.service.AccessTokenService;
 import hr.tvz.vibecheck.api.security.service.RefreshTokenService;
 import hr.tvz.vibecheck.api.security.service.SecurityService;
+import hr.tvz.vibecheck.api.user.dto.UserOutputDto;
+import hr.tvz.vibecheck.exception.framework.ErrorKey;
 import hr.tvz.vibecheck.exception.framework.ErrorResponseService;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.ResponseEntity;
 import hr.tvz.vibecheck.security.SecurityConfig;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
@@ -98,5 +104,75 @@ class SecurityControllerTest {
 
         mockMvc.perform(get("/security/current-user"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("POST /security/register - 200 s validnim podacima")
+    void register_withValidData_returns200() throws Exception {
+        var userOutput = new UserOutputDto(1L, "lsaric", "Luka", "Saric", null, "lsaric@test.hr", null, false);
+        when(securityService.register(any(RegisterRequestDto.class))).thenReturn(userOutput);
+        when(securityService.loginWithUsername(any(), anyString())).thenReturn(new TokenOutputDto("access", "refresh"));
+        when(accessTokenService.generateTokenCookie(anyString())).thenReturn(new Cookie("ACCESS", "access"));
+        when(refreshTokenService.generateTokenCookie(anyString())).thenReturn(new Cookie("REFRESH", "refresh"));
+        when(securityService.getCurrentUser()).thenReturn(mock(UserStateResponse.class));
+
+        mockMvc.perform(post("/security/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "firstName": "Luka",
+                                  "lastName": "Saric",
+                                  "username": "lsaric",
+                                  "email": "lsaric@test.hr",
+                                  "password": "password123"
+                                }
+                                """))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("POST /security/register - 400 s nevalidnim podacima")
+    void register_withBlankFields_returns400() throws Exception {
+        when(errorResponseService.buildError(any(Exception.class), any(HttpServletRequest.class), any(ErrorKey.class)))
+                .thenReturn(ResponseEntity.badRequest().build());
+
+        mockMvc.perform(post("/security/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                { "firstName": "", "lastName": "", "username": "", "email": "nije-email", "password": "" }
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("POST /security/refresh-token - 200 s validnim kolačićem")
+    void refreshToken_withValidCookie_returns200() throws Exception {
+        var refreshToken = mock(RefreshToken.class);
+        var user = mock(hr.tvz.vibecheck.api.user.entity.User.class);
+        when(user.getUsername()).thenReturn("lsaric");
+        when(refreshToken.getUser()).thenReturn(user);
+        when(refreshTokenService.isValid(anyString())).thenReturn(refreshToken);
+        when(securityService.loginWithUsername(any(), anyString())).thenReturn(new TokenOutputDto("access", "refresh"));
+        when(accessTokenService.generateTokenCookie(anyString())).thenReturn(new Cookie("ACCESS", "access"));
+        when(refreshTokenService.generateTokenCookie(anyString())).thenReturn(new Cookie("REFRESH", "refresh"));
+        when(securityService.getCurrentUser()).thenReturn(mock(UserStateResponse.class));
+
+        mockMvc.perform(post("/security/refresh-token")
+                        .cookie(new Cookie("REFRESH", "valid-refresh-token")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("POST /security/refresh-token - 401 bez kolačića")
+    void refreshToken_withNoCookie_returns401() throws Exception {
+        mockMvc.perform(post("/security/refresh-token"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("POST /security/revoke-tokens/{userId} - 204")
+    void revokeUserTokens_returns204() throws Exception {
+        mockMvc.perform(post("/security/revoke-tokens/{userId}", 1L))
+                .andExpect(status().isNoContent());
     }
 }
