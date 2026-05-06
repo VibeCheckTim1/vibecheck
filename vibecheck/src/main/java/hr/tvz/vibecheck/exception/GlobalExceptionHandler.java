@@ -87,6 +87,9 @@ public class GlobalExceptionHandler {
         return errorResponseService.buildError(ex, request, ErrorKey.UNAUTHORIZED);
     }
 
+    // TODO: add @ExceptionHandler(MethodArgumentNotValidException.class) — the catch-all below intercepts it first,
+    //  causing validation errors to return 500 instead of 400
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex, HttpServletRequest request) {
         return errorResponseService.buildError(ex, request, ErrorKey.INTERNAL_SERVER_ERROR);
