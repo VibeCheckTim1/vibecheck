@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 @AutoConfigureMockMvc
 @Transactional
-class SearchServiceIT {
+class SearchServiceTest {
 
     @Autowired
     SearchService searchService;

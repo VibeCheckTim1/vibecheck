@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 })
 @AutoConfigureMockMvc
 @Transactional
-class AccountServiceIT {
+class AccountServiceTest {
 
     @Autowired
     AccountService accountService;
