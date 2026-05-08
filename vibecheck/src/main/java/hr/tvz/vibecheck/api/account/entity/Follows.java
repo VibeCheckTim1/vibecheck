@@ -4,12 +4,14 @@ import hr.tvz.vibecheck.api.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 @Table(name = "follows",
     uniqueConstraints = {
         @UniqueConstraint(columnNames = { "user1_id", "user2_id" })
