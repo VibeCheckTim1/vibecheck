@@ -1,8 +1,8 @@
 package hr.tvz.vibecheck.api.account.controller;
 
 import hr.tvz.vibecheck.api.account.dto.FollowStatsResponse;
-import hr.tvz.vibecheck.dto.request.FollowRequestActionRequest;
-import hr.tvz.vibecheck.dto.request.FollowRequestRequest;
+import hr.tvz.vibecheck.api.account.dto.FollowRequestActionRequest;
+import hr.tvz.vibecheck.api.account.dto.FollowRequestRequest;
 import hr.tvz.vibecheck.api.account.dto.FollowActionResponse;
 import hr.tvz.vibecheck.api.account.dto.FollowRequestResponse;
 import hr.tvz.vibecheck.security.VibeCheckUserDetails;
