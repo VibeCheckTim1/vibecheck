@@ -49,12 +49,6 @@
 			<version>5.1.0</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
 		<!--Annotations for less boilerplate-->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
