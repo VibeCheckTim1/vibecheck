@@ -50,7 +50,7 @@ public class SecurityController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<UserStateResponse> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request, HttpServletResponse response) {
         TokenOutputDto tokenOutputDto = securityService.loginWithCredentials(request.getRemoteAddr(), loginRequestDto);
         this.populateSecurityResponse(tokenOutputDto, response);
 
@@ -61,7 +61,7 @@ public class SecurityController {
     }
 
     @GetMapping("/current-user")
-    public ResponseEntity<?> currentUser() {
+    public ResponseEntity<UserStateResponse> currentUser() {
         var userState = securityService.getCurrentUser();
         if (userState == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
@@ -69,8 +69,8 @@ public class SecurityController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        String token = Optional.ofNullable(request.getCookies())
+    public ResponseEntity<UserStateResponse> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        var token = Optional.ofNullable(request.getCookies())
                 .stream()
                 .flatMap(Arrays::stream)
                 .filter(c -> c.getName().equals("REFRESH"))
@@ -105,15 +105,15 @@ public class SecurityController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        ResponseCookie access = ResponseCookie.from("ACCESS", "")
+    public ResponseEntity<Void> logout() {
+        var access = ResponseCookie.from("ACCESS", "")
                 .httpOnly(true)
                 .secure(secureCookie)
                 .path("/")
                 .maxAge(0)
                 .build();
 
-        ResponseCookie refresh = ResponseCookie.from("REFRESH", "")
+        var refresh = ResponseCookie.from("REFRESH", "")
                 .httpOnly(true)
                 .secure(secureCookie)
                 .path("/")

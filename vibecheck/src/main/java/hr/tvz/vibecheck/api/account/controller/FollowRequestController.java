@@ -29,7 +29,7 @@ public class FollowRequestController {
     }
 
     @DeleteMapping("{receiverId}")
-    public ResponseEntity<?> cancelFollowRequest(
+    public ResponseEntity<Void> cancelFollowRequest(
             @PathVariable Long receiverId,
             @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
         followRequestService.cancelFollowRequest(userDetails.getId(), receiverId);
@@ -37,7 +37,7 @@ public class FollowRequestController {
     }
 
     @DeleteMapping("/unfollow/{receiverId}")
-    public ResponseEntity<?> unfollow(
+    public ResponseEntity<Void> unfollow(
             @PathVariable Long receiverId,
             @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
         followRequestService.unfollow(userDetails.getId(), receiverId);
@@ -52,7 +52,7 @@ public class FollowRequestController {
     }
 
     @PatchMapping("/acceptOrDeclineFollowRequest/{requestId}")
-    public ResponseEntity<?> acceptOrDeclineFollowRequest(
+    public ResponseEntity<Void> acceptOrDeclineFollowRequest(
             @PathVariable Long requestId,
             @AuthenticationPrincipal VibeCheckUserDetails userDetails, @RequestBody FollowRequestActionRequest userResponse) {
         followRequestService.acceptOrDeclineFollowRequest(requestId, userDetails.getId(), userResponse);

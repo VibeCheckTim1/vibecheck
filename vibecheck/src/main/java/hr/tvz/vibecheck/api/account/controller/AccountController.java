@@ -47,17 +47,17 @@ public class AccountController {
     }
 
     @DeleteMapping("")
-    public ResponseEntity<?> delete(@AuthenticationPrincipal VibeCheckUserDetails userDetails) {
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal VibeCheckUserDetails userDetails) {
         accountService.deleteAccount(userDetails.getId());
 
-        ResponseCookie access = ResponseCookie.from("ACCESS", "")
+        var access = ResponseCookie.from("ACCESS", "")
                 .httpOnly(true)
                 .secure(secureCookie)
                 .path("/")
                 .maxAge(0)
                 .build();
 
-        ResponseCookie refresh = ResponseCookie.from("REFRESH", "")
+        var refresh = ResponseCookie.from("REFRESH", "")
                 .httpOnly(true)
                 .secure(secureCookie)
                 .path("/")
@@ -84,7 +84,7 @@ public class AccountController {
     }
 
     @PatchMapping("/password")
-    public ResponseEntity<?> changePassword(
+    public ResponseEntity<Void> changePassword(
             @RequestBody @Valid ChangePasswordRequestDto request,
             @AuthenticationPrincipal VibeCheckUserDetails userDetails
     ) {
@@ -94,7 +94,7 @@ public class AccountController {
     }
 
     @PostMapping("/emailVerificationCode")
-    public ResponseEntity<?> sendEmailVerificationCode(@RequestBody @Valid ChangeEmailRequestDto request,
+    public ResponseEntity<Void> sendEmailVerificationCode(@RequestBody @Valid ChangeEmailRequestDto request,
                                                        @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
         accountService.sendEmailVerificationCode(userDetails.getId(), request);
 
