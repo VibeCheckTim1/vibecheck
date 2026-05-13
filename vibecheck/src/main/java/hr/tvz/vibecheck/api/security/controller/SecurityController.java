@@ -4,6 +4,7 @@ import hr.tvz.vibecheck.api.security.dto.RegisterRequestDto;
 import hr.tvz.vibecheck.api.security.dto.LoginRequestDto;
 import hr.tvz.vibecheck.api.security.dto.TokenOutputDto;
 import hr.tvz.vibecheck.api.security.entity.RefreshToken;
+import hr.tvz.vibecheck.api.security.enums.TokenType;
 import hr.tvz.vibecheck.api.security.service.RefreshTokenService;
 import hr.tvz.vibecheck.api.security.service.SecurityService;
 import hr.tvz.vibecheck.api.security.projections.UserStateResponse;
@@ -73,7 +74,7 @@ public class SecurityController {
         var token = Optional.ofNullable(request.getCookies())
                 .stream()
                 .flatMap(Arrays::stream)
-                .filter(c -> c.getName().equals("REFRESH"))
+                .filter(c -> c.getName().equals(TokenType.REFRESH.name()))
                 .map(Cookie::getValue)
                 .findFirst()
                 .orElse(null);
@@ -106,14 +107,14 @@ public class SecurityController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
-        var access = ResponseCookie.from("ACCESS", "")
+        var access = ResponseCookie.from(TokenType.ACCESS.name(), "")
                 .httpOnly(true)
                 .secure(secureCookie)
                 .path("/")
                 .maxAge(0)
                 .build();
 
-        var refresh = ResponseCookie.from("REFRESH", "")
+        var refresh = ResponseCookie.from(TokenType.REFRESH.name(), "")
                 .httpOnly(true)
                 .secure(secureCookie)
                 .path("/")

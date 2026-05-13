@@ -2,6 +2,7 @@ package hr.tvz.vibecheck.api.security.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import hr.tvz.vibecheck.api.security.enums.TokenType;
 import hr.tvz.vibecheck.security.VibeCheckUserDetails;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,14 +32,14 @@ public class AccessTokenService {
 
         return JWT.create()
                 .withSubject(user.getUsername())
-                .withClaim(TYPE, "ACCESS")
+                .withClaim(TYPE, TokenType.ACCESS.name())
                 .withIssuedAt(new Date())
                 .withExpiresAt(Date.from(expiration))
                 .sign(Algorithm.HMAC256(secret));
     }
 
     public Cookie generateTokenCookie(String token) {
-        var cookie = new Cookie("ACCESS", token);
+        var cookie = new Cookie(TokenType.ACCESS.name(), token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setSecure(secureCookie);
@@ -52,13 +53,13 @@ public class AccessTokenService {
                 .build()
                 .verify(token);
 
-        return decrypted.getClaim(TYPE).asString().equals("ACCESS");
+        return decrypted.getClaim(TYPE).asString().equals(TokenType.ACCESS.name());
     }
 
     public String extractTokenFromCookie(HttpServletRequest request) {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals("ACCESS")) {
+                if (cookie.getName().equals(TokenType.ACCESS.name())) {
                     return cookie.getValue();
                 }
             }

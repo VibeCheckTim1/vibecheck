@@ -106,7 +106,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             }
         }
 
-        var usernameBase = firstName != null ? firstName : (name != null ? name : "user");
+        var nameOrDefault = name != null ? name : "user";
+        var usernameBase = firstName != null ? firstName : nameOrDefault;
         if (firstName == null) {
             firstName = name != null ? name : usernameBase;
         }

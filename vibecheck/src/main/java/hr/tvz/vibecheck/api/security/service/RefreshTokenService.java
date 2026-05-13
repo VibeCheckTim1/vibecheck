@@ -1,6 +1,7 @@
 package hr.tvz.vibecheck.api.security.service;
 
 import hr.tvz.vibecheck.api.security.entity.RefreshToken;
+import hr.tvz.vibecheck.api.security.enums.TokenType;
 import hr.tvz.vibecheck.api.security.repository.RefreshTokenRepository;
 import hr.tvz.vibecheck.api.user.entity.User;
 import hr.tvz.vibecheck.exception.custom.InvalidRefreshTokenException;
@@ -58,7 +59,7 @@ public class RefreshTokenService {
     }
 
     public Cookie generateTokenCookie(String token) {
-        var cookie = new Cookie("REFRESH", token);
+        var cookie = new Cookie(TokenType.REFRESH.name(), token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setSecure(secureCookie);
