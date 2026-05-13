@@ -92,7 +92,7 @@ public class SecurityController {
 
             return ResponseEntity.ok(userState);
         }
-        catch (Exception e) {
+        catch (Exception _) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }

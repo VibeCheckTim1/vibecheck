@@ -1,6 +1,6 @@
-package hr.tvz.vibecheck.dto.request;
+package hr.tvz.vibecheck.api.security.dto;
 
-import hr.tvz.vibecheck.enums.FollowRequestUserResponse;
+import hr.tvz.vibecheck.api.security.enums.FollowRequestUserResponse;
 import jakarta.validation.constraints.NotNull;
 
 public record FollowRequestActionRequest(@NotNull FollowRequestUserResponse action) {
