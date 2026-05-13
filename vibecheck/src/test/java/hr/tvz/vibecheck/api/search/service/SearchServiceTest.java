@@ -26,9 +26,10 @@ class SearchServiceTest {
     void search_withValidKeyword_returnsMatchingUsers() {
         var results = searchService.search("lsaric");
 
-        assertThat(results).isNotEmpty();
-        assertThat(results).allMatch(r -> r.getType().equals("user"));
-        assertThat(results).anyMatch(r -> r.getTitleText().equals("lsaric"));
+        assertThat(results)
+                .isNotEmpty()
+                .allMatch(r -> r.getType().equals("user"))
+                .anyMatch(r -> r.getTitleText().equals("lsaric"));
     }
 
     @Test

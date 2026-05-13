@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.dto.response;
+package hr.tvz.vibecheck.api.user.dto;
 
 public class SearchResult {
     private Long id;

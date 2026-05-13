@@ -50,6 +50,7 @@ public class SecurityConfig {
     private final HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository;
 
     @Bean
+    @SuppressWarnings("java:S4502") // CSRF može biti ugašen
     public SecurityFilterChain filterChain(HttpSecurity http) {
         http
                 .cors(_ -> {})

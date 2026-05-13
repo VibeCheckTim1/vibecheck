@@ -4,6 +4,7 @@ import hr.tvz.vibecheck.api.security.dto.RegisterRequestDto;
 import hr.tvz.vibecheck.api.security.dto.LoginRequestDto;
 import hr.tvz.vibecheck.api.security.dto.TokenOutputDto;
 import hr.tvz.vibecheck.api.security.entity.RefreshToken;
+import hr.tvz.vibecheck.api.security.enums.TokenType;
 import hr.tvz.vibecheck.api.security.service.RefreshTokenService;
 import hr.tvz.vibecheck.api.security.service.SecurityService;
 import hr.tvz.vibecheck.api.security.projections.UserStateResponse;
@@ -14,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,9 @@ public class SecurityController {
     private final AccessTokenService accessTokenService;
     private final RefreshTokenService refreshTokenService;
 
+    @Value("${app.cookies.secure:false}")
+    private boolean secureCookie;
+
     @PostMapping("/register")
     public ResponseEntity<UserStateResponse> register(@RequestBody @Valid RegisterRequestDto registerRequestDto, HttpServletRequest request, HttpServletResponse response) {
         var user = securityService.register(registerRequestDto);
@@ -46,7 +51,7 @@ public class SecurityController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<UserStateResponse> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request, HttpServletResponse response) {
         TokenOutputDto tokenOutputDto = securityService.loginWithCredentials(request.getRemoteAddr(), loginRequestDto);
         this.populateSecurityResponse(tokenOutputDto, response);
 
@@ -57,7 +62,7 @@ public class SecurityController {
     }
 
     @GetMapping("/current-user")
-    public ResponseEntity<?> currentUser() {
+    public ResponseEntity<UserStateResponse> currentUser() {
         var userState = securityService.getCurrentUser();
         if (userState == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
@@ -65,11 +70,11 @@ public class SecurityController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        String token = Optional.ofNullable(request.getCookies())
+    public ResponseEntity<UserStateResponse> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        var token = Optional.ofNullable(request.getCookies())
                 .stream()
                 .flatMap(Arrays::stream)
-                .filter(c -> c.getName().equals("REFRESH"))
+                .filter(c -> c.getName().equals(TokenType.REFRESH.name()))
                 .map(Cookie::getValue)
                 .findFirst()
                 .orElse(null);
@@ -88,7 +93,7 @@ public class SecurityController {
 
             return ResponseEntity.ok(userState);
         }
-        catch (Exception e) {
+        catch (Exception _) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
@@ -101,17 +106,17 @@ public class SecurityController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        ResponseCookie access = ResponseCookie.from("ACCESS", "")
+    public ResponseEntity<Void> logout() {
+        var access = ResponseCookie.from(TokenType.ACCESS.name(), "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(secureCookie)
                 .path("/")
                 .maxAge(0)
                 .build();
 
-        ResponseCookie refresh = ResponseCookie.from("REFRESH", "")
+        var refresh = ResponseCookie.from(TokenType.REFRESH.name(), "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(secureCookie)
                 .path("/")
                 .maxAge(0)
                 .build();
