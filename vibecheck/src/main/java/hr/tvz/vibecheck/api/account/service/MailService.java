@@ -1,5 +1,6 @@
 package hr.tvz.vibecheck.api.account.service;
 
+import hr.tvz.vibecheck.exception.custom.MailSendFailedException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class MailService {
         }
         catch (Exception e) {
             log.error("Failed to send email change verification code email", e);
-            throw new RuntimeException("Failed to send emial change verification code email", e);
+            throw new MailSendFailedException("Failed to send email change verification code email", e);
 
         }
     }
@@ -53,7 +54,7 @@ public class MailService {
         }
         catch (Exception e) {
             log.error("Failed to send OAuth password email", e);
-            throw new RuntimeException("Failed to send OAuth password email", e);
+            throw new MailSendFailedException("Failed to send OAuth password email", e);
 
         }
     }

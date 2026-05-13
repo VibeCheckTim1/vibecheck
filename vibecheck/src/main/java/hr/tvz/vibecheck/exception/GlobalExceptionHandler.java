@@ -87,6 +87,16 @@ public class GlobalExceptionHandler {
         return errorResponseService.buildError(ex, request, ErrorKey.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidRefreshTokenException(InvalidRefreshTokenException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(MailSendFailedException.class)
+    public ResponseEntity<ErrorResponse> handleMailSendFailedException(MailSendFailedException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.INTERNAL_SERVER_ERROR);
+    }
+
     // TODO: add @ExceptionHandler(MethodArgumentNotValidException.class) — the catch-all below intercepts it first,
     //  causing validation errors to return 500 instead of 400
 

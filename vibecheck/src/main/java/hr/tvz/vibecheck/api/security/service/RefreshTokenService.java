@@ -3,6 +3,7 @@ package hr.tvz.vibecheck.api.security.service;
 import hr.tvz.vibecheck.api.security.entity.RefreshToken;
 import hr.tvz.vibecheck.api.security.repository.RefreshTokenRepository;
 import hr.tvz.vibecheck.api.user.entity.User;
+import hr.tvz.vibecheck.exception.custom.InvalidRefreshTokenException;
 import jakarta.servlet.http.Cookie;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -69,14 +70,14 @@ public class RefreshTokenService {
     @Transactional()
     public RefreshToken isValid(String token) {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
+                .orElseThrow(() -> new InvalidRefreshTokenException("Invalid refresh token"));
 
         if (refreshToken.isRevoked()) {
-            throw new RuntimeException("Refresh token revoked");
+            throw new InvalidRefreshTokenException("Refresh token revoked");
         }
 
         if (refreshToken.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Refresh token expired");
+            throw new InvalidRefreshTokenException("Refresh token expired");
         }
 
         return refreshToken;
