@@ -28,6 +28,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
     private final UserRepository userRepository;
     private final OAuthAccountRepository oAuthAccountRepository;
     private final RoleRepository roleRepository;
@@ -143,10 +145,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private String generatePassword() {
         var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+";
-        var random = new SecureRandom();
         var password = new StringBuilder();
         for (int i = 0; i < 16; i++) {
-            password.append(characters.charAt(random.nextInt(characters.length())));
+            password.append(characters.charAt(SECURE_RANDOM.nextInt(characters.length())));
         }
         return password.toString();
     }

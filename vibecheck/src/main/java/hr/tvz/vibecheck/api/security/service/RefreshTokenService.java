@@ -27,11 +27,12 @@ public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     private static final int REFRESH_TOKEN_LENGTH = 64;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     public String generateRefreshToken() {
         byte[] bytes = new byte[REFRESH_TOKEN_LENGTH];
 
-        new SecureRandom().nextBytes(bytes);
+        SECURE_RANDOM.nextBytes(bytes);
 
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
