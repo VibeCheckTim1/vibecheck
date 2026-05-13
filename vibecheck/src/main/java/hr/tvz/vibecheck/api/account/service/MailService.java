@@ -2,11 +2,13 @@ package hr.tvz.vibecheck.api.account.service;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MailService {
@@ -30,7 +32,7 @@ public class MailService {
 
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
+            log.error("Failed to send email change verification code email", e);
             throw new RuntimeException("Failed to send emial change verification code email", e);
 
         }
@@ -50,7 +52,7 @@ public class MailService {
 
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
+            log.error("Failed to send OAuth password email", e);
             throw new RuntimeException("Failed to send OAuth password email", e);
 
         }

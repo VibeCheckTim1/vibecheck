@@ -26,6 +26,9 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class FollowRequestService {
+    private static final String USER_NOT_FOUND_PREFIX = "User with ID ";
+    private static final String NOT_FOUND_SUFFIX = " not found";
+
     private final FollowRequestRepository followRequestRepository;
     private final UserRepository userRepository;
     private final FollowsRepository followsRepository;
@@ -33,10 +36,10 @@ public class FollowRequestService {
     @Transactional
     public FollowActionResponse createFollowRequestOrFollow(Long senderId, FollowRequestRequest followRequest) {
         User sender = userRepository.findById(senderId).orElseThrow(()
-                -> new UserNotFoundException("User with ID " + senderId + " not found"));
+                -> new UserNotFoundException(USER_NOT_FOUND_PREFIX + senderId + NOT_FOUND_SUFFIX));
 
         User receiver = userRepository.findById(followRequest.receiverId()).orElseThrow(()
-                -> new UserNotFoundException("User with ID " + followRequest.receiverId() + " not found"));
+                -> new UserNotFoundException(USER_NOT_FOUND_PREFIX + followRequest.receiverId() + NOT_FOUND_SUFFIX));
 
         if (sender.getIdUser().equals(receiver.getIdUser())) {
             throw new SelfFollowException("You cannot follow yourself");
@@ -83,14 +86,14 @@ public class FollowRequestService {
 
     public void cancelFollowRequest(Long senderId, Long receiverId) {
         User sender = userRepository.findById(senderId).orElseThrow(()
-                -> new UserNotFoundException("User with ID " + senderId + " not found"));
+                -> new UserNotFoundException(USER_NOT_FOUND_PREFIX + senderId + NOT_FOUND_SUFFIX));
 
         User receiver = userRepository.findById(receiverId).orElseThrow(()
-                -> new UserNotFoundException("User with ID " + receiverId + " not found"));
+                -> new UserNotFoundException(USER_NOT_FOUND_PREFIX + receiverId + NOT_FOUND_SUFFIX));
 
         FollowRequest existingReq = followRequestRepository.findBySender_IdUserAndReceiver_IdUser
                 (sender.getIdUser(), receiver.getIdUser()).orElseThrow(()
-                -> new FollowRequestNotFoundException("Follow request for user " + sender.getUsername() + " not found"));
+                -> new FollowRequestNotFoundException("Follow request for user " + sender.getUsername() + NOT_FOUND_SUFFIX));
 
 
         if (!existingReq.getStatus().equals(FollowRequestStatus.PENDING)) {
@@ -103,14 +106,14 @@ public class FollowRequestService {
     @Transactional
     public void unfollow(Long senderId, Long receiverId) {
         User sender = userRepository.findById(senderId).orElseThrow(()
-                -> new UserNotFoundException("User with ID " + senderId + " not found"));
+                -> new UserNotFoundException(USER_NOT_FOUND_PREFIX + senderId + NOT_FOUND_SUFFIX));
 
         User receiver = userRepository.findById(receiverId).orElseThrow(()
-                -> new UserNotFoundException("User with ID " + receiverId + " not found"));
+                -> new UserNotFoundException(USER_NOT_FOUND_PREFIX + receiverId + NOT_FOUND_SUFFIX));
 
         Follows followToDelete = followsRepository.findByUser1_IdUserAndUser2_IdUser
                 (sender.getIdUser(), receiver.getIdUser()).orElseThrow(() ->
-                new FollowNotFoundException("Follow for user " + sender.getUsername() + " not found"));
+                new FollowNotFoundException("Follow for user " + sender.getUsername() + NOT_FOUND_SUFFIX));
 
         Optional<FollowRequest> existingFollowReq = followRequestRepository.findBySender_IdUserAndReceiver_IdUser
                 (sender.getIdUser(), receiver.getIdUser());
@@ -149,10 +152,10 @@ public class FollowRequestService {
         String actionName = userResponse.action().name().toLowerCase();
 
         User receiver = userRepository.findById(receiverId).orElseThrow(()
-                -> new UserNotFoundException("User with ID " + receiverId + " not found"));
+                -> new UserNotFoundException(USER_NOT_FOUND_PREFIX + receiverId + NOT_FOUND_SUFFIX));
 
         FollowRequest existingReq = followRequestRepository.findById(requestId).orElseThrow(() ->
-                new FollowRequestNotFoundException("Follow request for user " + receiver.getUsername() + " not found"));
+                new FollowRequestNotFoundException("Follow request for user " + receiver.getUsername() + NOT_FOUND_SUFFIX));
 
         if (!existingReq.getReceiver().getIdUser().equals(receiverId)) {
             throw new NotYourRequestException("You cannot " + actionName + " someone else's follow request");
@@ -172,7 +175,6 @@ public class FollowRequestService {
                 throw new DuplicateFollowException("User already follows this profile");
             }
 
-            //existingReq.setStatus(FollowRequestStatus.ACCEPTED);
             followRequestRepository.delete(existingReq);
 
             Follows newFollow = Follows.builder()
@@ -184,7 +186,6 @@ public class FollowRequestService {
         }
         else if (userResponse.action() == FollowRequestUserResponse.DECLINE) {
             existingReq.setStatus(FollowRequestStatus.DECLINED);
-            //followRequestRepository.delete(existingReq);
         }
 
 
@@ -193,7 +194,7 @@ public class FollowRequestService {
 
     public List<FollowRequestResponse> getAllFollowRequests(Long receiverId) {
         userRepository.findById(receiverId).orElseThrow(()
-                -> new UserNotFoundException("User with ID " + receiverId + " not found"));
+                -> new UserNotFoundException(USER_NOT_FOUND_PREFIX + receiverId + NOT_FOUND_SUFFIX));
 
         return followRequestRepository.findAllByReceiverId(receiverId);
 
