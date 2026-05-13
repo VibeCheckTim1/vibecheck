@@ -23,6 +23,9 @@ public class AccessTokenService {
     @Value("${jwt.expiration.access}")
     private long accessExpirationMinutes;
 
+    @Value("${app.cookies.secure:false}")
+    private boolean secureCookie;
+
     public String generateToken(VibeCheckUserDetails user) {
         Instant expiration = Instant.now().plus(accessExpirationMinutes, ChronoUnit.MINUTES);
 
@@ -38,7 +41,7 @@ public class AccessTokenService {
         var cookie = new Cookie("ACCESS", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setSecure(false); // set to true in production with HTTPS
+        cookie.setSecure(secureCookie);
         cookie.setMaxAge(-1);
 
         return cookie;

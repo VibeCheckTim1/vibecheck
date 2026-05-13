@@ -21,6 +21,9 @@ public class RefreshTokenService {
     @Value("${jwt.expiration.refresh}")
     private long refreshExpirationHours;
 
+    @Value("${app.cookies.secure:false}")
+    private boolean secureCookie;
+
     private final RefreshTokenRepository refreshTokenRepository;
 
     private static final int REFRESH_TOKEN_LENGTH = 64;
@@ -56,7 +59,7 @@ public class RefreshTokenService {
         var cookie = new Cookie("REFRESH", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setSecure(false); // set to true in production with HTTPS
+        cookie.setSecure(secureCookie);
         cookie.setMaxAge((int) (refreshExpirationHours * 24 * 60 * 60));
 
         return cookie;

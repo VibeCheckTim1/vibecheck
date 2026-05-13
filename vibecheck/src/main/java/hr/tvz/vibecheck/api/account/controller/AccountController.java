@@ -11,6 +11,7 @@ import hr.tvz.vibecheck.security.VibeCheckUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
@@ -28,6 +29,9 @@ import java.io.IOException;
 public class AccountController {
     private final AccountService accountService;
     private final SecurityService securityService;
+
+    @Value("${app.cookies.secure:false}")
+    private boolean secureCookie;
 
     @PatchMapping("")
     public ResponseEntity<UserStateResponse> updateAccount(
@@ -48,14 +52,14 @@ public class AccountController {
 
         ResponseCookie access = ResponseCookie.from("ACCESS", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(secureCookie)
                 .path("/")
                 .maxAge(0)
                 .build();
 
         ResponseCookie refresh = ResponseCookie.from("REFRESH", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(secureCookie)
                 .path("/")
                 .maxAge(0)
                 .build();

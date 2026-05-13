@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,9 @@ public class SecurityController {
     private final SecurityService securityService;
     private final AccessTokenService accessTokenService;
     private final RefreshTokenService refreshTokenService;
+
+    @Value("${app.cookies.secure:false}")
+    private boolean secureCookie;
 
     @PostMapping("/register")
     public ResponseEntity<UserStateResponse> register(@RequestBody @Valid RegisterRequestDto registerRequestDto, HttpServletRequest request, HttpServletResponse response) {
@@ -104,14 +108,14 @@ public class SecurityController {
     public ResponseEntity<?> logout() {
         ResponseCookie access = ResponseCookie.from("ACCESS", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(secureCookie)
                 .path("/")
                 .maxAge(0)
                 .build();
 
         ResponseCookie refresh = ResponseCookie.from("REFRESH", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(secureCookie)
                 .path("/")
                 .maxAge(0)
                 .build();
