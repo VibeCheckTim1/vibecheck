@@ -52,7 +52,7 @@ class AccountControllerTest {
     @EnableWebSecurity
     static class TestSecurityConfig {
         @Bean
-        SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        SecurityFilterChain filterChain(HttpSecurity http) {
             return http.csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests(a -> a.anyRequest().permitAll())
                     .build();
