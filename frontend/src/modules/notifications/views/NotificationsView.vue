@@ -100,8 +100,8 @@ onMounted(async () => {
             <p class="empty-subtitle">When someone sends you a follow request, it will appear here.</p>
         </div>
 
-        <div v-else class="requests-list">
-            <div v-for="req in followRequests" :key="req.idRequest" class="request-card"
+        <div data-testid="follow-request-list" v-else class="requests-list">
+            <div :data-testid="`follow-request-item-${req.senderId}`" v-for="req in followRequests" :key="req.idRequest" class="request-card"
                 @click="goToProfile(req.senderId)">
                 <div class="request-user-section">
                     <div class="request-avatar">
@@ -120,9 +120,9 @@ onMounted(async () => {
                 </div>
 
                 <div class="request-actions">
-                    <button class="primary-button" @click.stop
+                    <button :data-testid="`accept-follow-request-button-${req.senderId}`" class="primary-button" @click.stop
                         @click="acceptFollowRequest(req.idRequest)">Accept</button>
-                    <button class="secondary-button" @click.stop
+                    <button :data-testid="`decline-follow-request-button-${req.senderId}`" class="secondary-button" @click.stop
                         @click="declineFollowRequest(req.idRequest)">Decline</button>
                 </div>
             </div>
