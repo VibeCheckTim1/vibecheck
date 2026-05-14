@@ -10,6 +10,7 @@ import hr.tvz.vibecheck.api.account.repository.follow_request.FollowRequestRepos
 import hr.tvz.vibecheck.api.account.repository.follows.FollowsRepository;
 import hr.tvz.vibecheck.api.security.enums.FollowActionResult;
 import hr.tvz.vibecheck.api.security.enums.FollowRequestStatus;
+import hr.tvz.vibecheck.api.security.enums.FollowRequestUserResponse;
 import hr.tvz.vibecheck.api.user.entity.User;
 import hr.tvz.vibecheck.api.user.repository.UserRepository;
 import hr.tvz.vibecheck.exception.custom.DuplicateFollowException;
@@ -373,7 +374,7 @@ public class FollowRequestServiceTest {
                 .build();
 
         FollowRequestActionRequest userResponse =
-                new FollowRequestActionRequest(hr.tvz.vibecheck.enums.FollowRequestUserResponse.ACCEPT);
+                new FollowRequestActionRequest(FollowRequestUserResponse.ACCEPT);
 
         when(userRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
         when(followRequestRepository.findById(requestId)).thenReturn(Optional.of(existingRequest));
@@ -404,7 +405,7 @@ public class FollowRequestServiceTest {
                 .build();
 
         FollowRequestActionRequest userResponse =
-                new FollowRequestActionRequest(hr.tvz.vibecheck.enums.FollowRequestUserResponse.DECLINE);
+                new FollowRequestActionRequest(FollowRequestUserResponse.DECLINE);
 
         when(userRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
         when(followRequestRepository.findById(requestId)).thenReturn(Optional.of(existingRequest));

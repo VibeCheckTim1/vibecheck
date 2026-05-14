@@ -84,7 +84,7 @@ function redirectToSpotifyOAuth() {
                            type="password"
                            label="Password"/>
                 <a href="#" class="decorative-link">Forgot your password?</a>
-                <button type="submit" class="primary-button large-button">Login</button>
+                <button name="Login" type="submit" class="primary-button large-button">Login</button>
             </form>
 
             <div class="divider">

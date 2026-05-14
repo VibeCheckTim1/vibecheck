@@ -239,10 +239,10 @@ onMounted(async () => {
                 <img v-if="viewedUser.avatarUrl" :src="viewedUser.avatarUrl" alt="Avatar">
             </div>
             <div class="user-full-name">{{ viewedUser.email }}</div>
-            <div class="user-username">{{ viewedUser.username }}</div>
+            <div data-testid="profile-username" class="user-username">{{ viewedUser.username }}</div>
             <p class="user-description" v-if="viewedUser.bio">{{ viewedUser.bio }}</p>
 
-            <button :class="['follow-btn', handleButtonClass]" v-if="!isOwnProfile" @click="handleFollowClick">{{
+            <button data-testid="follow-button" :class="['follow-btn', handleButtonClass]" v-if="!isOwnProfile" @click="handleFollowClick">{{
                     followButtonText
                 }}</button>
 
