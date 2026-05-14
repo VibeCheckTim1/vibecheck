@@ -44,9 +44,6 @@ public class AccountService {
         if (avatar.getContentType() == null || !avatar.getContentType().startsWith("image/")) {
             throw new InvalidFileException("File must be an image");
         }
-        /*if (user.getAvatarPublicId() != null) {
-            cloudinaryService.deleteImage(user.getAvatarPublicId());
-        }*/
 
         UploadImageDetailsDto response = cloudinaryService.uploadUserAvatar(avatar, user.getIdUser());
         user.setAvatarUrl(response.imageUrl());
@@ -60,8 +57,6 @@ public class AccountService {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         userMapper.updateUserFromRequest(request, user);
-
-        //userRepository.save(user);
     }
 
 

@@ -1,17 +1,13 @@
 package hr.tvz.vibecheck.api.account.service;
 
-import hr.tvz.vibecheck.api.account.dto.FollowStatsResponse;
+import hr.tvz.vibecheck.api.account.dto.*;
 import hr.tvz.vibecheck.api.account.entity.FollowRequest;
 import hr.tvz.vibecheck.api.security.enums.FollowActionResult;
 import hr.tvz.vibecheck.api.security.enums.FollowRequestStatus;
+import hr.tvz.vibecheck.api.security.enums.FollowRequestUserResponse;
 import hr.tvz.vibecheck.api.user.entity.User;
 import hr.tvz.vibecheck.api.user.repository.UserRepository;
-import hr.tvz.vibecheck.api.account.dto.FollowRequestActionRequest;
-import hr.tvz.vibecheck.api.account.dto.FollowRequestRequest;
-import hr.tvz.vibecheck.api.account.dto.FollowActionResponse;
-import hr.tvz.vibecheck.api.account.dto.FollowRequestResponse;
 import hr.tvz.vibecheck.api.account.entity.Follows;
-import hr.tvz.vibecheck.enums.FollowRequestUserResponse;
 import hr.tvz.vibecheck.exception.custom.*;
 import hr.tvz.vibecheck.api.account.repository.follow_request.FollowRequestRepository;
 import hr.tvz.vibecheck.api.account.repository.follows.FollowsRepository;

@@ -1,8 +1,10 @@
 package hr.tvz.vibecheck.api.security.service;
 
 import hr.tvz.vibecheck.api.security.entity.RefreshToken;
+import hr.tvz.vibecheck.api.security.enums.TokenType;
 import hr.tvz.vibecheck.api.security.repository.RefreshTokenRepository;
 import hr.tvz.vibecheck.api.user.entity.User;
+import hr.tvz.vibecheck.exception.custom.InvalidRefreshTokenException;
 import jakarta.servlet.http.Cookie;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +23,18 @@ public class RefreshTokenService {
     @Value("${jwt.expiration.refresh}")
     private long refreshExpirationHours;
 
+    @Value("${app.cookies.secure:false}")
+    private boolean secureCookie;
+
     private final RefreshTokenRepository refreshTokenRepository;
 
     private static final int REFRESH_TOKEN_LENGTH = 64;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     public String generateRefreshToken() {
         byte[] bytes = new byte[REFRESH_TOKEN_LENGTH];
 
-        new SecureRandom().nextBytes(bytes);
+        SECURE_RANDOM.nextBytes(bytes);
 
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
@@ -53,10 +59,10 @@ public class RefreshTokenService {
     }
 
     public Cookie generateTokenCookie(String token) {
-        var cookie = new Cookie("REFRESH", token);
+        var cookie = new Cookie(TokenType.REFRESH.name(), token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setSecure(false); // set to true in production with HTTPS
+        cookie.setSecure(secureCookie);
         cookie.setMaxAge((int) (refreshExpirationHours * 24 * 60 * 60));
 
         return cookie;
@@ -65,14 +71,14 @@ public class RefreshTokenService {
     @Transactional()
     public RefreshToken isValid(String token) {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
+                .orElseThrow(() -> new InvalidRefreshTokenException("Invalid refresh token"));
 
         if (refreshToken.isRevoked()) {
-            throw new RuntimeException("Refresh token revoked");
+            throw new InvalidRefreshTokenException("Refresh token revoked");
         }
 
         if (refreshToken.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Refresh token expired");
+            throw new InvalidRefreshTokenException("Refresh token expired");
         }
 
         return refreshToken;

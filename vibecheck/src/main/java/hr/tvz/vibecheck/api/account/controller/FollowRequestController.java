@@ -1,10 +1,6 @@
 package hr.tvz.vibecheck.api.account.controller;
 
-import hr.tvz.vibecheck.api.account.dto.FollowStatsResponse;
-import hr.tvz.vibecheck.api.account.dto.FollowRequestActionRequest;
-import hr.tvz.vibecheck.api.account.dto.FollowRequestRequest;
-import hr.tvz.vibecheck.api.account.dto.FollowActionResponse;
-import hr.tvz.vibecheck.api.account.dto.FollowRequestResponse;
+import hr.tvz.vibecheck.api.account.dto.*;
 import hr.tvz.vibecheck.security.VibeCheckUserDetails;
 import hr.tvz.vibecheck.api.account.service.FollowRequestService;
 import jakarta.validation.Valid;
@@ -29,7 +25,7 @@ public class FollowRequestController {
     }
 
     @DeleteMapping("{receiverId}")
-    public ResponseEntity<?> cancelFollowRequest(
+    public ResponseEntity<Void> cancelFollowRequest(
             @PathVariable Long receiverId,
             @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
         followRequestService.cancelFollowRequest(userDetails.getId(), receiverId);
@@ -37,7 +33,7 @@ public class FollowRequestController {
     }
 
     @DeleteMapping("/unfollow/{receiverId}")
-    public ResponseEntity<?> unfollow(
+    public ResponseEntity<Void> unfollow(
             @PathVariable Long receiverId,
             @AuthenticationPrincipal VibeCheckUserDetails userDetails) {
         followRequestService.unfollow(userDetails.getId(), receiverId);
@@ -52,7 +48,7 @@ public class FollowRequestController {
     }
 
     @PatchMapping("/acceptOrDeclineFollowRequest/{requestId}")
-    public ResponseEntity<?> acceptOrDeclineFollowRequest(
+    public ResponseEntity<Void> acceptOrDeclineFollowRequest(
             @PathVariable Long requestId,
             @AuthenticationPrincipal VibeCheckUserDetails userDetails, @RequestBody FollowRequestActionRequest userResponse) {
         followRequestService.acceptOrDeclineFollowRequest(requestId, userDetails.getId(), userResponse);
