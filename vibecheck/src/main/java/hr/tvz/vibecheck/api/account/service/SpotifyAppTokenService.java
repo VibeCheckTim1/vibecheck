@@ -34,7 +34,13 @@ public class SpotifyAppTokenService {
         return accessToken;
     }
 
-
+    /*
+    search pjesmi
+    dohvat tracka
+    dohvat albuma
+    dohvat artista
+    public Spotify podaci
+    */
     private void refreshAccessToken() {
         String basicAuth = Base64.getEncoder().encodeToString(
                 (clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8)
