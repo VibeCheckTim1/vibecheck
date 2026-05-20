@@ -33,7 +33,7 @@ public class SearchService {
 
     private SearchResult mapUserToDto(User user) {
         return new SearchResult(
-                user.getIdUser(),
+                String.valueOf(user.getIdUser()),
                 "user",
                 user.getUsername(),
                 user.getFirstName() + " " + user.getLastName()

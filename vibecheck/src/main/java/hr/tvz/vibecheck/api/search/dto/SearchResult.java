@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class SearchResult {
-    private Long id;
+    private String id;
     private String type;
     private String titleText;
     private String subtitleText;
