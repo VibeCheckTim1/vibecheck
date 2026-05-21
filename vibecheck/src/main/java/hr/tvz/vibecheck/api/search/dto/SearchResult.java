@@ -10,5 +10,6 @@ public class SearchResult {
     private String type;
     private String titleText;
     private String subtitleText;
+    private String imageUrl;
 
 }
