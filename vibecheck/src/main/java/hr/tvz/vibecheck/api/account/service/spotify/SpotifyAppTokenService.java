@@ -1,8 +1,8 @@
-package hr.tvz.vibecheck.api.account.service;
+package hr.tvz.vibecheck.api.account.service.spotify;
 
 import hr.tvz.vibecheck.api.account.dto.spotify.SpotifyTokenResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.hc.core5.http.HttpHeaders;
+import org.springframework.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -35,6 +35,7 @@ public class SpotifyAppTokenService {
     }
 
     /*
+    app token za
     search pjesmi
     dohvat tracka
     dohvat albuma

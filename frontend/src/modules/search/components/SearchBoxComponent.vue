@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import {computed, ref, watch} from "vue";
+import { computed, ref, watch } from "vue";
 import InputText from "../../../components/InputText.vue";
-import {useFormField} from "../../../composables/useFormField.ts";
-import {useHttpClient} from "../../../composables/useHttpClient.ts";
-import {useRouter} from "vue-router";
+import { useFormField } from "../../../composables/useFormField.ts";
+import { useHttpClient } from "../../../composables/useHttpClient.ts";
+import { useRouter } from "vue-router";
 
 type SearchItem = {
-    id: number;
+    id: string;
     type: string;
     titleText: string;
     subtitleText: string;
+    imageUrl?: string;
 };
 
-const {httpGet} = useHttpClient();
+const { httpGet } = useHttpClient();
 const router = useRouter();
 const searchKeyword = useFormField<string>(null);
 const results = ref<SearchItem[]>([]);
@@ -28,6 +29,13 @@ const handleClick = (item: SearchItem) => {
                 }
             });
             break;
+
+        case "song":
+            const youtubeUrl = buildYoutubeSearchUrl(item);
+            window.open(youtubeUrl, "_blank");
+            break;
+
+
 
         default:
             console.warn("Unknown type:", item.type);
@@ -99,29 +107,31 @@ const typeLabels: Record<string, string> = {
     album: "Albums",
     playlist: "Playlists"
 };
+
+const buildYoutubeSearchUrl = (item: SearchItem) => {
+    const query = `${item.subtitleText} ${item.titleText}`;
+    return `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+}
+
+
 </script>
 
 <template>
     <div class="search-box">
         <div class="input-wrapper">
-            <InputText :control="searchKeyword"
-                       placeholder="Search...">
+            <InputText :control="searchKeyword" placeholder="Search...">
                 <template #prefix>
                     <i class="icon-magnify"></i>
                 </template>
             </InputText>
 
             <div v-if="results.length" class="search-dropdown">
-                <div v-for="(items, type) in groupedResults"
-                     :key="type"
-                     class="result-group">
+                <div v-for="(items, type) in groupedResults" :key="type" class="result-group">
                     <div class="group-title">{{ typeLabels[type] ?? type }}</div>
-                    <div v-for="item in items"
-                         :key="item.id"
-                         class="result-item"
-                         @click="handleClick(item)">
+                    <div v-for="item in items" :key="item.id" class="result-item" @click="handleClick(item)">
                         <div class="icon">
-                            <i :class="getIcon(type)"></i>
+                            <img v-if="item.imageUrl" :src="item.imageUrl" alt="" class="result-image" />
+                            <i v-else :class="getIcon(type)"></i>
                         </div>
                         <div class="text">
                             <div class="title">{{ item.titleText }}</div>
@@ -135,6 +145,13 @@ const typeLabels: Record<string, string> = {
 </template>
 
 <style scoped>
+.result-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
 .search-box {
     width: 100%;
 
