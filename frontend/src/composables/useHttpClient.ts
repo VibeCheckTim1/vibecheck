@@ -1,4 +1,5 @@
 import {useState} from "./useState.ts";
+import {API_BASE_URL} from "../config.ts";
 
 export class ApiError extends Error {
 	public status: number;
@@ -20,7 +21,7 @@ export type RequestOptions = Omit<RequestInit, "method" | "body"> & {
 
 export function useHttpClient() {
 	const MAX_RETRIES = 3;
-	const SERVER_HOST = "http://127.0.0.1:8080";
+	const SERVER_HOST = API_BASE_URL;
 
 	async function request<T = void>(
 		method: string,

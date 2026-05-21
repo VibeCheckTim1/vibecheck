@@ -7,6 +7,7 @@ import InputText from "../../../components/InputText.vue";
 import {useToast} from "../../../composables/useToast.ts";
 import {useLoginService} from "../composables/useLoginService.ts";
 import {ApiError} from "../../../composables/useHttpClient.ts";
+import {API_BASE_URL} from "../../../config.ts";
 import {useRouter, useRoute} from "vue-router";
 import {useState} from "../../../composables/useState.ts";
 import {onMounted} from "vue";
@@ -47,11 +48,11 @@ async function submitForm() {
 }
 
 function redirectToGoogleOAuth() {
-    window.location.href = "http://127.0.0.1:8080/oauth2/authorization/google";
+    window.location.href = `${API_BASE_URL}/oauth2/authorization/google`;
 }
 
 function redirectToSpotifyOAuth() {
-    window.location.href = "http://127.0.0.1:8080/oauth2/authorization/spotify";
+    window.location.href = `${API_BASE_URL}/oauth2/authorization/spotify`;
 }
 </script>
 
