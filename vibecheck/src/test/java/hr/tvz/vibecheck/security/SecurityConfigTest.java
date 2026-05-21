@@ -23,6 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(MockitoExtension.class)
 class SecurityConfigTest {
 
+    private static final String FRONTEND_URL = "http://127.0.0.1:5173";
+
     @Mock private MDCfilter mdcFilter;
     @Mock private JwtFilter jwtFilter;
     @Mock private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
@@ -46,21 +48,21 @@ class SecurityConfigTest {
     void corsConfigurationSource_shouldAllowFrontendOrigin() {
         SecurityConfig config = securityConfig();
 
-        CorsConfigurationSource source = config.corsConfigurationSource();
+        CorsConfigurationSource source = config.corsConfigurationSource(FRONTEND_URL);
 
         assertThat(source).isNotNull().isInstanceOf(UrlBasedCorsConfigurationSource.class);
 
         UrlBasedCorsConfigurationSource urlSource = (UrlBasedCorsConfigurationSource) source;
         CorsConfiguration corsConfig = urlSource.getCorsConfigurations().get("/**");
         assertThat(corsConfig).isNotNull();
-        assertThat(corsConfig.getAllowedOrigins()).containsExactly("http://127.0.0.1:5173");
+        assertThat(corsConfig.getAllowedOrigins()).containsExactly(FRONTEND_URL);
     }
 
     @Test
     void corsConfigurationSource_shouldAllowAllHeaders() {
         SecurityConfig config = securityConfig();
 
-        CorsConfigurationSource source = config.corsConfigurationSource();
+        CorsConfigurationSource source = config.corsConfigurationSource(FRONTEND_URL);
         UrlBasedCorsConfigurationSource urlSource = (UrlBasedCorsConfigurationSource) source;
         CorsConfiguration corsConfig = urlSource.getCorsConfigurations().get("/**");
 
@@ -71,7 +73,7 @@ class SecurityConfigTest {
     void corsConfigurationSource_shouldAllowCredentials() {
         SecurityConfig config = securityConfig();
 
-        CorsConfigurationSource source = config.corsConfigurationSource();
+        CorsConfigurationSource source = config.corsConfigurationSource(FRONTEND_URL);
         UrlBasedCorsConfigurationSource urlSource = (UrlBasedCorsConfigurationSource) source;
         CorsConfiguration corsConfig = urlSource.getCorsConfigurations().get("/**");
 
@@ -82,7 +84,7 @@ class SecurityConfigTest {
     void corsConfigurationSource_shouldAllowHttpMethods() {
         SecurityConfig config = securityConfig();
 
-        CorsConfigurationSource source = config.corsConfigurationSource();
+        CorsConfigurationSource source = config.corsConfigurationSource(FRONTEND_URL);
         UrlBasedCorsConfigurationSource urlSource = (UrlBasedCorsConfigurationSource) source;
         CorsConfiguration corsConfig = urlSource.getCorsConfigurations().get("/**");
 
