@@ -27,6 +27,9 @@ public class AccessTokenService {
     @Value("${app.cookies.secure:false}")
     private boolean secureCookie;
 
+    @Value("${app.cookies.same-site:Lax}")
+    private String sameSiteCookie;
+
     public String generateToken(VibeCheckUserDetails user) {
         Instant expiration = Instant.now().plus(accessExpirationMinutes, ChronoUnit.MINUTES);
 
@@ -43,6 +46,7 @@ public class AccessTokenService {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setSecure(secureCookie);
+        cookie.setAttribute("SameSite", sameSiteCookie);
         cookie.setMaxAge(-1);
 
         return cookie;

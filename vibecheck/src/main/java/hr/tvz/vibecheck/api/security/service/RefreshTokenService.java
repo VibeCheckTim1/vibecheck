@@ -26,6 +26,9 @@ public class RefreshTokenService {
     @Value("${app.cookies.secure:false}")
     private boolean secureCookie;
 
+    @Value("${app.cookies.same-site:Lax}")
+    private String sameSiteCookie;
+
     private final RefreshTokenRepository refreshTokenRepository;
 
     private static final int REFRESH_TOKEN_LENGTH = 64;
@@ -63,6 +66,7 @@ public class RefreshTokenService {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setSecure(secureCookie);
+        cookie.setAttribute("SameSite", sameSiteCookie);
         cookie.setMaxAge((int) (refreshExpirationHours * 24 * 60 * 60));
 
         return cookie;
