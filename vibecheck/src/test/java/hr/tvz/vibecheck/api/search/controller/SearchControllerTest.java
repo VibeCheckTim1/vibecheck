@@ -62,8 +62,8 @@ class SearchControllerTest {
     @DisplayName("GET /search - 200 s rezultatima za poznati keyword")
     void search_withMatchingKeyword_returns200AndResults() throws Exception {
         var results = List.of(
-                new SearchResult(1L, "user", "kstjepanovic", "Karlo Stjepanović"),
-                new SearchResult(2L, "user", "mhorvat", "Marko Horvat")
+                new SearchResult("1", "user", "kstjepanovic", "Karlo Stjepanović"),
+                new SearchResult("2", "user", "mhorvat", "Marko Horvat")
         );
         when(searchService.search("luk")).thenReturn(results);
 
