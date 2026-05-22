@@ -1,6 +1,6 @@
-package hr.tvz.vibecheck.api.account.service.spotify;
+package hr.tvz.vibecheck.api.spotify.service;
 
-import hr.tvz.vibecheck.api.account.dto.spotify.SpotifyTokenResponse;
+import hr.tvz.vibecheck.api.spotify.dto.SpotifyTokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Value;

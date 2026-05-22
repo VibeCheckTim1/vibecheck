@@ -1,4 +1,4 @@
-package hr.tvz.vibecheck.api.account.dto.spotify;
+package hr.tvz.vibecheck.api.spotify.dto;
 
 import java.util.List;
 

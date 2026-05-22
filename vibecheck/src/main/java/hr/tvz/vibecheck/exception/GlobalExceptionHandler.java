@@ -62,6 +62,11 @@ public class GlobalExceptionHandler {
         return errorResponseService.buildError(ex, request, ErrorKey.CONFLICT);
     }
 
+    @ExceptionHandler(DuplicateUserLikedSongException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateUserLikedSongException(DuplicateUserLikedSongException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.CONFLICT);
+    }
+
     @ExceptionHandler(FollowNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleFollowNotFoundException(FollowNotFoundException ex, HttpServletRequest request) {
         return errorResponseService.buildError(ex, request, ErrorKey.NOT_FOUND);
@@ -100,6 +105,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MailSendFailedException.class)
     public ResponseEntity<ErrorResponse> handleMailSendFailedException(MailSendFailedException ex, HttpServletRequest request) {
         return errorResponseService.buildError(ex, request, ErrorKey.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(EmptySpotifyTrackException.class)
+    public ResponseEntity<ErrorResponse> handleEmptySpotifyTrackException(EmptySpotifyTrackException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.NOT_FOUND);
     }
 
     // TODO: add @ExceptionHandler(MethodArgumentNotValidException.class) — the catch-all below intercepts it first,

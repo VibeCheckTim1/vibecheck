@@ -1,6 +1,6 @@
 package hr.tvz.vibecheck.api.search.service;
 
-import hr.tvz.vibecheck.api.account.service.spotify.SpotifyActionsService;
+import hr.tvz.vibecheck.api.spotify.service.SpotifyActionsService;
 import hr.tvz.vibecheck.api.search.dto.SearchResult;
 import hr.tvz.vibecheck.api.user.entity.User;
 import hr.tvz.vibecheck.api.user.repository.UserRepository;

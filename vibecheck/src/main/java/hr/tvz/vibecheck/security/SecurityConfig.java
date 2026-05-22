@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -54,7 +55,8 @@ public class SecurityConfig {
     @SuppressWarnings("java:S4502") // CSRF može biti ugašen
     public SecurityFilterChain filterChain(HttpSecurity http) {
         http
-                .cors(_ -> {})
+                .cors(_ -> {
+                })
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(restAuthenticationEntryPoint)
@@ -87,14 +89,19 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
 
+                                .requestMatchers("/public/**").permitAll()
+                                .requestMatchers("/error/**").permitAll()
+                                .requestMatchers("/security/register").permitAll()
+                                .requestMatchers("/security/login").permitAll()
+                                .requestMatchers("/security/refresh-token").permitAll()
+                                .requestMatchers("/error").permitAll()
+                                .requestMatchers("/login/**", "/oauth2/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/search").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/music/search").permitAll()
+
+                                .requestMatchers(HttpMethod.POST, "/songs/*/like").authenticated()
+                                .anyRequest().authenticated()
                         .requestMatchers("/health").permitAll()
-                        .requestMatchers("/public/**").permitAll()
-                        .requestMatchers("/error/**").permitAll()
-                        .requestMatchers("/security/register").permitAll()
-                        .requestMatchers("/security/login").permitAll()
-                        .requestMatchers("/security/refresh-token").permitAll()
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers("/login/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                         //.requestMatchers("/security/current-user").authenticated()
                         //.requestMatchers("/security/logout").authenticated()
