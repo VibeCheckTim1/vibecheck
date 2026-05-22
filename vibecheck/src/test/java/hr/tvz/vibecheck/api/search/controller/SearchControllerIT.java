@@ -1,14 +1,21 @@
 package hr.tvz.vibecheck.api.search.controller;
 
+import hr.tvz.vibecheck.api.account.service.spotify.SpotifyActionsService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -24,6 +31,15 @@ class SearchControllerIT {
 
     @Autowired
     MockMvc mockMvc;
+
+    @MockitoBean
+    SpotifyActionsService spotifyService;
+
+    @BeforeEach
+    void setUp() {
+        when(spotifyService.trackSearch(anyString()))
+                .thenReturn(List.of());
+    }
 
     @Test
     @DisplayName("GET /search?q=luka - vraća rezultate koji odgovaraju upitu")
