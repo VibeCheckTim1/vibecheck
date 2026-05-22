@@ -88,7 +88,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
-
+                                .requestMatchers("/health").permitAll()
                                 .requestMatchers("/public/**").permitAll()
                                 .requestMatchers("/error/**").permitAll()
                                 .requestMatchers("/security/register").permitAll()
@@ -96,12 +96,11 @@ public class SecurityConfig {
                                 .requestMatchers("/security/refresh-token").permitAll()
                                 .requestMatchers("/error").permitAll()
                                 .requestMatchers("/login/**", "/oauth2/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/search").permitAll()
+                                .requestMatchers("/search").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/music/search").permitAll()
 
                                 .requestMatchers(HttpMethod.POST, "/songs/*/like").authenticated()
-                                .anyRequest().authenticated()
-                        .requestMatchers("/health").permitAll()
+
                         .anyRequest().authenticated()
                         //.requestMatchers("/security/current-user").authenticated()
                         //.requestMatchers("/security/logout").authenticated()

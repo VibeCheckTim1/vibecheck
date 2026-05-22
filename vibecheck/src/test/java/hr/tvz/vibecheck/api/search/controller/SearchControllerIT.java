@@ -1,6 +1,6 @@
 package hr.tvz.vibecheck.api.search.controller;
 
-import hr.tvz.vibecheck.api.account.service.spotify.SpotifyActionsService;
+import hr.tvz.vibecheck.api.spotify.service.SpotifyActionsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
