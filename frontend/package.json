@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
+    "postbuild": "node --env-file=.env.production scripts/notify-deploy.js",
     "preview": "vite preview"
   },
   "dependencies": {

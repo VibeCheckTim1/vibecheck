@@ -87,6 +87,7 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
 
+                        .requestMatchers("/health").permitAll()
                         .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/error/**").permitAll()
                         .requestMatchers("/security/register").permitAll()
