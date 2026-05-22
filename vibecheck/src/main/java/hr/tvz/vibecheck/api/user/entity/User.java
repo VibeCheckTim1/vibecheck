@@ -2,6 +2,7 @@ package hr.tvz.vibecheck.api.user.entity;
 
 import hr.tvz.vibecheck.api.security.entity.Role;
 import hr.tvz.vibecheck.api.security.entity.OAuthAccount;
+import hr.tvz.vibecheck.api.playlists.entity.Playlist;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
@@ -51,6 +52,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OAuthAccount> oauthAccounts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Playlist> playlists;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

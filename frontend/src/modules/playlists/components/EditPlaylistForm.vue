@@ -1,25 +1,28 @@
 <script setup lang="ts">
-import PageHeaderComponent from "../../../components/PageHeaderComponent.vue";
 import InputText from "../../../components/InputText.vue";
 import InputToggle from "../../../components/InputToggle.vue";
+import {useDialog} from "../../../composables/useDialog.ts";
 import {useForm} from "../../../composables/useForm.ts";
 import {useFormField} from "../../../composables/useFormField.ts";
-import {useValidators} from "../../../composables/useValidators.ts";
 import {useToast} from "../../../composables/useToast.ts";
+import {useValidators} from "../../../composables/useValidators.ts";
 import {ApiError} from "../../../composables/useHttpClient.ts";
-import {usePlaylistService} from "../../playlists/composables/usePlaylistService.ts";
-import {useState} from "../../../composables/useState.ts";
-import {useRouter} from "vue-router";
+import type {Playlist} from "../../../entities/playlist.ts";
+import {usePlaylistService} from "../composables/usePlaylistService.ts";
 
+const props = defineProps<{
+    playlist: Playlist;
+    callback: (playlist: Playlist) => Promise<void>;
+}>();
+
+const {closeDialog} = useDialog();
 const {required, maxLength} = useValidators();
-const {showSuccess, showError} = useToast();
-const {currentUser} = useState();
-const router = useRouter();
+const {showError} = useToast();
 
 const form = useForm({
-    name: useFormField<string>("", [required, maxLength(100)]),
-    isFavorite: useFormField<boolean>(false),
-    isPublic: useFormField<boolean>(true),
+    name: useFormField<string>(props.playlist.name, [required, maxLength(100)]),
+    isFavorite: useFormField<boolean>(props.playlist.isFavorite),
+    isPublic: useFormField<boolean>(props.playlist.isPublic),
 });
 
 async function submitForm() {
@@ -28,37 +31,26 @@ async function submitForm() {
     }
 
     try {
-        const {createPlaylist} = usePlaylistService();
-        await createPlaylist(form.toJson());
-        showSuccess("Playlist created successfully!");
+        const {updatePlaylist} = usePlaylistService();
+        const updatedPlaylist = await updatePlaylist(props.playlist.id, form.toJson());
 
-        if (currentUser.value) {
-            await router.push({
-                name: "account",
-                params: {
-                    userId: currentUser.value.idUser
-                }
-            });
-        }
-        else {
-            form.resetForm();
-        }
+        await props.callback(updatedPlaylist);
+        closeDialog();
     }
     catch (error) {
         if (error instanceof ApiError) {
             showError(error.message);
+            return;
         }
+        showError("Something went wrong.");
     }
 }
 </script>
 
 <template>
-    <PageHeaderComponent>
-        <span>Create playlist</span>
-    </PageHeaderComponent>
-    <div class="center-content-container">
-        <form class="create-playlist-form" @submit.prevent="submitForm">
-            <InputText :control="form.name" label="Playlist name" placeholder="My new playlist"/>
+    <div class="edit-playlist-container">
+        <form @submit.prevent="submitForm">
+            <InputText :control="form.name" label="Playlist name"/>
 
             <div class="form-section-container">
                 <div class="icon-holder">
@@ -86,16 +78,14 @@ async function submitForm() {
                 </div>
             </div>
 
-            <div class="form-bottom">
-                <button class="primary-button large-button" type="submit">Create playlist</button>
-            </div>
+            <button type="submit" class="primary-button large-button">Save</button>
         </form>
     </div>
 </template>
 
 <style scoped>
-.create-playlist-form {
-    padding-block: var(--spacing-5);
+.edit-playlist-container {
+    padding: var(--spacing-4);
 }
 
 .form-section-container {
