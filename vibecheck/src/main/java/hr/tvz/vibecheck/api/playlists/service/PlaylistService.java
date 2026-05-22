@@ -76,6 +76,16 @@ public class PlaylistService {
     }
 
     @Transactional
+    public PlaylistResponseDto toggleFavorite(Long playlistId, Long requesterId) {
+        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(PlaylistNotFoundException::new);
+        validateOwner(playlist, requesterId);
+
+        playlist.setFavorite(!playlist.isFavorite());
+
+        return toResponse(playlistRepository.save(playlist));
+    }
+
+    @Transactional
     public void delete(Long playlistId, Long requesterId) {
         Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(PlaylistNotFoundException::new);
         validateOwner(playlist, requesterId);

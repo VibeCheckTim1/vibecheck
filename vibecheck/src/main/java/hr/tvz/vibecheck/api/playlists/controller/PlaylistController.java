@@ -53,6 +53,14 @@ public class PlaylistController {
         return ResponseEntity.ok(playlistService.update(playlistId, userDetails.getId(), request));
     }
 
+    @PatchMapping("/playlists/{playlistId}/favorite")
+    public ResponseEntity<PlaylistResponseDto> toggleFavorite(
+            @PathVariable Long playlistId,
+            @AuthenticationPrincipal VibeCheckUserDetails userDetails
+    ) {
+        return ResponseEntity.ok(playlistService.toggleFavorite(playlistId, userDetails.getId()));
+    }
+
     @DeleteMapping("/playlists/{playlistId}")
     public ResponseEntity<Void> delete(
             @PathVariable Long playlistId,

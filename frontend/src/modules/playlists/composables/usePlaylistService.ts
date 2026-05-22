@@ -36,6 +36,11 @@ export function usePlaylistService() {
 		return new Playlist(data);
 	}
 
+	async function toggleFavorite(playlistId: number): Promise<Playlist> {
+		const data = await httpPatch<PlaylistApi>(`/playlists/${String(playlistId)}/favorite`);
+		return new Playlist(data);
+	}
+
 	async function deletePlaylist(playlistId: number): Promise<void> {
 		await httpDelete<void>(`/playlists/${String(playlistId)}`);
 	}
@@ -45,6 +50,7 @@ export function usePlaylistService() {
 		getUserPlaylists,
 		getPlaylist,
 		updatePlaylist,
+		toggleFavorite,
 		deletePlaylist,
 	};
 }

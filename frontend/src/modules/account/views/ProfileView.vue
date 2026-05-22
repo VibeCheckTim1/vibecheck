@@ -197,6 +197,23 @@ async function loadPlaylists() {
     }
 }
 
+async function togglePlaylistFavorite(playlist: Playlist) {
+    if (!isOwnProfile.value) return;
+
+    try {
+        const {toggleFavorite} = usePlaylistService();
+        const updatedPlaylist = await toggleFavorite(playlist.id);
+        playlists.value = playlists.value.map((currentPlaylist) => {
+            return currentPlaylist.id === updatedPlaylist.id ? updatedPlaylist : currentPlaylist;
+        });
+    }
+    catch (error) {
+        if (error instanceof ApiError) {
+            showError(error.message);
+        }
+    }
+}
+
 watch(() => route.params.userId, async (newUserId) => {
     if (!newUserId) return;
 
@@ -278,8 +295,20 @@ watch(() => route.params.userId, async (newUserId) => {
                             <div class="playlist-cover">
                                 <i class="icon-playlist-music"></i>
                             </div>
-                            <span class="playlist-name">{{ playlist.name }}</span>
-                            <span class="playlist-song-count">{{ playlist.songCount }} songs</span>
+                            <div class="playlist-card-footer">
+                                <div class="playlist-info">
+                                    <span class="playlist-name">{{ playlist.name }}</span>
+                                    <span class="playlist-song-count">{{ playlist.songCount }} songs</span>
+                                </div>
+                                <button
+                                    v-if="isOwnProfile"
+                                    class="favorite-button"
+                                    type="button"
+                                    :aria-label="playlist.isFavorite ? 'Remove from favorites' : 'Add to favorites'"
+                                    @click.prevent.stop="togglePlaylistFavorite(playlist)">
+                                    <i :class="playlist.isFavorite ? 'icon-heart' : 'icon-heart-outline'"></i>
+                                </button>
+                            </div>
                         </router-link>
                     </div>
                     <div class="empty-state" v-else>
@@ -463,6 +492,41 @@ watch(() => route.params.userId, async (newUserId) => {
                 font-size: var(--font-size-1);
                 color: var(--color-gray-4);
                 display: block;
+            }
+
+            .playlist-card-footer {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: var(--spacing-2);
+
+                .playlist-info {
+                    min-width: 0;
+                }
+            }
+
+            .favorite-button {
+                width: 34px;
+                height: 34px;
+                border: none;
+                border-radius: var(--border-radius-full);
+                background-color: white;
+                color: var(--color-primary-4);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                cursor: pointer;
+                font-size: var(--font-size-4);
+                transition: background-color 150ms ease, transform 150ms ease;
+
+                &:hover {
+                    background-color: var(--color-primary-0);
+                }
+
+                &:active {
+                    transform: scale(0.94);
+                }
             }
         }
     }
