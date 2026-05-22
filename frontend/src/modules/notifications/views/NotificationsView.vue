@@ -252,28 +252,6 @@ onMounted(async () => {
     background: #ede9fe;
 }
 
-.empty-state {
-    margin-top: 2rem;
-    padding: 2.25rem 1.5rem;
-    text-align: center;
-    background: #ffffff;
-    border: 1px solid #ede9fe;
-    border-radius: 20px;
-}
-
-.empty-title {
-    margin: 0;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #1f2937;
-}
-
-.empty-subtitle {
-    margin: 0.5rem 0 0;
-    font-size: 0.95rem;
-    color: #6b7280;
-}
-
 @media (max-width: 640px) {
     .request-card {
         flex-direction: column;

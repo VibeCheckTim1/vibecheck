@@ -22,6 +22,11 @@ public class GlobalExceptionHandler {
         return errorResponseService.buildError(ex, request, ErrorKey.NOT_FOUND);
     }
 
+    @ExceptionHandler(PlaylistNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePlaylistNotFound(PlaylistNotFoundException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.NOT_FOUND);
+    }
+
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<ErrorResponse> handleInvalidPassword(InvalidPasswordException ex, HttpServletRequest request) {
         return errorResponseService.buildError(ex, request, ErrorKey.BAD_REQUEST);

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useState } from "../../../composables/useState.ts";
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import type { Playlist } from "../../../entities/playlist.ts";
 import PageHeaderComponent from "../../../components/PageHeaderComponent.vue";
 import { useRoute } from "vue-router";
@@ -12,6 +12,7 @@ import { type FollowStatsResponse, useFollowingService } from "../../followers/c
 import { useConfirm } from "../../../composables/useConfirm.ts";
 import {useUserService} from "../../../composables/useUserService.ts";
 import {useSecurityService} from "../../../composables/useSecurityService.ts";
+import {usePlaylistService} from "../../playlists/composables/usePlaylistService.ts";
 
 const { currentUser } = useState();
 const route = useRoute();
@@ -150,33 +151,7 @@ async function getStats() {
 }
 
 
-const playlists = ref<Playlist[]>([
-    {
-        id: 1,
-        name: "Top Hits 2025",
-        songCount: 42,
-    },
-    {
-        id: 2,
-        name: "Chill Vibes",
-        songCount: 18,
-    },
-    {
-        id: 3,
-        name: "Workout Mix",
-        songCount: 27,
-    },
-    {
-        id: 4,
-        name: "Old School Classics",
-        songCount: 35,
-    },
-    {
-        id: 5,
-        name: "Focus & Study",
-        songCount: 22,
-    },
-]);
+const playlists = ref<Playlist[]>([]);
 
 const loadUser = async (userIdRoute: number) => {
     if (!currentUser.value) {
@@ -208,22 +183,48 @@ async function getFollowStatus() {
     followResult.value = (await getFollowStatus()).result;
 }
 
+async function loadPlaylists() {
+    if (!viewedUser.value) return;
+
+    try {
+        const {getUserPlaylists} = usePlaylistService();
+        playlists.value = await getUserPlaylists(viewedUser.value.idUser);
+    }
+    catch (error) {
+        if (error instanceof ApiError) {
+            showError(error.message);
+        }
+    }
+}
+
+async function togglePlaylistFavorite(playlist: Playlist) {
+    if (!isOwnProfile.value) return;
+
+    try {
+        const {toggleFavorite} = usePlaylistService();
+        const updatedPlaylist = await toggleFavorite(playlist.id);
+        playlists.value = playlists.value.map((currentPlaylist) => {
+            return currentPlaylist.id === updatedPlaylist.id ? updatedPlaylist : currentPlaylist;
+        });
+    }
+    catch (error) {
+        if (error instanceof ApiError) {
+            showError(error.message);
+        }
+    }
+}
+
 watch(() => route.params.userId, async (newUserId) => {
     if (!newUserId) return;
 
     await loadUser(Number(newUserId));
+    await getFollowStatus();
+    await getStats();
+    await loadPlaylists();
 }, {
     immediate: true,
 });
 
-onMounted(async () => {
-    const userIdRoute = Number(route.params.userId);
-    await loadUser(userIdRoute);
-
-    await getFollowStatus();
-    await getStats();
-
-});
 </script>
 
 <template>
@@ -260,7 +261,7 @@ onMounted(async () => {
                             <span class="label">Following</span>
                         </li>
                         <li>
-                            <span class="value">24</span>
+                            <span class="value">{{ playlists.length }}</span>
                             <span class="label">Playlists</span>
                         </li>
                     </ul>
@@ -285,18 +286,37 @@ onMounted(async () => {
                         <i class="icon-playlist-music"></i>
                         <span>My playlists</span>
                     </div>
-                    <div class="playlists-container">
-                        <div class="playlist-card" v-for="playlist in playlists" :key="playlist.id">
+                    <div class="playlists-container" v-if="playlists.length > 0">
+                        <router-link
+                            class="playlist-card"
+                            v-for="playlist in playlists"
+                            :key="playlist.id"
+                            :to="{ name: 'playlistDetails', params: { playlistId: playlist.id } }">
                             <div class="playlist-cover">
-
+                                <i class="icon-playlist-music"></i>
                             </div>
-                            <span class="playlist-name">{{ playlist.name }}</span>
-                            <span class="playlist-song-count">{{ playlist.songCount }} songs</span>
-                        </div>
+                            <div class="playlist-card-footer">
+                                <div class="playlist-info">
+                                    <span class="playlist-name">{{ playlist.name }}</span>
+                                    <span class="playlist-song-count">{{ playlist.songCount }} songs</span>
+                                </div>
+                                <button
+                                    v-if="isOwnProfile"
+                                    class="favorite-button"
+                                    type="button"
+                                    :aria-label="playlist.isFavorite ? 'Remove from favorites' : 'Add to favorites'"
+                                    @click.prevent.stop="togglePlaylistFavorite(playlist)">
+                                    <i :class="playlist.isFavorite ? 'icon-heart' : 'icon-heart-outline'"></i>
+                                </button>
+                            </div>
+                        </router-link>
+                    </div>
+                    <div class="empty-state" v-else>
+                        <p>No songs have been added to this playlist yet.</p>
                     </div>
                 </section>
             </template>
-            <div v-if="viewedUser.isPrivate" class="private-profile-container">
+            <div v-if="isPrivateProfile" class="private-profile-container">
                 <div class="icon-holder">
                     <i class="icon-shield-lock-outline"></i>
                 </div>
@@ -440,6 +460,15 @@ onMounted(async () => {
             background-color: var(--color-gray-0);
             padding: var(--spacing-3);
             border-radius: var(--border-radius-7);
+            color: inherit;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 150ms ease, transform 150ms ease;
+
+            &:hover {
+                background-color: var(--color-gray-1);
+                transform: translateY(-1px);
+            }
 
             .playlist-cover {
                 width: 100%;
@@ -447,6 +476,11 @@ onMounted(async () => {
                 background-color: white;
                 border-radius: var(--border-radius-4);
                 margin-bottom: var(--spacing-2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--color-primary-4);
+                font-size: var(--font-size-6);
             }
 
             .playlist-name {
@@ -458,6 +492,41 @@ onMounted(async () => {
                 font-size: var(--font-size-1);
                 color: var(--color-gray-4);
                 display: block;
+            }
+
+            .playlist-card-footer {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: var(--spacing-2);
+
+                .playlist-info {
+                    min-width: 0;
+                }
+            }
+
+            .favorite-button {
+                width: 34px;
+                height: 34px;
+                border: none;
+                border-radius: var(--border-radius-full);
+                background-color: white;
+                color: var(--color-primary-4);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                cursor: pointer;
+                font-size: var(--font-size-4);
+                transition: background-color 150ms ease, transform 150ms ease;
+
+                &:hover {
+                    background-color: var(--color-primary-0);
+                }
+
+                &:active {
+                    transform: scale(0.94);
+                }
             }
         }
     }
