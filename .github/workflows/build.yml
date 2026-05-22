@@ -48,3 +48,23 @@ jobs:
             -Dsonar.projectKey=VibeCheckTim1_vibecheck \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+
+  deploy-frontend:
+    name: Deploy frontend after backend
+    needs: build
+    runs-on: ubuntu-latest
+    if: contains(fromJSON('["refs/heads/develop","refs/heads/test","refs/heads/prod"]'), github.ref)
+
+    steps:
+      - name: Wait for backend to be healthy
+        run: |
+          for i in $(seq 1 40); do
+            if curl -fsS https://vibecheck-gku9.onrender.com/health; then
+              echo "backend up"; exit 0
+            fi
+            echo "waiting for backend... ($i)"; sleep 15
+          done
+          echo "backend never came up"; exit 1
+
+      - name: Trigger frontend deploy
+        run: curl -fsS -X POST "${{ secrets.RENDER_FRONTEND_DEPLOY_HOOK }}"
