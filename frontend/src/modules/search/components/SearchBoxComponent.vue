@@ -2,8 +2,10 @@
 import { computed, ref, watch } from "vue";
 import InputText from "../../../components/InputText.vue";
 import { useFormField } from "../../../composables/useFormField.ts";
-import { useHttpClient } from "../../../composables/useHttpClient.ts";
+import { ApiError, useHttpClient } from "../../../composables/useHttpClient.ts";
 import { useRouter } from "vue-router";
+import { useSpotifyService } from "../../search/composables/useSpotifyService.ts"
+import { useToast } from "../../../composables/useToast.ts";
 
 type SearchItem = {
     id: string;
@@ -11,6 +13,7 @@ type SearchItem = {
     titleText: string;
     subtitleText: string;
     imageUrl?: string;
+    liked?: boolean;
 };
 
 const { httpGet } = useHttpClient();
@@ -18,6 +21,8 @@ const router = useRouter();
 const searchKeyword = useFormField<string>(null);
 const results = ref<SearchItem[]>([]);
 const loading = ref(false);
+const { showSuccess, showError } = useToast();
+
 
 const handleClick = (item: SearchItem) => {
     switch (item.type) {
@@ -80,6 +85,8 @@ const search = async (query: string | null) => {
     }
 };
 
+
+
 watch(() => searchKeyword.getInputValue(), (val) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
@@ -114,6 +121,21 @@ const buildYoutubeSearchUrl = (item: SearchItem) => {
 }
 
 
+async function songLike(item: SearchItem) {
+    try {
+        await useSpotifyService().songLike(item.id);
+        item.liked = true;
+        showSuccess("Updated successfully!");
+    }
+    catch (error) {
+        if (error instanceof ApiError) {
+            showError(error.message);
+        }
+    }
+}
+
+
+
 </script>
 
 <template>
@@ -133,10 +155,23 @@ const buildYoutubeSearchUrl = (item: SearchItem) => {
                             <img v-if="item.imageUrl" :src="item.imageUrl" alt="" class="result-image" />
                             <i v-else :class="getIcon(type)"></i>
                         </div>
+
                         <div class="text">
                             <div class="title">{{ item.titleText }}</div>
                             <div class="subtitle">{{ item.subtitleText }}</div>
                         </div>
+
+                        <button v-if="item.type === 'song'" class="like-button" @click.stop="songLike(item)">
+                            <svg class="heart-icon" :class="{ liked: item.liked }" viewBox="0 0 24 24"
+                                aria-hidden="true">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+            2 5.42 4.42 3 7.5 3
+            c1.74 0 3.41.81 4.5 2.09
+            C13.09 3.81 14.76 3 16.5 3
+            19.58 3 22 5.42 22 8.5
+            c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -145,6 +180,37 @@ const buildYoutubeSearchUrl = (item: SearchItem) => {
 </template>
 
 <style scoped>
+.like-button {
+    margin-left: auto;
+    min-width: 42px;
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.like-button:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.heart-icon {
+    width: 28px;
+    height: 28px;
+    fill: transparent;
+    stroke: #e91e63;
+    stroke-width: 2;
+}
+
+.heart-icon.liked {
+    fill: #e91e63;
+}
+
+
 .result-image {
     width: 40px;
     height: 40px;

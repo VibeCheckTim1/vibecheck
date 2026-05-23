@@ -5,6 +5,7 @@ import {searchRoutes} from "../modules/search/routes.ts";
 import {createRoutes} from "../modules/create/routes.ts";
 import {notificationsRoutes} from "../modules/notifications/routes.ts";
 import {accountRoutes} from "../modules/account/routes.ts";
+import {playlistRoutes} from "../modules/playlists/routes.ts";
 import {useState} from "../composables/useState.ts";
 import {useHttpClient} from "../composables/useHttpClient.ts";
 import {User, type UserApi} from "../entities/user.ts";
@@ -19,6 +20,7 @@ const router = createRouter({
 		...homeRoutes,
 		...searchRoutes,
 		...createRoutes,
+		...playlistRoutes,
 		...notificationsRoutes,
 		...accountRoutes
 	],

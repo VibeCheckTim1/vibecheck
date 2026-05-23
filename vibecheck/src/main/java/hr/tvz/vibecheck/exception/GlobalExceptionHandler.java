@@ -22,6 +22,11 @@ public class GlobalExceptionHandler {
         return errorResponseService.buildError(ex, request, ErrorKey.NOT_FOUND);
     }
 
+    @ExceptionHandler(PlaylistNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePlaylistNotFound(PlaylistNotFoundException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.NOT_FOUND);
+    }
+
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<ErrorResponse> handleInvalidPassword(InvalidPasswordException ex, HttpServletRequest request) {
         return errorResponseService.buildError(ex, request, ErrorKey.BAD_REQUEST);
@@ -54,6 +59,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateUserException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateUserException(DuplicateUserException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.CONFLICT);
+    }
+
+    @ExceptionHandler(DuplicateUserLikedSongException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateUserLikedSongException(DuplicateUserLikedSongException ex, HttpServletRequest request) {
         return errorResponseService.buildError(ex, request, ErrorKey.CONFLICT);
     }
 
@@ -95,6 +105,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MailSendFailedException.class)
     public ResponseEntity<ErrorResponse> handleMailSendFailedException(MailSendFailedException ex, HttpServletRequest request) {
         return errorResponseService.buildError(ex, request, ErrorKey.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(EmptySpotifyTrackException.class)
+    public ResponseEntity<ErrorResponse> handleEmptySpotifyTrackException(EmptySpotifyTrackException ex, HttpServletRequest request) {
+        return errorResponseService.buildError(ex, request, ErrorKey.NOT_FOUND);
     }
 
     // TODO: add @ExceptionHandler(MethodArgumentNotValidException.class) — the catch-all below intercepts it first,

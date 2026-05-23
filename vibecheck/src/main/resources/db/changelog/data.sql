@@ -30,3 +30,11 @@ VALUES ('ADMIN', 'Application administrator role');
 --FROM roles r
 --JOIN endpoints e ON e.http_method = 'GET' AND e.path = '/security/current-user'
 --WHERE r.name = 'USER';
+
+--changeset kstjepanovic:insert-playlists context:integration
+INSERT INTO playlists (user_id, name, is_favorite, is_public)
+VALUES (1, 'Luka public playlist', true, true);
+INSERT INTO playlists (user_id, name, is_favorite, is_public)
+VALUES (1, 'Luka private playlist', false, false);
+INSERT INTO playlists (user_id, name, is_favorite, is_public)
+VALUES (2, 'Marko private playlist', false, false);

@@ -60,7 +60,7 @@ class UserTest {
     void allArgsConstructor_shouldCreateUser() {
         LocalDateTime ts = LocalDateTime.now();
         User user = new User(2L, "Jane", "Smith", "jsmith", "http://avatar.url", null,
-                "bio", true, "jane@example.com", "pass", ts, List.of(), List.of());
+                "bio", true, "jane@example.com", "pass", ts, List.of(), List.of(), List.of());
 
         assertThat(user.getIdUser()).isEqualTo(2L);
         assertThat(user.getFirstName()).isEqualTo("Jane");

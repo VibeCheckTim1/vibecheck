@@ -324,3 +324,25 @@ form {
 	color: var(--color-red-4);
 }
 
+.empty-state {
+	width: 100%;
+	background-color: var(--color-gray-0);
+	border-radius: var(--border-radius-6);
+	padding: var(--spacing-6);
+	text-align: center;
+	color: var(--color-gray-6);
+
+	.empty-title {
+		margin: 0;
+		font-size: 1.15rem;
+		font-weight: 700;
+		color: #1f2937;
+	}
+
+	.empty-subtitle {
+		margin: 0.5rem 0 0;
+		font-size: 0.95rem;
+		color: #6b7280;
+	}
+}
+
