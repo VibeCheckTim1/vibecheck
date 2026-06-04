@@ -1,5 +1,6 @@
 package hr.tvz.vibecheck.config;
 
+import hr.tvz.vibecheck.config.port.ServerStatusNotificationSender;
 import lombok.Getter;
 import org.springframework.context.ApplicationContext;
 import org.quartz.JobKey;
@@ -16,7 +17,7 @@ public enum QuartzJobDefinition {
             "discordServerStatusTrigger",
             "discord",
             applicationContext -> () -> applicationContext
-                    .getBean(DiscordWebhookService.class)
+                    .getBean(ServerStatusNotificationSender.class)
                     .sendDailyServerStatus(),
             "0 0 0 * * ?"
     );
