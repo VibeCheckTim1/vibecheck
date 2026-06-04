@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class VibeCheckUserDetailsTest {
 
@@ -94,11 +95,10 @@ class VibeCheckUserDetailsTest {
     }
 
     @Test
-    void noArgsConstructor_shouldCreateEmptyDetails() {
-        VibeCheckUserDetails details = new VibeCheckUserDetails();
-
-        assertThat(details.getUsername()).isNull();
-        assertThat(details.getPassword()).isNull();
+    void builder_withoutUsername_shouldRejectInvalidDetails() {
+        assertThatThrownBy(() -> VibeCheckUserDetails.builder().build())
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("username");
     }
 
     @Test
@@ -111,5 +111,15 @@ class VibeCheckUserDetailsTest {
         assertThat(details.getId()).isEqualTo(1L);
         assertThat(details.getUsername()).isEqualTo("user");
         assertThat(details.getEmail()).isEqualTo("user@test.com");
+    }
+
+    @Test
+    void getPassword_withoutPassword_shouldReturnNull() {
+        VibeCheckUserDetails details = VibeCheckUserDetails.builder()
+                .username("user")
+                .build();
+
+        assertThat(details.getPassword()).isNull();
+        assertThat(details.getAttributes()).isEmpty();
     }
 }
