@@ -38,3 +38,21 @@ INSERT INTO playlists (user_id, name, is_favorite, is_public)
 VALUES (1, 'Luka private playlist', false, false);
 INSERT INTO playlists (user_id, name, is_favorite, is_public)
 VALUES (2, 'Marko private playlist', false, false);
+
+
+--changeset mgradiscaj:insert-marko-pending-follow-requests context:integration
+INSERT INTO follow_request (sender_id, receiver_id, status, created_at)
+VALUES (
+           (SELECT id_user FROM users WHERE username = 'lsaric'),
+           (SELECT id_user FROM users WHERE username = 'mgradiscaj'),
+           'PENDING',
+           CURRENT_TIMESTAMP
+       );
+
+INSERT INTO follow_request (sender_id, receiver_id, status, created_at)
+VALUES (
+           (SELECT id_user FROM users WHERE username = 'kstjepanovic'),
+           (SELECT id_user FROM users WHERE username = 'mgradiscaj'),
+           'PENDING',
+           CURRENT_TIMESTAMP
+       );

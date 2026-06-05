@@ -2,6 +2,7 @@ package hr.tvz.vibecheck.api.account.repository.follow_request;
 
 import hr.tvz.vibecheck.api.account.dto.FollowRequestResponse;
 import hr.tvz.vibecheck.api.account.entity.FollowRequest;
+import hr.tvz.vibecheck.quartz.DTO.PendingFollowRequestReminderTarget;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -27,5 +28,19 @@ public interface FollowRequestRepository extends JpaRepository<FollowRequest, Lo
           fr.status != 'DECLINED'
 """)
     List<FollowRequestResponse> findAllByReceiverId(Long receiverId);
+
+    @Query("""
+    SELECT new hr.tvz.vibecheck.quartz.DTO.PendingFollowRequestReminderTarget(
+        fr.receiver.idUser,
+        fr.receiver.username,
+        fr.receiver.email,
+        COUNT(fr)
+    )
+    FROM FollowRequest fr
+    WHERE fr.status = 'PENDING'
+    GROUP BY fr.receiver.idUser, fr.receiver.username, fr.receiver.email
+    HAVING COUNT(fr) >= :minPendingCount
+""")
+    List<PendingFollowRequestReminderTarget> findPendingFollowRequestReminderTargets(int minPendingCount);
 
 }
