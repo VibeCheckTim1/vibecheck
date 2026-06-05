@@ -1,5 +1,7 @@
 package hr.tvz.vibecheck.config;
 
+import hr.tvz.vibecheck.config.port.ServerStatusNotificationSender;
+import hr.tvz.vibecheck.config.port.StartupNotificationSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -11,7 +13,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class DiscordWebhookService {
+public class DiscordWebhookService implements StartupNotificationSender, ServerStatusNotificationSender {
 
     private final RestClient restClient;
     private final String webhookUrl;
@@ -27,10 +29,12 @@ public class DiscordWebhookService {
         this.appName = appName;
     }
 
+    @Override
     public void sendStartupNotification() {
         sendMessage("%s - backend has started".formatted(appName), "startup");
     }
 
+    @Override
     public void sendDailyServerStatus() {
         sendMessage("%s - server is up".formatted(appName), "daily server status");
     }
