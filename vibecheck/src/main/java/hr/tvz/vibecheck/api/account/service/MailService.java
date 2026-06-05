@@ -59,6 +59,29 @@ public class MailService {
         }
     }
 
+    public void sendPendingFollowRequestReminderEmail(String to, String username, long pendingCount) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+
+            helper.setFrom(fromEmail);
+            helper.setTo(to);
+            helper.setSubject("VibeCheck - Pending follow requests");
+            helper.setText("""
+                Hi %s,
+
+                You have %d pending follow request(s) waiting on VibeCheck.
+
+                Open the app to review them.
+                """.formatted(username, pendingCount), false);
+
+            mailSender.send(message);
+        } catch (Exception e) {
+            log.error("Failed to send pending follow request reminder email", e);
+            throw new MailSendFailedException("Failed to send pending follow request reminder email", e);
+        }
+    }
+
 
 
     private String buildEmailChangeVerificationHtml(String code) {

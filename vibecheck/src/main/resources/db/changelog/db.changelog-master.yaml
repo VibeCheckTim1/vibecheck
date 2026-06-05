@@ -1,5 +1,16 @@
 databaseChangeLog:
   - include:
       file: db/changelog/schema.sql
+
+  - changeSet:
+      id: create-quartz-tables-h2
+      author: mgradiscaj
+      changes:
+        - sqlFile:
+            path: db/changelog/quartz-h2.sql
+            splitStatements: true
+            stripComments: true
+            endDelimiter: ";"
+
   - include:
       file: db/changelog/data.sql
