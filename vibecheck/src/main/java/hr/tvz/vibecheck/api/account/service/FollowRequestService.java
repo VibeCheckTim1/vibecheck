@@ -2,6 +2,9 @@ package hr.tvz.vibecheck.api.account.service;
 
 import hr.tvz.vibecheck.api.account.dto.FollowStatsResponse;
 import hr.tvz.vibecheck.api.account.entity.FollowRequest;
+import hr.tvz.vibecheck.api.account.service.interfaces.FollowRequestActionHandler;
+import hr.tvz.vibecheck.api.account.service.interfaces.FollowRequestCommandService;
+import hr.tvz.vibecheck.api.account.service.interfaces.FollowRequestQueryService;
 import hr.tvz.vibecheck.api.security.enums.FollowActionResult;
 import hr.tvz.vibecheck.api.security.enums.FollowRequestStatus;
 import hr.tvz.vibecheck.api.user.entity.User;
@@ -11,7 +14,6 @@ import hr.tvz.vibecheck.api.security.dto.FollowRequestRequest;
 import hr.tvz.vibecheck.api.account.dto.FollowActionResponse;
 import hr.tvz.vibecheck.api.account.dto.FollowRequestResponse;
 import hr.tvz.vibecheck.api.account.entity.Follows;
-import hr.tvz.vibecheck.api.security.enums.FollowRequestUserResponse;
 import hr.tvz.vibecheck.exception.custom.*;
 import hr.tvz.vibecheck.api.account.repository.follow_request.FollowRequestRepository;
 import hr.tvz.vibecheck.api.account.repository.follows.FollowsRepository;
@@ -25,22 +27,74 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class FollowRequestService {
+public class FollowRequestService implements FollowRequestCommandService, FollowRequestQueryService {
     private static final String USER_NOT_FOUND_PREFIX = "User with ID ";
     private static final String NOT_FOUND_SUFFIX = " not found";
 
     private final FollowRequestRepository followRequestRepository;
     private final UserRepository userRepository;
     private final FollowsRepository followsRepository;
+    private final List<FollowRequestActionHandler> actionHandlers;
 
+    @Override
     @Transactional
     public FollowActionResponse createFollowRequestOrFollow(Long senderId, FollowRequestRequest followRequest) {
-        User sender = userRepository.findById(senderId).orElseThrow(()
-                -> new UserNotFoundException(USER_NOT_FOUND_PREFIX + senderId + NOT_FOUND_SUFFIX));
+        User sender = findUserById(senderId);
+        User receiver = findUserById(followRequest.receiverId());
 
-        User receiver = userRepository.findById(followRequest.receiverId()).orElseThrow(()
-                -> new UserNotFoundException(USER_NOT_FOUND_PREFIX + followRequest.receiverId() + NOT_FOUND_SUFFIX));
+        validateFollowCanBeCreated(sender, receiver);
 
+        if (!receiver.isPrivate()) {
+            createFollow(sender, receiver);
+            return new FollowActionResponse(FollowActionResult.FOLLOWING);
+        }
+        createOrReactivatePendingFollowRequest(sender, receiver);
+
+        return new FollowActionResponse(FollowActionResult.PENDING);
+    }
+
+    private void createOrReactivatePendingFollowRequest(User sender, User receiver) {
+        Optional<FollowRequest> existingRequestOpt =
+                followRequestRepository.findBySender_IdUserAndReceiver_IdUser(sender.getIdUser(), receiver.getIdUser());
+
+        if (existingRequestOpt.isPresent()) {
+            reactivateDeclinedRequestOrThrow(existingRequestOpt.get(), receiver);
+            return;
+        }
+
+        FollowRequest newFollowRequest = FollowRequest.builder()
+                .sender(sender)
+                .receiver(receiver)
+                .status(FollowRequestStatus.PENDING)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        followRequestRepository.save(newFollowRequest);
+    }
+
+    private void reactivateDeclinedRequestOrThrow(FollowRequest existingRequest, User receiver) {
+        if (existingRequest.getStatus() != FollowRequestStatus.DECLINED) {
+            throw new DuplicateFollowRequestException("Follow request for user " + receiver.getUsername() + " already exists");
+        }
+
+        existingRequest.setStatus(FollowRequestStatus.PENDING);
+        followRequestRepository.save(existingRequest);
+    }
+
+    private void createFollow(User sender, User receiver) {
+        Follows newFollow = Follows.builder()
+                .user1(sender)
+                .user2(receiver)
+                .build();
+        followsRepository.save(newFollow);
+    }
+
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(()
+                -> new UserNotFoundException(USER_NOT_FOUND_PREFIX + userId + NOT_FOUND_SUFFIX));
+    }
+
+    private void validateFollowCanBeCreated(User sender, User receiver) {
         if (sender.getIdUser().equals(receiver.getIdUser())) {
             throw new SelfFollowException("You cannot follow yourself");
         }
@@ -48,42 +102,9 @@ public class FollowRequestService {
         if (followsRepository.findByUser1_IdUserAndUser2_IdUser(sender.getIdUser(), receiver.getIdUser()).isPresent()) {
             throw new DuplicateFollowException("Follow for " + receiver.getUsername() + " already exists");
         }
-
-        if (!receiver.isPrivate()) {
-            Follows newFollow = Follows.builder()
-                    .user1(sender)
-                    .user2(receiver)
-                    .build();
-            followsRepository.save(newFollow);
-            return new FollowActionResponse(FollowActionResult.FOLLOWING);
-        } else {
-            Optional<FollowRequest> existingRequestOpt =
-                    followRequestRepository.findBySender_IdUserAndReceiver_IdUser(sender.getIdUser(), receiver.getIdUser());
-
-            if (existingRequestOpt.isPresent()) {
-                FollowRequest existingReq = existingRequestOpt.get();
-
-                if (existingReq.getStatus() == FollowRequestStatus.DECLINED) {
-                    existingReq.setStatus(FollowRequestStatus.PENDING);
-                    followRequestRepository.save(existingReq);
-                    return new FollowActionResponse(FollowActionResult.PENDING);
-                } else {
-                    throw new DuplicateFollowRequestException("Follow request for user " + receiver.getUsername() + " already exists");
-                }
-            } else {
-                FollowRequest newFollowRequest = FollowRequest.builder()
-                        .sender(sender)
-                        .receiver(receiver)
-                        .status(FollowRequestStatus.PENDING)
-                        .createdAt(LocalDateTime.now())
-                        .build();
-                followRequestRepository.save(newFollowRequest);
-                return new FollowActionResponse(FollowActionResult.PENDING);
-            }
-
-        }
     }
 
+    @Override
     public void cancelFollowRequest(Long senderId, Long receiverId) {
         User sender = userRepository.findById(senderId).orElseThrow(()
                 -> new UserNotFoundException(USER_NOT_FOUND_PREFIX + senderId + NOT_FOUND_SUFFIX));
@@ -104,6 +125,7 @@ public class FollowRequestService {
     }
 
     @Transactional
+    @Override
     public void unfollow(Long senderId, Long receiverId) {
         User sender = userRepository.findById(senderId).orElseThrow(()
                 -> new UserNotFoundException(USER_NOT_FOUND_PREFIX + senderId + NOT_FOUND_SUFFIX));
@@ -124,30 +146,33 @@ public class FollowRequestService {
 
     }
 
-    public FollowActionResponse getFollowStatus(Long senderId, Long receiverId) {
-        Optional<Follows> followExistsOpt =
-                followsRepository.findByUser1_IdUserAndUser2_IdUser(senderId, receiverId);
 
-        if (followExistsOpt.isPresent()) {
+    @Override
+    public FollowActionResponse getFollowStatus(Long senderId, Long receiverId) {
+        if (isFollowing(senderId, receiverId)) {
             return new FollowActionResponse(FollowActionResult.FOLLOWING);
         }
 
-        Optional<FollowRequest> followRequestExistsOtp =
-                followRequestRepository.findBySender_IdUserAndReceiver_IdUser(senderId, receiverId);
+        return followRequestRepository.findBySender_IdUserAndReceiver_IdUser(senderId, receiverId)
+                .map(this::mapFollowRequestToActionResponse)
+                .orElseGet(() -> new FollowActionResponse(FollowActionResult.FOLLOW));
+    }
 
-        if (followRequestExistsOtp.isPresent()) {
-            FollowRequest followRequest = followRequestExistsOtp.get();
+    private boolean isFollowing(Long senderId, Long receiverId) {
+        return followsRepository.findByUser1_IdUserAndUser2_IdUser(senderId, receiverId).isPresent();
+    }
 
-            if (followRequest.getStatus() == FollowRequestStatus.DECLINED) {
-                return new FollowActionResponse(FollowActionResult.FOLLOW);
-            }
-            return new FollowActionResponse(FollowActionResult.PENDING);
+    private FollowActionResponse mapFollowRequestToActionResponse(FollowRequest followRequest) {
+        if (followRequest.getStatus() == FollowRequestStatus.DECLINED) {
+            return new FollowActionResponse(FollowActionResult.FOLLOW);
         }
-        return new FollowActionResponse(FollowActionResult.FOLLOW);
+
+        return new FollowActionResponse(FollowActionResult.PENDING);
     }
 
 
     @Transactional
+    @Override
     public void acceptOrDeclineFollowRequest(Long requestId, Long receiverId, FollowRequestActionRequest userResponse) {
         String actionName = userResponse.action().name().toLowerCase();
 
@@ -165,33 +190,15 @@ public class FollowRequestService {
             throw new NotPendingStatusException("You cannot " + actionName + " a follow request that is not \"Pending\"");
         }
 
+        FollowRequestActionHandler handler = actionHandlers.stream()
+                .filter(candidate -> candidate.action() == userResponse.action())
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unsupported follow request action"));
 
-        if (userResponse.action() == FollowRequestUserResponse.ACCEPT) {
-            boolean alreadyFollowing = followsRepository
-                    .findByUser1_IdUserAndUser2_IdUser(existingReq.getSender().getIdUser(), receiver.getIdUser())
-                    .isPresent();
-
-            if (alreadyFollowing) {
-                throw new DuplicateFollowException("User already follows this profile");
-            }
-
-            followRequestRepository.delete(existingReq);
-
-            Follows newFollow = Follows.builder()
-                    .user1(existingReq.getSender())
-                    .user2(receiver)
-                    .build();
-
-            followsRepository.save(newFollow);
-        }
-        else if (userResponse.action() == FollowRequestUserResponse.DECLINE) {
-            existingReq.setStatus(FollowRequestStatus.DECLINED);
-        }
-
-
+        handler.handle(existingReq, receiver);
     }
 
-
+    @Override
     public List<FollowRequestResponse> getAllFollowRequests(Long receiverId) {
         userRepository.findById(receiverId).orElseThrow(()
                 -> new UserNotFoundException(USER_NOT_FOUND_PREFIX + receiverId + NOT_FOUND_SUFFIX));
@@ -200,7 +207,7 @@ public class FollowRequestService {
 
     }
 
-
+    @Override
     public FollowStatsResponse getFollowStats(Long userId) {
         userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
