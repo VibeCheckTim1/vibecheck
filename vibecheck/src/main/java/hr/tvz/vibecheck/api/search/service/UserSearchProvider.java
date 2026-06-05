@@ -27,7 +27,7 @@ public class UserSearchProvider implements SearchProvider {
                 String.valueOf(user.getIdUser()),
                 "user",
                 user.getUsername(),
-                user.getFirstName().concat("").concat(user.getLastName()),
+                user.getFirstName().concat(" ").concat(user.getLastName()),
                 user.getAvatarUrl()
         );
     }
