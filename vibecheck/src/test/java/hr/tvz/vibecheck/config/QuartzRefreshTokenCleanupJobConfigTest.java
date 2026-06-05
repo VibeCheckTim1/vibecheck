@@ -33,7 +33,7 @@ class QuartzRefreshTokenCleanupJobConfigTest {
     }
 
     @Test
-    void createsCronTriggerThatRunsEveryFiveMinutes() {
+    void createsCronTriggerThatRunsEveryThirtySeconds() {
         JobDetail jobDetail = config.expiredRefreshTokenCleanupJobDetail();
 
         Trigger trigger = config.expiredRefreshTokenCleanupTrigger(jobDetail);
@@ -47,6 +47,6 @@ class QuartzRefreshTokenCleanupJobConfigTest {
         CronTrigger cronTrigger = (CronTrigger) trigger;
 
         assertThat(cronTrigger.getCronExpression())
-                .isEqualTo("0 0/5 * * * ?");
+                .isEqualTo("0/30 * * * * ?");
     }
 }

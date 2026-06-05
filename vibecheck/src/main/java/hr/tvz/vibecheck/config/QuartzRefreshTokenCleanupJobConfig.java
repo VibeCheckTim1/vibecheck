@@ -16,7 +16,7 @@ public class QuartzRefreshTokenCleanupJobConfig {
     public static final String TRIGGER_NAME = "expiredRefreshTokenCleanupTrigger";
     public static final String DATA_RUN_COUNT = "runCount";
     public static final String DATA_LAST_DELETED_COUNT = "lastDeletedCount";
-    public static final String EVERY_FIVE_MINUTES_CRON_EXPRESSION = "0 0/5 * * * ?";
+    public static final String EVERY_THIRTY_SECONDS_CRON_EXPRESSION = "0/30 * * * * ?";
 
     @Bean
     public JobDetail expiredRefreshTokenCleanupJobDetail() {
@@ -34,7 +34,7 @@ public class QuartzRefreshTokenCleanupJobConfig {
         return TriggerBuilder.newTrigger()
                 .withIdentity(TRIGGER_NAME, JOB_GROUP)
                 .forJob(expiredRefreshTokenCleanupJobDetail)
-                .withSchedule(CronScheduleBuilder.cronSchedule(EVERY_FIVE_MINUTES_CRON_EXPRESSION)
+                .withSchedule(CronScheduleBuilder.cronSchedule(EVERY_THIRTY_SECONDS_CRON_EXPRESSION)
                         .withMisfireHandlingInstructionFireAndProceed())
                 .build();
     }
