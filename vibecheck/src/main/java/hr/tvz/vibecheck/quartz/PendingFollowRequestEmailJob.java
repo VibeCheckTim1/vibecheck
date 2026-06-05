@@ -26,7 +26,7 @@ public class PendingFollowRequestEmailJob implements Job {
         try {
             int sentCount = reminderService.sendPendingFollowRequestReminders(minPendingCount, dryRun);
 
-            dataMap.put("runCount", runCount);
+            dataMap.put("runCount", runCount + 1);
             dataMap.put("lastSentCount", sentCount);
 
             log.info(

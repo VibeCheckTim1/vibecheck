@@ -5,6 +5,7 @@ databaseChangeLog:
   - changeSet:
       id: create-quartz-tables-h2
       author: mgradiscaj
+      dbms: h2
       changes:
         - sqlFile:
             path: db/changelog/quartz-h2.sql
