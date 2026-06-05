@@ -5,7 +5,9 @@ import hr.tvz.vibecheck.api.account.service.interfaces.FollowRequestActionHandle
 import hr.tvz.vibecheck.api.security.enums.FollowRequestStatus;
 import hr.tvz.vibecheck.api.security.enums.FollowRequestUserResponse;
 import hr.tvz.vibecheck.api.user.entity.User;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DeclineFollowRequestActionHandler implements FollowRequestActionHandler {
     @Override
     public FollowRequestUserResponse action() {
