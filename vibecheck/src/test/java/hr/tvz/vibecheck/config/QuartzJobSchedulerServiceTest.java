@@ -1,5 +1,6 @@
 package hr.tvz.vibecheck.config;
 
+import hr.tvz.vibecheck.config.port.ServerStatusNotificationSender;
 import org.junit.jupiter.api.Test;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
@@ -17,10 +18,10 @@ class QuartzJobSchedulerServiceTest {
     void schedulesQuartzJobsFromDefinitions() throws Exception {
         Scheduler scheduler = mock(Scheduler.class);
         ApplicationContext applicationContext = mock(ApplicationContext.class);
-        DiscordWebhookService discordWebhookService = mock(DiscordWebhookService.class);
+        ServerStatusNotificationSender serverStatusNotificationSender = mock(ServerStatusNotificationSender.class);
         QuartzJobDefinition jobDefinition = QuartzJobDefinition.DISCORD_SERVER_STATUS;
 
-        when(applicationContext.getBean(DiscordWebhookService.class)).thenReturn(discordWebhookService);
+        when(applicationContext.getBean(ServerStatusNotificationSender.class)).thenReturn(serverStatusNotificationSender);
 
         QuartzJobSchedulerService service = new QuartzJobSchedulerService(
                 scheduler,
