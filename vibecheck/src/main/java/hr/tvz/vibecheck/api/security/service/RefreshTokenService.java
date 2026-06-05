@@ -95,4 +95,9 @@ public class RefreshTokenService {
         tokens.forEach(t -> t.setRevoked(true));
         refreshTokenRepository.saveAll(tokens);
     }
+
+    @Transactional
+    public int deleteExpiredOrRevokedTokens() {
+        return refreshTokenRepository.deleteExpiredOrRevokedBefore(LocalDateTime.now());
+    }
 }
