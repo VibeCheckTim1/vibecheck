@@ -22,7 +22,7 @@ public class QuartzRefreshTokenCleanupJobConfig {
     public JobDetail expiredRefreshTokenCleanupJobDetail() {
         return JobBuilder.newJob(ExpiredRefreshTokenCleanupJob.class)
                 .withIdentity(JOB_NAME, JOB_GROUP)
-                .withDescription("Deletes expired refresh tokens from the database")
+                .withDescription("Deletes expired or revoked refresh tokens from the database")
                 .usingJobData(DATA_RUN_COUNT, 0)
                 .usingJobData(DATA_LAST_DELETED_COUNT, 0)
                 .storeDurably()

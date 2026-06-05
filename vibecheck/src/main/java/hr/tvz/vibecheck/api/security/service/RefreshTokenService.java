@@ -97,7 +97,7 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public int deleteExpiredTokens() {
-        return refreshTokenRepository.deleteExpiredBefore(LocalDateTime.now());
+    public int deleteExpiredOrRevokedTokens() {
+        return refreshTokenRepository.deleteExpiredOrRevokedBefore(LocalDateTime.now());
     }
 }

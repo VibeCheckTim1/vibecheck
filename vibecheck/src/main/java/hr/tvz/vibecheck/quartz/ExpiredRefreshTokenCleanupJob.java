@@ -25,19 +25,19 @@ public class ExpiredRefreshTokenCleanupJob implements Job {
         int runCount = dataMap.containsKey("runCount") ? dataMap.getInt("runCount") : 0;
 
         try {
-            int deletedCount = refreshTokenService.deleteExpiredTokens();
+            int deletedCount = refreshTokenService.deleteExpiredOrRevokedTokens();
 
             dataMap.put("runCount", runCount + 1);
             dataMap.put("lastDeletedCount", deletedCount);
 
             log.info(
-                    "Expired refresh token cleanup job finished. deletedCount={}, runCount={}",
+                    "Expired or revoked refresh token cleanup job finished. deletedCount={}, runCount={}",
                     deletedCount,
                     runCount + 1
             );
         }
         catch (Exception e) {
-            log.error("Expired refresh token cleanup job failed", e);
+            log.error("Expired or revoked refresh token cleanup job failed", e);
             throw new JobExecutionException(e);
         }
     }

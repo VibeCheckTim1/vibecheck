@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 class ExpiredRefreshTokenCleanupJobTest {
 
     @Test
-    void executeDeletesExpiredTokensAndUpdatesJobDataMap() throws Exception {
+    void executeDeletesExpiredOrRevokedTokensAndUpdatesJobDataMap() throws Exception {
         RefreshTokenService refreshTokenService = mock(RefreshTokenService.class);
         ExpiredRefreshTokenCleanupJob job = new ExpiredRefreshTokenCleanupJob(refreshTokenService);
         JobExecutionContext context = mock(JobExecutionContext.class);
@@ -24,11 +24,11 @@ class ExpiredRefreshTokenCleanupJobTest {
         jobDataMap.put("lastDeletedCount", 0);
 
         when(context.getMergedJobDataMap()).thenReturn(jobDataMap);
-        when(refreshTokenService.deleteExpiredTokens()).thenReturn(7);
+        when(refreshTokenService.deleteExpiredOrRevokedTokens()).thenReturn(7);
 
         job.execute(context);
 
-        verify(refreshTokenService).deleteExpiredTokens();
+        verify(refreshTokenService).deleteExpiredOrRevokedTokens();
 
         assertThat(jobDataMap.getInt("runCount")).isEqualTo(5);
         assertThat(jobDataMap.getInt("lastDeletedCount")).isEqualTo(7);

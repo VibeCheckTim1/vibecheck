@@ -14,16 +14,16 @@ import static org.mockito.Mockito.when;
 class RefreshTokenServiceTest {
 
     @Test
-    void deleteExpiredTokensDeletesTokensExpiredBeforeNow() {
+    void deleteExpiredOrRevokedTokensDeletesMatchingTokens() {
         RefreshTokenRepository refreshTokenRepository = mock(RefreshTokenRepository.class);
         RefreshTokenService service = new RefreshTokenService(refreshTokenRepository);
 
-        when(refreshTokenRepository.deleteExpiredBefore(any(LocalDateTime.class)))
+        when(refreshTokenRepository.deleteExpiredOrRevokedBefore(any(LocalDateTime.class)))
                 .thenReturn(3);
 
-        int deletedCount = service.deleteExpiredTokens();
+        int deletedCount = service.deleteExpiredOrRevokedTokens();
 
         assertThat(deletedCount).isEqualTo(3);
-        verify(refreshTokenRepository).deleteExpiredBefore(any(LocalDateTime.class));
+        verify(refreshTokenRepository).deleteExpiredOrRevokedBefore(any(LocalDateTime.class));
     }
 }
